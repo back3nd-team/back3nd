@@ -1,0 +1,41 @@
+services:
+  postgres_db:
+    image: postgres:17.0-alpine
+    container_name: postgres_db
+    env_file:
+      - .env
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+    ports:
+      - 5432:5432
+    networks:
+      - postgres-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "back3nd@softagon.com.br"
+      PGADMIN_DEFAULT_PASSWORD: "back3ndSamplePassword"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False" 
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "8037:80"  
+    depends_on:
+      - postgres_db
+    networks:
+      - postgres-network
+    restart: unless-stopped
+
+volumes:
+  postgresql_data:
+
+networks:
+  postgres-network:
+    driver: bridge

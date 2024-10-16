@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model back3nd_user {
+  id                     String                   @id @default(uuid()) @db.Uuid
+  email                  String                   @unique
+  password               String
+  reset_token            String? // Token for password reset
+  created_at             DateTime                 @default(now())
+  updated_at             DateTime                 @updatedAt
+  roles                  back3nd_user_role[] // Relation with roles
+  back3nd_password_reset back3nd_password_reset[]
+}
+
+model back3nd_role {
+  id          String               @id @default(uuid()) @db.Uuid
+  name        String               @unique
+  description String?
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt
+  users       back3nd_user_role[] // Many-to-many relationship with users
+  permissions back3nd_permission[] // Permissions related to this role
+}
+
+model back3nd_user_role {
+  id         String       @id @default(uuid()) @db.Uuid
+  user_id    String       @db.Uuid
+  role_id    String       @db.Uuid
+  user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role       back3nd_role @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  created_at DateTime     @default(now())
+
+  @@unique([user_id, role_id]) // Ensure the user doesn't have the same role twice
+}
+
+model back3nd_permission {
+  id         String             @id @default(uuid()) @db.Uuid
+  role_id    String             @db.Uuid
+  table_id   String             @db.Uuid
+  table      back3nd_some_table @relation(fields: [table_id], references: [id], onDelete: Cascade)
+  can_create Boolean            @default(false)
+  can_read   Boolean            @default(false)
+  can_update Boolean            @default(false)
+  can_delete Boolean            @default(false)
+  role       back3nd_role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  created_at DateTime           @default(now())
+
+  @@unique([role_id, table_id]) // Ensure unique permission for each role-table combo
+}
+
+model back3nd_some_table {
+  id                 String               @id @default(uuid()) @db.Uuid
+  data_field         String
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  back3nd_permission back3nd_permission[]
+}
+
+model back3nd_password_reset {
+  id         String       @id @default(uuid()) @db.Uuid
+  user_id    String       @db.Uuid
+  user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  token      String // Token for password reset
+  created_at DateTime     @default(now())
+  expires_at DateTime // Expiration time for the reset token
+}
