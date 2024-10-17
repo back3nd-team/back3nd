@@ -43,7 +43,7 @@ model back3nd_permission {
   id         String             @id @default(uuid()) @db.Uuid
   role_id    String             @db.Uuid
   table_id   String             @db.Uuid
-  table      back3nd_some_table @relation(fields: [table_id], references: [id], onDelete: Cascade)
+  table      back3nd_entity     @relation(fields: [table_id], references: [id], onDelete: Cascade) // Renomeado
   can_create Boolean            @default(false)
   can_read   Boolean            @default(false)
   can_update Boolean            @default(false)
@@ -54,9 +54,9 @@ model back3nd_permission {
   @@unique([role_id, table_id]) // Ensure unique permission for each role-table combo
 }
 
-model back3nd_some_table {
+model back3nd_entity {  
   id                 String               @id @default(uuid()) @db.Uuid
-  data_field         String
+  name               String               @unique  
   created_at         DateTime             @default(now())
   updated_at         DateTime             @updatedAt
   back3nd_permission back3nd_permission[]
@@ -69,4 +69,11 @@ model back3nd_password_reset {
   token      String // Token for password reset
   created_at DateTime     @default(now())
   expires_at DateTime // Expiration time for the reset token
+}
+
+model test_table {
+  id         String   @id @default(uuid()) @db.Uuid
+  data_field String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

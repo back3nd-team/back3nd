@@ -46,13 +46,13 @@ CREATE TABLE "back3nd_permission" (
 );
 
 -- CreateTable
-CREATE TABLE "back3nd_some_table" (
+CREATE TABLE "back3nd_entity" (
     "id" UUID NOT NULL,
-    "data_field" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "back3nd_some_table_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "back3nd_entity_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -64,6 +64,16 @@ CREATE TABLE "back3nd_password_reset" (
     "expires_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "back3nd_password_reset_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "test_table" (
+    "id" UUID NOT NULL,
+    "data_field" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "test_table_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -78,6 +88,9 @@ CREATE UNIQUE INDEX "back3nd_user_role_user_id_role_id_key" ON "back3nd_user_rol
 -- CreateIndex
 CREATE UNIQUE INDEX "back3nd_permission_role_id_table_id_key" ON "back3nd_permission"("role_id", "table_id");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "back3nd_entity_name_key" ON "back3nd_entity"("name");
+
 -- AddForeignKey
 ALTER TABLE "back3nd_user_role" ADD CONSTRAINT "back3nd_user_role_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "back3nd_user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -85,7 +98,7 @@ ALTER TABLE "back3nd_user_role" ADD CONSTRAINT "back3nd_user_role_user_id_fkey" 
 ALTER TABLE "back3nd_user_role" ADD CONSTRAINT "back3nd_user_role_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "back3nd_role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "back3nd_permission" ADD CONSTRAINT "back3nd_permission_table_id_fkey" FOREIGN KEY ("table_id") REFERENCES "back3nd_some_table"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "back3nd_permission" ADD CONSTRAINT "back3nd_permission_table_id_fkey" FOREIGN KEY ("table_id") REFERENCES "back3nd_entity"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "back3nd_permission" ADD CONSTRAINT "back3nd_permission_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "back3nd_role"("id") ON DELETE CASCADE ON UPDATE CASCADE;

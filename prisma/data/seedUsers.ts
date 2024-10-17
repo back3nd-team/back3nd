@@ -45,7 +45,7 @@ export async function seedUsers() {
       roles: {
         create: {
           role: {
-            connect: { name: 'Admin' }, // Connect to the Admin role
+            connect: { name: 'admin' }, // Connect to the Admin role
           },
         },
       },
@@ -62,7 +62,7 @@ export async function seedUsers() {
       roles: {
         create: {
           role: {
-            connect: { name: 'Comum' }, // Connect to the Comum role
+            connect: { name: 'comum' }, // Connect to the Comum role
           },
         },
       },
@@ -79,7 +79,7 @@ export async function seedUsers() {
       roles: {
         create: {
           role: {
-            connect: { name: 'Public' }, // Connect to the Public role
+            connect: { name: 'public' }, // Connect to the Public role
           },
         },
       },
