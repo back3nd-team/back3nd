@@ -8,7 +8,7 @@ datasource db {
 }
 
 model back3nd_user {
-  id                     String                   @id @default(uuid()) @db.Uuid
+  id                     String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email                  String                   @unique
   password               String
   reset_token            String? // Token for password reset
@@ -19,7 +19,7 @@ model back3nd_user {
 }
 
 model back3nd_role {
-  id          String               @id @default(uuid()) @db.Uuid
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String               @unique
   description String?
   created_at  DateTime             @default(now())
@@ -29,7 +29,7 @@ model back3nd_role {
 }
 
 model back3nd_user_role {
-  id         String       @id @default(uuid()) @db.Uuid
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id    String       @db.Uuid
   role_id    String       @db.Uuid
   user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -40,7 +40,7 @@ model back3nd_user_role {
 }
 
 model back3nd_permission {
-  id         String             @id @default(uuid()) @db.Uuid
+  id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   role_id    String             @db.Uuid
   table_id   String             @db.Uuid
   table      back3nd_entity     @relation(fields: [table_id], references: [id], onDelete: Cascade) // Renomeado
@@ -54,16 +54,17 @@ model back3nd_permission {
   @@unique([role_id, table_id]) // Ensure unique permission for each role-table combo
 }
 
-model back3nd_entity {  
-  id                 String               @id @default(uuid()) @db.Uuid
-  name               String               @unique  
+model back3nd_entity {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String               @unique
   created_at         DateTime             @default(now())
   updated_at         DateTime             @updatedAt
   back3nd_permission back3nd_permission[]
 }
 
+
 model back3nd_password_reset {
-  id         String       @id @default(uuid()) @db.Uuid
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id    String       @db.Uuid
   user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
   token      String // Token for password reset
@@ -72,7 +73,7 @@ model back3nd_password_reset {
 }
 
 model test_table {
-  id         String   @id @default(uuid()) @db.Uuid
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   data_field String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

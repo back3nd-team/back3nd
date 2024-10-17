@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "back3nd_user" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "reset_token" TEXT,
@@ -12,7 +12,7 @@ CREATE TABLE "back3nd_user" (
 
 -- CreateTable
 CREATE TABLE "back3nd_role" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
     "description" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -23,7 +23,7 @@ CREATE TABLE "back3nd_role" (
 
 -- CreateTable
 CREATE TABLE "back3nd_user_role" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "role_id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -33,7 +33,7 @@ CREATE TABLE "back3nd_user_role" (
 
 -- CreateTable
 CREATE TABLE "back3nd_permission" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "role_id" UUID NOT NULL,
     "table_id" UUID NOT NULL,
     "can_create" BOOLEAN NOT NULL DEFAULT false,
@@ -47,7 +47,7 @@ CREATE TABLE "back3nd_permission" (
 
 -- CreateTable
 CREATE TABLE "back3nd_entity" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE "back3nd_entity" (
 
 -- CreateTable
 CREATE TABLE "back3nd_password_reset" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "token" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -68,7 +68,7 @@ CREATE TABLE "back3nd_password_reset" (
 
 -- CreateTable
 CREATE TABLE "test_table" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "data_field" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
