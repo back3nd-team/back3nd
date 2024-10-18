@@ -1,0 +1,27 @@
+{
+  "name": "studio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "lint": "eslint . --ext .vue,.js,.ts",
+    "lint:fix": "eslint . --fix --ext .vue,.js,.ts"
+  },
+  "dependencies": {
+    "@nuxt/fonts": "^0.10.0",
+    "@nuxt/image": "^1.8.1",
+    "@nuxt/ui": "^2.18.7",
+    "@vueuse/nuxt": "^11.1.0",
+    "nuxt": "^3.13.2",
+    "nuxt-og-image": "^3.0.6",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "resolutions": {
+    "@nuxtjs/tailwindcss": "nightly"
+  }
+}
