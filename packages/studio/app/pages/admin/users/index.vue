@@ -6,6 +6,12 @@ definePageMeta({
     { label: 'Users', to: '/admin/users' },
   ],
 })
+const columns = [
+  { label: 'Name', key: 'name' },
+  { label: 'Title', key: 'title', class: 'hidden lg:table-cell', rowClass: 'hidden lg:table-cell' },
+  { label: 'Email', key: 'email', class: 'hidden md:table-cell', rowClass: 'hidden md:table-cell' },
+  { label: 'Role', key: 'role' },
+]
 const people = [{
   id: 1,
   name: 'Lindsay Walton',
@@ -43,8 +49,27 @@ const people = [{
   email: 'floyd.miles@example.com',
   role: 'Member',
 }]
+const q = ref('')
+
+const filteredRows = computed(() => {
+  if (!q.value) {
+    return people
+  }
+
+  return people.filter((person) => {
+    return Object.values(person).some((value) => {
+      return String(value).toLowerCase().includes(q.value.toLowerCase())
+    })
+  })
+})
 </script>
 
 <template>
-  <UTable :rows="people" />
+  <div>
+    <div class="flex px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
+      <UInput v-model="q" placeholder="Filter people..." />
+    </div>
+
+    <UTable :rows="filteredRows" :columns="columns" />
+  </div>
 </template>
