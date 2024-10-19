@@ -4,12 +4,14 @@
 
 <template>
   <div>
-    <AppHeader />
+    HEADER
 
     <UMain>
-      <slot />
+      Aqui
+      <NuxtPage />
+      aqui
     </UMain>
 
-    <AppFooter />
+    FOOTER
   </div>
 </template>

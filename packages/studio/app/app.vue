@@ -10,7 +10,7 @@ useHead({
     { key: 'theme-color', name: 'theme-color', content: color },
   ],
   link: [
-    { rel: 'icon', href: '/favicon.ico' },
+    { rel: 'icon', href: '/favicon-48x48.png', type: 'image/png' },
   ],
   htmlAttrs: {
     lang: 'en',
@@ -18,21 +18,22 @@ useHead({
 })
 
 useSeoMeta({
-  titleTemplate: '%s - Nuxt UI Pro - SaaS template',
-  ogImage: 'https://saas-template.nuxt.dev/social-card.png',
-  twitterImage: 'https://saas-template.nuxt.dev/social-card.png',
+  titleTemplate: '%s - Back3nd: Power and Speed for Your Backend',
+  ogImage: '/apple-touch-icon.png',
+  twitterImage: '/apple-touch-icon.png',
   twitterCard: 'summary_large_image',
+  ogTitle: 'Back3nd: Power and Speed for Your Backend',
+  ogDescription: 'A cutting-edge platform delivering simplicity, speed, and flexibility for backend development.',
+  twitterTitle: 'Back3nd: Power and Speed for Your Backend',
+  twitterDescription: 'Experience the next generation of backend management with Back3nd.',
 })
 </script>
 
 <template>
-  <div>
+  <div class="bg-gradient-to-br-primary">
     <NuxtLoadingIndicator />
-
     <NuxtLayout>
-      Teste
       <NuxtPage />
-      Teste
     </NuxtLayout>
 
     <UNotifications />

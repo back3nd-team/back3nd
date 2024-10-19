@@ -22,17 +22,11 @@ useHead({
 
 <template>
   <div>
-    <AppHeader />
-
-    <UMain>
-      <UContainer>
-        <UPage>
-          <UPageError :error="error" />
-        </UPage>
-      </UContainer>
-    </UMain>
-
-    <AppFooter />
+    <UContainer>
+      <UPage>
+        <UPageError :error="error" />
+      </UPage>
+    </UContainer>
 
     <UNotifications />
   </div>

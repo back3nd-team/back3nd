@@ -14,14 +14,11 @@
   "dependencies": {
     "@nuxt/fonts": "^0.10.0",
     "@nuxt/image": "^1.8.1",
-    "@nuxt/ui": "^2.18.7",
+    "@nuxt/ui": "latest",
     "@vueuse/nuxt": "^11.1.0",
     "nuxt": "^3.13.2",
     "nuxt-og-image": "^3.0.6",
     "vue": "latest",
     "vue-router": "latest"
-  },
-  "resolutions": {
-    "@nuxtjs/tailwindcss": "nightly"
   }
 }
