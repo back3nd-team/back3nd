@@ -26,3 +26,38 @@ export async function getItemsForTable(tableName: string) {
     return { error: 'Database error', statusCode: 500 }
   }
 }
+
+export async function listTablesForUser(userId: string) {
+  // Buscar as roles do usuário
+  const userRoles = await prisma.back3nd_user_role.findMany({
+    where: {
+      user_id: userId,
+    },
+    select: {
+      role_id: true, // Pegar o ID das roles
+    },
+  })
+
+  // Extrair os role_ids do usuário
+  const roleIds = userRoles.map(role => role.role_id)
+
+  // Buscar as permissões relacionadas às roles do usuário
+  const permissions = await prisma.back3nd_permission.findMany({
+    where: {
+      role_id: {
+        in: roleIds, // Verificar as permissões das roles do usuário
+      },
+      can_read: true, // Apenas permissões de leitura
+    },
+    select: {
+      table: {
+        select: {
+          name: true, // Pegar o nome da tabela
+        },
+      },
+    },
+  })
+  console.log('Permissions', permissions)
+  // Extrair e retornar os nomes das tabelas permitidas
+  return permissions.map(permission => permission.table.name)
+}
