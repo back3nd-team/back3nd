@@ -26,3 +26,33 @@ export async function getItemsForTable(tableName: string) {
     return { error: 'Database error', statusCode: 500 }
   }
 }
+
+export async function listTablesForUser(userId: string) {
+  const userRoles = await prisma.back3nd_user_role.findMany({
+    where: {
+      user_id: userId,
+    },
+    select: {
+      role_id: true,
+    },
+  })
+
+  const roleIds = userRoles.map(role => role.role_id)
+
+  const permissions = await prisma.back3nd_permission.findMany({
+    where: {
+      role_id: {
+        in: roleIds,
+      },
+      can_read: true,
+    },
+    select: {
+      table: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  })
+  return permissions.map(permission => permission.table.name)
+}

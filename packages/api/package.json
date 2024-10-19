@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "bun run --hot main.ts"
+  },
+  "dependencies": { "@hono/swagger-ui": "^0.4.1", "hono": "^4.6.5" }
+}
