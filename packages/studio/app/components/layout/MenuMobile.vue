@@ -7,7 +7,6 @@ const emit = defineEmits(['close'])
 </script>
 
 <template>
-  <!-- Menu Mobile -->
   <transition name="fade">
     <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center lg:hidden">
       <div class="bg-gray-800 p-6 rounded-lg w-64 space-y-8 shadow-lg">

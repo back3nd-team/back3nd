@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'nolayout',
+  title: 'Back3nd',
+})
 </script>
 
 <template>
