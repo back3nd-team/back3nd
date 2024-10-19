@@ -15,18 +15,16 @@ export async function getItems(c: Context) {
     return c.json({ error: result.error }, result.statusCode as StatusCode)
   }
 
-  // Aqui forçamos explicitamente o status 200 para garantir que o array vazio seja tratado corretamente
   return c.json(result.data, 200)
 }
 export async function listUserTables(c: Context) {
-  const user = c.get('user') // Obter o usuário logado
+  const user = c.get('user')
   if (!user) {
     return c.json({ error: 'User not authenticated' }, 401)
   }
 
   try {
     const tables = await listTablesForUser(user.id)
-    console.log('Tables ', tables)
     if (!tables.length) {
       return c.json({ error: 'No tables found for user' }, 404)
     }
