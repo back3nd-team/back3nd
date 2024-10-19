@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import type { BreadcrumbLink } from '#ui/types'
+
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
 const pageTitle = computed(() => {
   const metaTitle = route.meta.title
   return metaTitle || 'Default Title'
 })
-
+const breadcrumb = computed<BreadcrumbLink[]>(() => {
+  return route.meta.breadcrumb as BreadcrumbLink[] || []
+})
 useHead({
   title: pageTitle,
 })
@@ -22,6 +26,7 @@ useHead({
             {{ pageTitle }}
           </slot>
         </h1>
+        <UBreadcrumb :links="breadcrumb" />
 
         <UButton class="lg:hidden" @click="isMobileMenuOpen = true">
           <UIcon name="material-symbols:menu-rounded" class="h-6 w-6 text-white" />
