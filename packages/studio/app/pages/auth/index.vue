@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/store/authStore'
 import { z } from 'zod'
 
 definePageMeta({
@@ -10,19 +11,29 @@ const state = ref({
   password: '',
 })
 
+const router = useRouter()
+
 const loginSchema = z.object({
   email: z.string().email('E-mail is invalid'),
   password: z.string().min(6, 'The password must have at least 6 characters'),
 })
 
 const errors = ref<{ email?: string[], password?: string[] }>({})
-
-function login() {
+const authStore = useAuthStore()
+async function login() {
   const result = loginSchema.safeParse(state.value)
 
   if (!result.success) {
     errors.value = result.error.flatten().fieldErrors as { email?: string[], password?: string[] }
     return
+  }
+  try {
+    await authStore.login(state.value.email, state.value.password)
+    console.warn('Login successful')
+    router.push('/admin')
+  }
+  catch {
+    errors.value = { email: ['Login failed'], password: [] }
   }
 
   console.warn('Login successful')
@@ -37,7 +48,7 @@ function login() {
         v-model="state.email"
         type="email"
         required
-        placeholder="Digite seu e-mail"
+        placeholder="E-mail address"
         :error="errors.email?.[0]"
       />
     </UFormGroup>
@@ -48,7 +59,7 @@ function login() {
         v-model="state.password"
         type="password"
         required
-        placeholder="Digite sua senha"
+        placeholder="Input password"
         :error="errors.password?.[0]"
       />
       <button type="button" class="absolute right-3 top-9 text-gray-400">

@@ -14,14 +14,13 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: true },
-  modules: [
-    '@nuxt/fonts',
-    '@nuxt/image',
-    '@nuxt/ui',
-    '@vueuse/nuxt',
-    'nuxt-og-image',
-  ],
+  modules: ['@nuxt/fonts', '@nuxt/image', '@nuxt/ui', '@vueuse/nuxt', 'nuxt-og-image', '@pinia/nuxt'],
   typescript: {
     strict: true,
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://localhost:3737',
+    },
   },
 })

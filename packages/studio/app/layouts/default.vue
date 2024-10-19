@@ -4,14 +4,6 @@
 
 <template>
   <div>
-    HEADER
-
-    <UMain>
-      Aqui
-      <NuxtPage />
-      aqui
-    </UMain>
-
-    FOOTER
+    <NuxtPage />
   </div>
 </template>

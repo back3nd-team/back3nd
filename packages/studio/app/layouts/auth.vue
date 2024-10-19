@@ -9,7 +9,7 @@
       </div>
 
       <h2 class="text-white text-2xl font-bold text-center mb-6">
-        Bem-vindo ao Back3nd
+        Welcome to Back3nd
       </h2>
 
       <slot />

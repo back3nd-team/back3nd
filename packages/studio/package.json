@@ -15,10 +15,14 @@
     "@nuxt/fonts": "^0.10.0",
     "@nuxt/image": "^1.8.1",
     "@nuxt/ui": "latest",
+    "@pinia/nuxt": "^0.5.5",
     "@vueuse/nuxt": "^11.1.0",
     "nuxt": "^3.13.2",
     "nuxt-og-image": "^3.0.6",
     "vue": "latest",
     "vue-router": "latest"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

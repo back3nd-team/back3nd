@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "api": "bun run --hot packages/api/main.ts",
-    "studio": "bun run packages/studio",
+    "studio": "cd packages/studio && bun run dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "bunx prisma generate --schema=./prisma/schema.prisma",
@@ -19,7 +19,8 @@
     "prisma:seed": "bun run prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.21.1"
+    "@prisma/client": "^5.21.1",
+    "zod-prisma-types": "^3.1.8"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.8.0",
