@@ -1,48 +1,39 @@
-# Back3nd
+# Back3nd: The third-party boost your project needs.
 
-"back3nd" is a modular backend inspired by Directus, using **Bun v1.1.30**, **PostgreSQL**, and **Prisma ORM** for data management. The project includes an administrative panel (Data Studio) built with **Nuxt 4**, which enables dynamic API creation, JWT-based access control, user and permission management, and file upload features.
+Back3nd is designed to combine robust backend architecture with the flexibility of third-party integrations. The "3" in the name is a nod to the essential role of third-party services in modern systems.
 
-## Technologies Used
+## Features
 
-- **Bun v1.1.30**: Development platform for the backend.
-- **Nuxt 4**: Vue framework for the frontend, used in the Data Studio.
-- **PostgreSQL**: Relational database.
-- **Prisma ORM**: Schema management and database operations.
-- **JWT (JSON Web Token)**: Authentication and access control.
-- **SMTP or Email API**: For sending automated emails.
+- **Third-party Integrations**: Effortless integration with external services and APIs.
+- **Prisma ORM**: Simplified database management with automatic type generation and migrations.
+- **Nuxt Frontend**: Powered by Nuxt, offering SSR, SEO optimizations, and a highly responsive UI.
+- **Hono API**: Lightweight and performant API handling, capable of scaling efficiently.
+- **Bun**: High-performance runtime and package manager, optimized for speed and developer experience.
+- **Permission Management**: Fine-grained access control through user roles and permissions.
 
-## How the Project Works
+## Project Structure
 
-### Hono
+This project is organized as a monorepo using Bun Workspaces, allowing seamless management of multiple packages within the same repository.
 
-**Hono** is a minimalist framework used to build fast and efficient APIs. It is used in this project to manage routes and authentication middleware.
+### Bun Workspaces
 
-### Project Structure
+The project uses **Bun Workspaces** to manage multiple packages within the same repository, enabling efficient code sharing and dependency management for both frontend and backend.
 
-```plaintext
-back3nd/
-├── api/
-│   ├── controllers/
-│   │   └── authController.ts
-│   ├── middleware/
-│   │   └── authMiddleware.ts
-│   ├── routes/
-│   │   └── authRoutes.ts
-│   ├── services/
-│   │   └── authService.ts
-│   └── main.ts
-├── prisma/
-│   ├── data/
-│   │   ├── seedRoles.ts
-│   │   └── seedUsers.ts
-│   ├── migrations/
-│   │   └── 20241016112856_init/
-│   │       └── migration.sql
-│   └── schema.prisma
-├── .env.sample
-├── package.json
-└── README.md
-```
+### Directory Layout
+
+- **`/packages/api`**: The API package, built with Hono, responsible for backend logic and Prisma integration.
+- **`/packages/studio`**: The frontend package, powered by Nuxt, handling the user interface and interactions.
+- **`/prisma`**: Contains the Prisma schema shared across the entire project, managing database models and migrations.
+
+### Key Features
+
+- **Backend (API)**:
+  - Handles authentication, permission checks, and data retrieval using Hono.
+  - Integrated with Prisma for managing users, roles, and permissions.
+
+- **Frontend (Studio)**:
+  - Built with Nuxt and Pinia for state management and UI interactions.
+  - Consumes the backend API, handling user authentication and data visualization.
 
 ## Features Implemented
 
