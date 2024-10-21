@@ -74,8 +74,9 @@ function clearForm() {
 function saveItem() {
   console.warn('save item')
 }
+const selected = ref<{ id: number }[]>([])
 
-function select(row) {
+function select(row: { id: any }) {
   const index = selected.value.findIndex(item => item.id === row.id)
   if (index === -1) {
     selected.value.push(row)
@@ -84,8 +85,6 @@ function select(row) {
     selected.value.splice(index, 1)
   }
 }
-
-const selected = ref([])
 </script>
 
 <template>

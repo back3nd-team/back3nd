@@ -6,7 +6,9 @@ import authRoutes from './routes/authRoutes'
 import itemRoutes from './routes/itemRoutes'
 
 const app = new Hono()
-
+/**
+ * @todo Add CORS configuration to allow only localhost:3737
+ */
 app.use('*', cors({
   origin: (origin: string) => {
     if (origin?.startsWith('http://localhost')) {
@@ -21,7 +23,7 @@ app.use('*', authMiddleware)
 app.route('/auth', authRoutes)
 app.route('/items', itemRoutes)
 
-app.get('/protected', (c: Context) => {
+app.get('/me', (c: Context) => {
   const user = c.get('user')
   return c.json({ message: `Hello, ${user.sub}`, role: user.role })
 })
