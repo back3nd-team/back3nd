@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import itemRoutes from './routes/itemRoutes'
+import userRoutes from './routes/userRoutes'
 
 const app = new Hono()
 /**
@@ -21,6 +22,7 @@ app.use('*', cors({
 
 app.use('*', authMiddleware)
 app.route('/auth', authRoutes)
+app.route('/users', userRoutes)
 app.route('/items', itemRoutes)
 
 app.get('/me', (c: Context) => {

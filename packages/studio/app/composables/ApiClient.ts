@@ -101,6 +101,38 @@ class ApiClient {
   public async fetchUserData(): Promise<any> {
     return this.request<any>('/me')
   }
+
+  public async createUser(email: string, password: string, roles: string[]): Promise<void> {
+    await this.request('/users', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, roles }),
+    })
+  }
+
+  public async listUsers(): Promise<any[]> {
+    return this.request<any[]>('/users', {
+      method: 'GET',
+    })
+  }
+
+  public async getUser(userId: string): Promise<any> {
+    return this.request<any>(`/users/${userId}`, {
+      method: 'GET',
+    })
+  }
+
+  public async updateUser(userId: string, email: string, password: string, roles: string[]): Promise<void> {
+    await this.request(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ email, password, roles }),
+    })
+  }
+
+  public async deleteUser(userId: string): Promise<void> {
+    await this.request(`/users/${userId}`, {
+      method: 'DELETE',
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')

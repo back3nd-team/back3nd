@@ -40,6 +40,7 @@ export async function seedUsers() {
     where: { email: 'admin@example.com' },
     update: {},
     create: {
+      name: 'Back3nd Admin',
       email: 'admin@example.com',
       password: hashedAdminPassword,
       roles: {
@@ -57,6 +58,7 @@ export async function seedUsers() {
     where: { email: 'user@example.com' },
     update: {},
     create: {
+      name: 'Back3nd User',
       email: 'user@example.com',
       password: hashedUserPassword,
       roles: {
@@ -74,6 +76,7 @@ export async function seedUsers() {
     where: { email: 'public@example.com' },
     update: {},
     create: {
+      name: 'Back3nd Public',
       email: 'public@example.com',
       password: hashedPublicPassword,
       roles: {

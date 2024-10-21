@@ -6,61 +6,21 @@ definePageMeta({
     { label: 'Users', to: '/admin/users' },
   ],
 })
-const columns = [
-  { label: 'Name', key: 'name' },
-  { label: 'Title', key: 'title', class: 'hidden lg:table-cell', rowClass: 'hidden lg:table-cell' },
-  { label: 'Email', key: 'email', class: 'hidden md:table-cell', rowClass: 'hidden md:table-cell' },
-  { label: 'Role', key: 'role' },
-]
-const selectedColumns = ref([...columns])
 
-const people = [{
-  id: 1,
-  name: 'Lindsay Walton',
-  title: 'Front-end Developer',
-  email: 'lindsay.walton@example.com',
-  role: 'Member',
-}, {
-  id: 2,
-  name: 'Courtney Henry',
-  title: 'Designer',
-  email: 'courtney.henry@example.com',
-  role: 'Admin',
-}, {
-  id: 3,
-  name: 'Tom Cook',
-  title: 'Director of Product',
-  email: 'tom.cook@example.com',
-  role: 'Member',
-}, {
-  id: 4,
-  name: 'Whitney Francis',
-  title: 'Copywriter',
-  email: 'whitney.francis@example.com',
-  role: 'Admin',
-}, {
-  id: 5,
-  name: 'Leonard Krasner',
-  title: 'Senior Designer',
-  email: 'leonard.krasner@example.com',
-  role: 'Owner',
-}, {
-  id: 6,
-  name: 'Floyd Miles',
-  title: 'Principal Designer',
-  email: 'floyd.miles@example.com',
-  role: 'Member',
-}]
+const columns = ref<{ label: string, key: string }[]>([])
+const users = ref<{ id: number, name: string, email: string, role: string }[]>([])
+
+const selectedColumns = ref<{ label: string, key: string }[]>([])
 
 const q = ref('')
 
 const filteredRows = computed(() => {
   if (!q.value) {
-    return people
+    return users.value
   }
 
-  return people.filter((person) => {
-    return Object.values(person).some((value) => {
+  return users.value.filter((user) => {
+    return Object.values(user).some((value) => {
       return String(value).toLowerCase().includes(q.value.toLowerCase())
     })
   })
@@ -85,19 +45,56 @@ function select(row: { id: any }) {
     selected.value.splice(index, 1)
   }
 }
+
+async function getUsers() {
+  try {
+    const response = await useApiClient.listUsers()
+    extractColumns(response)
+    extractUsers(response)
+    console.warn(response)
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+function extractColumns(data: any[]) {
+  if (data.length === 0)
+    return
+
+  const firstItem = data[0]
+  const cols = Object.keys(firstItem).map((key) => {
+    if (key === 'roles') {
+      return { label: 'Role', key: 'role' }
+    }
+    return { label: key.charAt(0).toUpperCase() + key.slice(1), key }
+  })
+  columns.value = cols
+  selectedColumns.value = cols.filter(col => col.key !== 'id')
+}
+
+function extractUsers(data: any[]) {
+  const usersData = data.map((item) => {
+    const roles = item.roles.map((role: { role: { name: any } }) => role.role.name).join(', ')
+    return { ...item, role: roles }
+  })
+  users.value = usersData
+}
+
+getUsers()
 </script>
 
 <template>
   <div>
     <div class="flex justify-between items-center px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
       <div class="flex space-x-4">
-        <UInput v-model="q" placeholder="Filter people..." />
+        <UInput v-model="q" placeholder="Search item..." />
         <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
       </div>
       <div id="actions-buttons">
         <UButton
-          icon="lets-icons:add-ring-fill"
-          size="sm"
+          icon="material-symbols:add-2-rounded"
+          size="md"
           color="primary"
           square
           variant="solid"
@@ -108,13 +105,13 @@ function select(row: { id: any }) {
     <UTable v-model="selected" :rows="filteredRows" :columns="selectedColumns" @select="select">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
-          125 rows in back3nd_users
+          {{ users.length }} rows in back3nd_users
         </caption>
       </template>
       <template #empty-state>
         <div class="flex flex-col items-center justify-center py-6 gap-3">
-          <span class="italic text-sm">No one here!</span>
-          <UButton label="Add people" />
+          <span class="italic text-sm">No item here!</span>
+          <UButton label="Add something" @click="isOpen = true" />
         </div>
       </template>
     </UTable>
@@ -137,7 +134,6 @@ function select(row: { id: any }) {
         </template>
 
         <div class="p-4 space-y-4">
-          <!-- Inputs do formulário -->
           <UInput label="Name" placeholder="Enter name" />
           <UInput label="Email" placeholder="Enter email" />
           <UInput label="Role" placeholder="Enter role" />

@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE "back3nd_user" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "reset_token" TEXT,
