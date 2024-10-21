@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-
 definePageMeta({
   title: 'Collections',
   breadcrumb: [

@@ -12,18 +12,20 @@ class ApiClient {
     return this.baseURL
   }
 
-  private getToken(): string | null {
+  public getToken(): string | null {
     const pinia = getActivePinia()
     if (!pinia) {
-      throw new Error('Pinia is not active! Make sure Pinia is properly initialized, and maybe take a coffee break!')
+      throw new Error('Pinia is not active! Ensure Pinia is properly initialized.')
     }
-    return useAuthStore(pinia).token
+
+    const authStore = useAuthStore(pinia)
+    return authStore.token
   }
 
   private async request<T>(url: string, options: any = {}): Promise<T> {
     const token = this.getToken()
     if (!token) {
-      throw new Error('User is not authenticated. Please log in. And maybe take a coffee break!')
+      throw new Error('User is not authenticated. Please log in.')
     }
 
     const headers = {
@@ -43,21 +45,21 @@ class ApiClient {
     return response.json()
   }
 
-  public readItem = async <T>(collection: string, id: string | number): Promise<T> => {
+  public async readItem<T>(collection: string, id: string | number): Promise<T> {
     return this.request<T>(`/items/${collection}/${id}`)
   }
 
-  public readItems = async <T>(collection: string, query: any = {}): Promise<T[]> => {
+  public async readItems<T>(collection: string, query: any = {}): Promise<T[]> {
     const queryString = new URLSearchParams(query).toString()
     return this.request<T[]>(`/items/${collection}?${queryString}`)
   }
 
-  public fetchCollections = async (): Promise<string[]> => {
+  public async fetchCollections(): Promise<string[]> {
     const data = await this.request<{ collections: string[] }>('/items/collections')
     return data.collections
   }
 
-  public login = async (email: string, password: string): Promise<void> => {
+  public async login(email: string, password: string): Promise<void> {
     const response = await fetch(`${this.baseURL}/auth/login`, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -73,23 +75,30 @@ class ApiClient {
     const data = await response.json()
     const pinia = getActivePinia()
     if (!pinia) {
-      throw new Error('Pinia is not active! Make sure Pinia is properly initialized.')
+      throw new Error('Pinia is not active! Ensure Pinia is properly initialized.')
     }
-    useAuthStore(pinia).setToken(data.token)
+
+    const authStore = useAuthStore(pinia)
+    authStore.setToken(data.token)
+    await authStore.fetchUserData() // Busca os dados do usuário após o login
   }
 
-  public logout = async (): Promise<void> => {
+  public async logout(): Promise<void> {
     await this.request('/auth/logout', {
       method: 'POST',
     })
+
     const pinia = getActivePinia()
     if (!pinia) {
-      throw new Error('Pinia is not active! Make sure Pinia is properly initialized, amigo.')
+      throw new Error('Pinia is not active! Ensure Pinia is properly initialized.')
     }
-    useAuthStore(pinia).setToken(null)
+
+    const authStore = useAuthStore(pinia)
+    authStore.setToken(null)
+    authStore.user = null
   }
 
-  public fetchUserData = async (): Promise<any> => {
+  public async fetchUserData(): Promise<any> {
     return this.request<any>('/me')
   }
 }

@@ -19,6 +19,7 @@
     "@vueuse/nuxt": "^11.1.0",
     "nuxt": "^3.13.2",
     "nuxt-og-image": "^3.0.6",
+    "pinia-plugin-persistedstate": "^4.1.1",
     "vue": "latest",
     "vue-router": "latest"
   },
