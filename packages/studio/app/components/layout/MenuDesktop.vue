@@ -19,8 +19,8 @@
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/admin/tables" class="block py-3 px-5 rounded bg-gray-700 hover:bg-yellow-500 transition-all duration-300">
-            <i class="fas fa-table mr-2" /> Tables
+          <NuxtLink to="/admin/collections" class="block py-3 px-5 rounded bg-gray-700 hover:bg-yellow-500 transition-all duration-300">
+            <i class="fas fa-table mr-2" /> Collections
           </NuxtLink>
         </li>
       </ul>

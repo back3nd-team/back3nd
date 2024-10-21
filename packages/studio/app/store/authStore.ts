@@ -19,8 +19,13 @@ export const useAuthStore = defineStore('auth', {
           throw new Error(error.value.message)
         }
 
-        this.token = data.value.token
-        this.user = data.value.user
+        if (data.value) {
+          this.token = data.value.token
+          this.user = data.value.user
+        }
+        else {
+          throw new Error('Login response data is undefined')
+        }
       }
       catch (error) {
         console.error('Login failed:', error)
@@ -34,7 +39,6 @@ export const useAuthStore = defineStore('auth', {
     async fetchUserData() {
       try {
         const { data, error } = await fetchWithAuth<{ user: any }>('/protected')
-        console.log('Retorno de usuario', data)
         if (error.value) {
           throw new Error(error.value.message)
         }
@@ -45,6 +49,9 @@ export const useAuthStore = defineStore('auth', {
         console.error('Fetching user data failed:', error)
         throw error
       }
+    },
+    setToken(token: string | null) {
+      this.token = token
     },
   },
 })
