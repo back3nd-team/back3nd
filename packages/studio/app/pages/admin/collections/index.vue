@@ -81,8 +81,8 @@ onMounted(() => {
       </div>
       <div id="actions-buttons">
         <UButton
-          icon="lets-icons:add-ring-fill"
-          size="sm"
+          icon="material-symbols:add-2-rounded"
+          size="md"
           color="primary"
           square
           variant="solid"

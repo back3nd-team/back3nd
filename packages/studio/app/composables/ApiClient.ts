@@ -133,6 +133,38 @@ class ApiClient {
       method: 'DELETE',
     })
   }
+
+  public async createRole(name: string, description: string): Promise<void> {
+    await this.request('/roles', {
+      method: 'POST',
+      body: JSON.stringify({ name, description }),
+    })
+  }
+
+  public async listRoles(): Promise<any[]> {
+    return this.request<any[]>('/roles', {
+      method: 'GET',
+    })
+  }
+
+  public async getRole(roleId: string): Promise<any> {
+    return this.request<any>(`/roles/${roleId}`, {
+      method: 'GET',
+    })
+  }
+
+  public async updateRole(roleId: string, name: string, description: string): Promise<void> {
+    await this.request(`/roles/${roleId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name, description }),
+    })
+  }
+
+  public async deleteRole(roleId: string): Promise<void> {
+    await this.request(`/roles/${roleId}`, {
+      method: 'DELETE',
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')
