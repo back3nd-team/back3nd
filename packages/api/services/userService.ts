@@ -1,9 +1,11 @@
 import { UserRepository } from '../repositories/userRepository'
+import { HashService } from '../services/hashService'
 
 export class UserService {
   private userRepository = new UserRepository()
 
-  async createUser(data: { email: string, password: string, roles: string[] }) {
+  async createUser(data: { name: string, email: string, password: string, role: string }) {
+    data.password = await HashService.hashPassword(data.password)
     return this.userRepository.create(data)
   }
 

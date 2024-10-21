@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
-    "strict": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "paths": {
+      "@prisma/client": ["../../node_modules/@prisma/client"]
+    },
+    "strict": true
   }
 }

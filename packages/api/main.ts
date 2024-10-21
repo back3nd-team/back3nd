@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
+import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
@@ -26,6 +27,7 @@ app.route('/auth', authRoutes)
 app.route('/users', userRoutes)
 app.route('/roles', roleRoutes)
 app.route('/items', itemRoutes)
+app.route('/hash', hashRoutes)
 
 app.get('/me', (c: Context) => {
   const user = c.get('user')

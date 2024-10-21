@@ -102,10 +102,10 @@ class ApiClient {
     return this.request<any>('/me')
   }
 
-  public async createUser(email: string, password: string, roles: string[]): Promise<void> {
+  public async createUser(name: string, email: string, password: string, role: string): Promise<void> {
     await this.request('/users', {
       method: 'POST',
-      body: JSON.stringify({ email, password, roles }),
+      body: JSON.stringify({ name, email, password, role }),
     })
   }
 

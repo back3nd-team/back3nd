@@ -82,7 +82,7 @@ async function saveItem() {
   }
 
   try {
-    await useApiClient.createUser(form.value.email, form.value.password, form.value.role ? [form.value.role] : [])
+    await useApiClient.createUser(form.value.name, form.value.email, form.value.password, form.value.role ? form.value.role : '')
     clearForm()
     isOpen.value = false
     getUsers()
@@ -105,7 +105,6 @@ function select(row: { id: any }) {
 }
 
 const roles = ref<any[]>([])
-const selectedRole = ref('')
 async function getRoles() {
   try {
     roles.value = await useApiClient.listRoles()
@@ -121,8 +120,6 @@ async function getUsers() {
     extractColumns(response)
     extractUsers(response)
     getRoles()
-
-    console.log(response)
   }
   catch (error) {
     console.error(error)
@@ -141,7 +138,7 @@ function extractColumns(data: any[]) {
     return { label: key.charAt(0).toUpperCase() + key.slice(1), key }
   })
   columns.value = cols
-  selectedColumns.value = [...cols]
+  selectedColumns.value = cols.filter(col => col.key !== 'id')
 }
 
 function extractUsers(data: any[]) {
