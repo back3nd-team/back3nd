@@ -8,6 +8,10 @@ class ApiClient {
     this.baseURL = baseURL
   }
 
+  public getBaseURL(): string {
+    return this.baseURL
+  }
+
   private getToken(): string | null {
     const pinia = getActivePinia()
     if (!pinia) {
@@ -49,8 +53,8 @@ class ApiClient {
   }
 
   public fetchCollections = async (): Promise<string[]> => {
-    const data = await this.request<{ tables: string[] }>('/items/collections')
-    return data.tables
+    const data = await this.request<{ collections: string[] }>('/items/collections')
+    return data.collections
   }
 
   public login = async (email: string, password: string): Promise<void> => {
@@ -83,6 +87,10 @@ class ApiClient {
       throw new Error('Pinia is not active! Make sure Pinia is properly initialized, amigo.')
     }
     useAuthStore(pinia).setToken(null)
+  }
+
+  public fetchUserData = async (): Promise<any> => {
+    return this.request<any>('/me')
   }
 }
 

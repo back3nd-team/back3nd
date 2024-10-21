@@ -1,16 +1,16 @@
-import { fetchWithAuth } from '@/utils/fetchWithAuth'
+import { useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: null as string | null,
+    token: useLocalStorage<string | null>('auth_token', null),
     user: null as any,
   }),
   actions: {
     async login(email: string, password: string) {
       try {
         const { data, error } = await useFetch<{ token: string, user: any }>(`/auth/login`, {
-          baseURL: 'http://localhost:3737',
+          baseURL: useApiClient.getBaseURL(),
           method: 'POST',
           body: { email, password },
         })
@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async fetchUserData() {
       try {
-        const { data, error } = await fetchWithAuth<{ user: any }>('/protected')
+        const { data, error } = await useApiClient.fetchUserData()
         if (error.value) {
           throw new Error(error.value.message)
         }

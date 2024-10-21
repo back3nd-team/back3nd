@@ -55,16 +55,10 @@ function select(row: { id: any }) {
 
 async function loadCollections() {
   try {
-    const collections = await useApiClient.readItems('collections')
+    const collections = await useApiClient.fetchCollections()
     console.log(collections)
     if (collections.length > 0) {
-      people.value = collections.map((table, index) => ({
-        id: index + 1,
-        name: table.name,
-        title: table.title || '',
-        email: table.email || '',
-        role: table.role || '',
-      }))
+      people.value = collections
     }
     else {
       console.warn('No collections found')

@@ -32,6 +32,10 @@ export async function getCollectionFields(c: Context) {
 
   return c.json(result.data, 200)
 }
+/**
+ * Controller to handle requests to list collections that a user has access to
+ * @param c Context object
+ */
 export async function listUserCollections(c: Context) {
   const user = c.get('user')
   if (!user) {
@@ -39,11 +43,16 @@ export async function listUserCollections(c: Context) {
   }
 
   try {
-    const collections = await listCollectionsForUser(user.id)
-    if (!collections.length) {
+    const result = await listCollectionsForUser(user.id)
+    if (result.error) {
+      return c.json({ error: result.error }, result.statusCode as StatusCode)
+    }
+
+    if (!result.data || !result.data.length) {
       return c.json({ error: 'No collections found for user' }, 404)
     }
-    return c.json({ collections })
+
+    return c.json({ collections: result.data })
   }
   catch (error: any) {
     console.error(`Error fetching collections: ${error.message}`)
