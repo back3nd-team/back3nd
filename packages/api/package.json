@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.4.1",
-    "@prisma/client": "*",
-    "hono": "^4.6.5"
+    "@prisma/client": "^5.21.1",
+    "hono": "^4.6.6"
   }
 }

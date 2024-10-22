@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
+import collectionRoutes from './routes/collectionRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import roleRoutes from './routes/roleRoutes'
@@ -26,6 +27,7 @@ app.use('*', authMiddleware)
 app.route('/auth', authRoutes)
 app.route('/users', userRoutes)
 app.route('/roles', roleRoutes)
+app.route('/collections', collectionRoutes)
 app.route('/items', itemRoutes)
 app.route('/hash', hashRoutes)
 

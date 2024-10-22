@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex", "driverAdapters", "prismaSchemaFolder"]
 }
 
 datasource db {
@@ -73,9 +74,3 @@ model back3nd_password_reset {
   expires_at DateTime // Expiration time for the reset token
 }
 
-model test_table {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  data_field String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
