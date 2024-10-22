@@ -7,7 +7,7 @@ export function useAddUserForm() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: '',
+    roles: '',
   })
 
   const schema = z.object({
@@ -43,7 +43,7 @@ export function useAddUserForm() {
       email: '',
       password: '',
       confirmPassword: '',
-      role: '',
+      roles: '',
     }
     errors.value = {}
   }

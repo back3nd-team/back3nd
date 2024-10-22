@@ -4,8 +4,8 @@ import { UserService } from '../services/userService'
 const userService = new UserService()
 
 export async function createUser(c: Context) {
-  const { name, email, password, role } = await c.req.json()
-  const user = await userService.createUser({ name, email, password, role })
+  const { name, email, password, roles } = await c.req.json()
+  const user = await userService.createUser({ name, email, password, roles })
   return c.json(user, 201)
 }
 

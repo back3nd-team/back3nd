@@ -33,16 +33,7 @@ export class UserRepository {
       })
     }
 
-    const updatedUser = await prisma.back3nd_user.update({
-      where: { id: user.id },
-      data: {
-        roles: {
-          connect: rolesArray.map(roleId => ({ id: roleId })),
-        },
-      },
-    })
-
-    return updatedUser
+    return user
   }
 
   async findAll() {

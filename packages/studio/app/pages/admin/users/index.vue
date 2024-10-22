@@ -1,13 +1,8 @@
 <script setup lang="ts">
-/**
- *  CLEAN ARCHITETURE
- *  @/composables/useCases/
- *  Entities from '@prisma/client'
- */
 import type { back3nd_role as Role, back3nd_user as User } from '@prisma/client'
 import { useAddUserForm } from '@/composables/useCases/useAddUserForm'
 import { useCreateUser } from '@/composables/useCases/useCreateUser'
-import { useGetUsers } from '@/composables/useCases/useGetUsers'
+import { useUserList } from '@/composables/useCases/useUserList'
 
 definePageMeta({
   title: 'Users',
@@ -16,37 +11,25 @@ definePageMeta({
     { label: 'Users', to: '/admin/users' },
   ],
 })
+const { users, q, filteredUsers, getUsers } = useUserList()
+
 const columns = ref<{ label: string, key: string }[]>([])
-const users = ref<User[]>([])
 const selectedColumns = ref<{ label: string, key: string }[]>([])
-
-const q = ref('')
-
-const filteredRows = computed(() => {
-  if (!q.value)
-    return users.value
-  return users.value.filter((user) => {
-    return Object.values(user).some(value =>
-      String(value).toLowerCase().includes(q.value.toLowerCase()),
-    )
-  })
-})
 
 const { schema, form, validateForm, clearForm } = useAddUserForm()
 const isOpen = ref(false)
 const showPassword = ref(false)
-const selected = ref<{ id: number }[]>([])
+const selected = ref([])
 async function saveItem() {
   if (!validateForm())
     return
-
   try {
     const user = {
       name: form.value.name,
       email: form.value.email,
       password: form.value.password,
     }
-    await useCreateUser(user, [form.value.role])
+    await useCreateUser(user, [form.value.roles])
     clearForm()
     isOpen.value = false
     getUsers()
@@ -55,6 +38,7 @@ async function saveItem() {
     console.error(error)
   }
 }
+
 const roles = ref<Role[]>([])
 async function getRoles() {
   try {
@@ -65,25 +49,10 @@ async function getRoles() {
   }
 }
 
-async function getUsers() {
-  try {
-    const rawData = await useGetUsers()
-    users.value = rawData.map((user: any) => ({
-      ...user,
-      roles: user.roles.map((role: any) => role.role.name).join(', '),
-    }))
-    extractColumns(users.value)
-    getRoles()
-  }
-  catch (error) {
-    console.error(error)
-  }
-}
-
+// Extração de colunas dos usuários
 function extractColumns(data: any[]) {
   if (data.length === 0)
     return
-
   const firstItem = data[0]
   const cols = Object.keys(firstItem).map((key) => {
     if (key === 'roles')
@@ -95,12 +64,15 @@ function extractColumns(data: any[]) {
 }
 
 onMounted(async () => {
-  getUsers()
+  await getUsers()
+  getRoles()
+  extractColumns(users.value)
 })
 </script>
 
 <template>
   <div>
+    <!-- Header e Filtros -->
     <div class="flex justify-between items-center px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
       <div class="flex space-x-4">
         <UInput v-model="q" placeholder="Filter user..." />
@@ -118,7 +90,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <UTable v-model="selected" :rows="filteredRows" :columns="selectedColumns">
+    <UTable v-model="selected" :rows="filteredUsers" :columns="selectedColumns">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
           {{ users.length }} rows in users
@@ -155,7 +127,7 @@ onMounted(async () => {
             <UFormGroup label="Role" name="selectedRole">
               <USelect
                 id="role"
-                v-model="form.role"
+                v-model="form.roles"
                 :options="roles"
                 placeholder="Select a role"
                 value-attribute="id"
