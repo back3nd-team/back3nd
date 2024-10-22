@@ -1,4 +1,7 @@
 <script setup lang="ts">
+/**
+ * @todo Show a loading indicator until hydration is complete.
+ */
 import type { BreadcrumbLink } from '#ui/types'
 
 const isMobileMenuOpen = ref(false)

@@ -3,7 +3,15 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export class UserRepository {
-  async create(data: { name: string, email: string, password: string, role: string }) {
+  async create(data: { name: string, email: string, password: string, roles?: string[] }) {
+    const existingUser = await prisma.back3nd_user.findUnique({
+      where: { email: data.email },
+    })
+
+    if (existingUser) {
+      throw new Error('Oops! This email is already taken. Try another one!')
+    }
+
     const user = await prisma.back3nd_user.create({
       data: {
         name: data.name,
@@ -12,18 +20,24 @@ export class UserRepository {
       },
     })
 
-    const userRole = await prisma.back3nd_user_role.create({
-      data: {
+    const rolesArray = data.roles ?? []
+
+    if (rolesArray.length > 0) {
+      const userRoles = rolesArray.map(roleId => ({
         user_id: user.id,
-        role_id: data.role,
-      },
-    })
+        role_id: roleId,
+      }))
+
+      await prisma.back3nd_user_role.createMany({
+        data: userRoles,
+      })
+    }
 
     const updatedUser = await prisma.back3nd_user.update({
       where: { id: user.id },
       data: {
         roles: {
-          connect: { id: userRole.id },
+          connect: rolesArray.map(roleId => ({ id: roleId })),
         },
       },
     })
