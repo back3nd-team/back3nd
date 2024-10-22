@@ -165,6 +165,38 @@ class ApiClient {
       method: 'DELETE',
     })
   }
+
+  public async listCollections(): Promise<any[]> {
+    return this.request<any[]>('/collections', {
+      method: 'GET',
+    })
+  }
+
+  public async getCollection(collectionId: string): Promise<any> {
+    return this.request<any>(`/collections/${collectionId}`, {
+      method: 'GET',
+    })
+  }
+
+  public async createCollection(collection: { name: string, email: string, role: string }): Promise<void> {
+    await this.request('/collections', {
+      method: 'POST',
+      body: JSON.stringify(collection),
+    })
+  }
+
+  public async updateCollection(collectionId: string, collection: { name: string, email: string, role: string }): Promise<void> {
+    await this.request(`/collections/${collectionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(collection),
+    })
+  }
+
+  public async deleteCollection(collectionId: string): Promise<void> {
+    await this.request(`/collections/${collectionId}`, {
+      method: 'DELETE',
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')

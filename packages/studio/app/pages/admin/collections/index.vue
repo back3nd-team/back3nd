@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useAddCollectionForm } from '@/composables/useCases/useAddCollectionForm'
+import { useCollectionList } from '@/composables/useCases/useCollectionList'
+import { useCreateCollection } from '@/composables/useCases/useCreateCollection'
+
 definePageMeta({
   title: 'Collections',
   breadcrumb: [
@@ -7,68 +11,41 @@ definePageMeta({
   ],
 })
 
-const columns = [
-  { label: 'Name', key: 'name' },
-  { label: 'Title', key: 'title', class: 'hidden lg:table-cell', rowClass: 'hidden lg:table-cell' },
-  { label: 'Email', key: 'email', class: 'hidden md:table-cell', rowClass: 'hidden md:table-cell' },
-  { label: 'Role', key: 'role' },
-]
-const selectedColumns = ref([...columns])
+const { collections, q, filteredCollections, getCollections } = useCollectionList()
 
-const people = ref([])
+const columns = ref([
+  { label: 'Table Catalog', key: 'table_catalog' },
+  { label: 'Table Schema', key: 'table_schema' },
+  { label: 'Table Name', key: 'table_name' },
+  { label: 'Table Type', key: 'table_type' },
+])
+const selectedColumns = ref([...columns.value])
 
-const q = ref('')
-
-const filteredRows = computed(() => {
-  if (!q.value) {
-    return people.value
-  }
-
-  return people.value.filter((person) => {
-    return Object.values(person).some((value) => {
-      return String(value).toLowerCase().includes(q.value.toLowerCase())
-    })
-  })
-})
-
+const { schema, form, validateForm, clearForm } = useAddCollectionForm()
 const isOpen = ref(false)
-function clearForm() {
-  console.warn('clear form')
-}
+const selected = ref([])
 
-function saveItem() {
-  console.warn('save item')
-}
-const selected = ref<{ id: number }[]>([])
-
-function select(row: { id: any }) {
-  const index = selected.value.findIndex(item => item.id === row.id)
-  if (index === -1) {
-    selected.value.push(row)
-  }
-  else {
-    selected.value.splice(index, 1)
-  }
-}
-
-async function loadCollections() {
+async function saveItem() {
+  if (!validateForm())
+    return
   try {
-    const collections = await useApiClient.fetchCollections()
-    console.log(collections)
-    if (collections.length > 0) {
-      people.value = collections
+    const collection = {
+      name: form.value.name,
+      email: form.value.email,
+      role: form.value.role,
     }
-    else {
-      console.warn('No collections found')
-    }
+    await useCreateCollection(collection)
+    clearForm()
+    isOpen.value = false
+    getCollections()
   }
   catch (error) {
-    console.error('Failed to load collections:', error)
+    console.error(error)
   }
 }
 
 onMounted(() => {
-  loadCollections()
+  getCollections()
 })
 </script>
 
@@ -76,7 +53,7 @@ onMounted(() => {
   <div>
     <div class="flex justify-between items-center px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
       <div class="flex space-x-4">
-        <UInput v-model="q" placeholder="Filter people..." />
+        <UInput v-model="q" placeholder="Filter collections..." />
         <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
       </div>
       <div id="actions-buttons">
@@ -90,10 +67,10 @@ onMounted(() => {
         />
       </div>
     </div>
-    <UTable v-model="selected" :rows="filteredRows" :columns="selectedColumns" @select="select">
+    <UTable v-model="selected" :rows="filteredCollections" :columns="selectedColumns">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
-          {{ people.length }} rows in back3nd_users
+          {{ collections.length }} rows in collections
         </caption>
       </template>
       <template #empty-state>
@@ -108,7 +85,7 @@ onMounted(() => {
         <template #header>
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-medium">
-              Add New Item
+              Add New Collection
             </h3>
             <UButton
               id="close-button"
@@ -122,10 +99,17 @@ onMounted(() => {
         </template>
 
         <div class="p-4 space-y-4">
-          <!-- Inputs do formulário -->
-          <UInput label="Name" placeholder="Enter name" />
-          <UInput label="Email" placeholder="Enter email" />
-          <UInput label="Role" placeholder="Enter role" />
+          <UForm :schema="schema" :state="form" class="space-y-4" @submit="saveItem">
+            <UFormGroup label="Name" name="name">
+              <UInput id="name" v-model="form.name" placeholder="Enter name" class="w-full rounded-lg" />
+            </UFormGroup>
+            <UFormGroup label="Email" name="email">
+              <UInput id="email" v-model="form.email" placeholder="Enter email" class="w-full rounded-lg" />
+            </UFormGroup>
+            <UFormGroup label="Role" name="role">
+              <UInput id="role" v-model="form.role" placeholder="Enter role" class="w-full rounded-lg" />
+            </UFormGroup>
+          </UForm>
         </div>
 
         <template #footer>
