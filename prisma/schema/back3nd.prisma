@@ -1,0 +1,14 @@
+model test_table {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  data_field String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model another {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  data_field String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+

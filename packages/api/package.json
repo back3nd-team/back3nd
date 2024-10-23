@@ -5,5 +5,9 @@
   "scripts": {
     "start": "bun run --hot main.ts"
   },
-  "dependencies": { "@hono/swagger-ui": "^0.4.1", "hono": "^4.6.5" }
+  "dependencies": {
+    "@hono/swagger-ui": "^0.4.1",
+    "@prisma/client": "^5.21.1",
+    "hono": "^4.6.6"
+  }
 }

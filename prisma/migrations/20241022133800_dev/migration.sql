@@ -1,6 +1,27 @@
 -- CreateTable
+CREATE TABLE "test_table" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "data_field" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "test_table_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "another" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "data_field" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "another_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "back3nd_user" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "reset_token" TEXT,
@@ -64,16 +85,6 @@ CREATE TABLE "back3nd_password_reset" (
     "expires_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "back3nd_password_reset_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "test_table" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "data_field" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "test_table_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

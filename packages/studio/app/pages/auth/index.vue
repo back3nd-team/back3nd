@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/store/authStore'
 import { z } from 'zod'
 
 definePageMeta({
@@ -19,7 +18,7 @@ const loginSchema = z.object({
 })
 
 const errors = ref<{ email?: string[], password?: string[] }>({})
-const authStore = useAuthStore()
+
 async function login() {
   const result = loginSchema.safeParse(state.value)
 
@@ -28,15 +27,14 @@ async function login() {
     return
   }
   try {
-    await authStore.login(state.value.email, state.value.password)
+    await useApiClient.login(state.value.email, state.value.password)
     console.warn('Login successful')
     router.push('/admin')
   }
-  catch {
+  catch (error) {
+    console.error('Login failed:', error)
     errors.value = { email: ['Login failed'], password: [] }
   }
-
-  console.warn('Login successful')
 }
 </script>
 

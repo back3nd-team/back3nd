@@ -18,13 +18,13 @@ useHead({
 })
 
 useSeoMeta({
-  titleTemplate: '%s - Back3nd: Power and Speed for Your Backend',
+  titleTemplate: '%s - Back3nd: The third-party boost your project needs',
   ogImage: '/apple-touch-icon.png',
   twitterImage: '/apple-touch-icon.png',
   twitterCard: 'summary_large_image',
-  ogTitle: 'Back3nd: Power and Speed for Your Backend',
+  ogTitle: 'Back3nd: The third-party boost your project needs',
   ogDescription: 'A cutting-edge platform delivering simplicity, speed, and flexibility for backend development.',
-  twitterTitle: 'Back3nd: Power and Speed for Your Backend',
+  twitterTitle: 'Back3nd: The third-party boost your project needs',
   twitterDescription: 'Experience the next generation of backend management with Back3nd.',
 })
 </script>

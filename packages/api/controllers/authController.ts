@@ -20,7 +20,7 @@ export class AuthController {
     try {
       const hashedPassword = await AuthService.hashPassword(password)
       const newUser = await prisma.back3nd_user.create({
-        data: { email, password: hashedPassword },
+        data: { email, password: hashedPassword, name: 'User' },
       })
 
       return c.json({ message: 'User registered successfully', user: newUser })

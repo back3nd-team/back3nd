@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: true },
-  modules: ['@nuxt/fonts', '@nuxt/image', '@nuxt/ui', '@vueuse/nuxt', 'nuxt-og-image', '@pinia/nuxt'],
+  modules: ['@nuxt/fonts', '@nuxt/image', '@nuxt/ui', '@vueuse/nuxt', 'nuxt-og-image', '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt'],
   typescript: {
     strict: true,
   },

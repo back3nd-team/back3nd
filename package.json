@@ -10,12 +10,12 @@
     "studio": "cd packages/studio && bun run dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prisma:generate": "bunx prisma generate --schema=./prisma/schema.prisma",
-    "prisma:migrate:dev": "bunx prisma migrate dev --schema=./prisma/schema.prisma",
-    "prisma:migrate:prod": "bunx prisma migrate deploy --schema=./prisma/schema.prisma",
-    "prisma:studio": "bunx prisma studio",
-    "prisma:push": "bunx prisma db push",
-    "prisma:reset": "bunx prisma migrate reset --force",
+    "prisma:generate": "bunx prisma generate --schema=./prisma/schema",
+    "prisma:migrate:dev": "bunx prisma migrate dev --schema=./prisma/schema",
+    "prisma:migrate:prod": "bunx prisma migrate deploy --schema=./prisma/schema",
+    "prisma:studio": "bunx prisma studio --schema=./prisma/schema",
+    "prisma:push": "bunx prisma db push --schema=./prisma/schema",
+    "prisma:reset": "bunx prisma migrate reset --force --schema=./prisma/schema",
     "prisma:seed": "bun run prisma/seed.ts"
   },
   "dependencies": {

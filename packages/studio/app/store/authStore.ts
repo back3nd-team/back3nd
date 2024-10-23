@@ -1,50 +1,62 @@
-import { fetchWithAuth } from '@/utils/fetchWithAuth'
+import { useApiClient } from '@/composables/ApiClient'
+import { useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: null as string | null,
+    token: useLocalStorage<string | null>('auth_token', null),
     user: null as any,
   }),
   actions: {
+    async initializeAuthState() {
+      if (this.token) {
+        try {
+          await this.fetchUserData()
+        }
+        catch (error) {
+          console.error('Failed to fetch user data during initialization:', error)
+          this.logout()
+        }
+      }
+    },
     async login(email: string, password: string) {
       try {
-        const { data, error } = await useFetch<{ token: string, user: any }>(`/auth/login`, {
-          baseURL: 'http://localhost:3737',
-          method: 'POST',
-          body: { email, password },
-        })
-
-        if (error.value) {
-          throw new Error(error.value.message)
-        }
-
-        this.token = data.value.token
-        this.user = data.value.user
+        await useApiClient.login(email, password)
+        this.token = useApiClient.getToken()
+        await this.fetchUserData()
       }
       catch (error) {
         console.error('Login failed:', error)
         throw error
       }
     },
-    logout() {
-      this.token = null
-      this.user = null
+
+    async logout() {
+      try {
+        await useApiClient.logout()
+        this.token = null
+        this.user = null
+      }
+      catch (error) {
+        console.error('Logout failed:', error)
+        throw error
+      }
     },
+
     async fetchUserData() {
       try {
-        const { data, error } = await fetchWithAuth<{ user: any }>('/protected')
-        console.log('Retorno de usuario', data)
-        if (error.value) {
-          throw new Error(error.value.message)
-        }
-
-        this.user = data.value
+        const userData = await useApiClient.fetchUserData()
+        this.user = userData
       }
       catch (error) {
         console.error('Fetching user data failed:', error)
         throw error
       }
     },
+
+    setToken(token: string | null) {
+      this.token = token
+    },
   },
+  persist: true,
 })
