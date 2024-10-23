@@ -1,7 +1,7 @@
 import { useGetCollections } from './useGetCollections'
 
 export function useCollectionList() {
-  const collections = ref([])
+  const collections = ref<{ [key: string]: any }[]>([])
   const q = ref('')
 
   const filteredCollections = computed(() => {
@@ -17,7 +17,13 @@ export function useCollectionList() {
   async function getCollections() {
     try {
       const rawData = await useGetCollections()
-      collections.value = rawData.userCollections
+      collections.value = (rawData as unknown as { userCollections: any[] }).userCollections.map((collection: any) => {
+        const roles = collection.back3nd_permission.map((permission: any) => permission.role.name).join(', ')
+        return {
+          ...collection,
+          roles,
+        }
+      })
     }
     catch (error) {
       console.error(error)

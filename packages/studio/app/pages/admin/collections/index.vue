@@ -14,10 +14,9 @@ definePageMeta({
 const { collections, q, filteredCollections, getCollections } = useCollectionList()
 
 const columns = ref([
-  { label: 'Table Catalog', key: 'table_catalog' },
-  { label: 'Table Schema', key: 'table_schema' },
-  { label: 'Table Name', key: 'table_name' },
-  { label: 'Table Type', key: 'table_type' },
+  { label: 'Table Name', key: 'name' },
+  { label: 'Roles', key: 'roles' },
+  { label: 'Created At', key: 'created_at' },
 ])
 const selectedColumns = ref([...columns.value])
 

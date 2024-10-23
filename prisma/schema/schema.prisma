@@ -45,7 +45,7 @@ model back3nd_permission {
   id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   role_id    String             @db.Uuid
   table_id   String             @db.Uuid
-  table      back3nd_entity     @relation(fields: [table_id], references: [id], onDelete: Cascade) // Renomeado
+  table      back3nd_entity     @relation(fields: [table_id], references: [id], onDelete: Cascade) 
   can_create Boolean            @default(false)
   can_read   Boolean            @default(false)
   can_update Boolean            @default(false)

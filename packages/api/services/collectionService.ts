@@ -16,15 +16,27 @@ const prisma = new PrismaClient()
  */
 export async function listCollections() {
   try {
-    const collections: { table_name: string }[] = await prisma.$queryRawUnsafe(
-      'SELECT * FROM information_schema.tables WHERE table_schema = \'public\'',
-    )
+    const collections = await prisma.back3nd_entity.findMany({
+      include: {
+        back3nd_permission: {
+          include: {
+            role: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    })
+
     const systemCollections = collections.filter((collection: any) =>
-      collection.table_name.startsWith('back3nd_') && collection.table_name !== '_prisma_migrations',
+      collection.name.startsWith('back3nd_') && collection.name !== '_prisma_migrations',
     )
     const userCollections = collections.filter((collection: any) =>
-      !collection.table_name.startsWith('back3nd_') && collection.table_name !== '_prisma_migrations',
+      !collection.name.startsWith('back3nd_') && collection.name !== '_prisma_migrations',
     )
+
     return { systemCollections, userCollections }
   }
   catch {
