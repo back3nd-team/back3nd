@@ -6,12 +6,11 @@ const fields = ref<{ key: string, type: string, defaultValue: string, required: 
 const { addField, fieldError } = useAddField(fields)
 function onAddField(newField) {
   const result = addField(newField)
-  console.log('onAddField result:', result) // Log para verificar o retorno
-  return result // Certifique-se de retornar o valor correto (true ou false)
+  return result
 }
 
 function onDeleteField(index) {
-  fields.value.splice(index, 1) // Remove o campo do array
+  fields.value.splice(index, 1)
 }
 
 onMounted(() => {
