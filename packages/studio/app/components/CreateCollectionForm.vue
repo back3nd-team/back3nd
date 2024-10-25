@@ -9,10 +9,10 @@ const idTypes = [
 ]
 
 const fieldSchema = z.string()
-  .min(1, 'O campo é obrigatório')
-  .max(63, 'O campo deve ter no máximo 63 caracteres')
-  .regex(/^[a-z_]/i, 'O campo deve começar com uma letra ou sublinhado')
-  .regex(/^\w+$/, 'O campo deve conter apenas letras, números ou sublinhados')
+  .min(1, 'The field is required')
+  .max(63, 'The field must be at most 63 characters long')
+  .regex(/^[a-z_]/i, 'The field must start with a letter or underscore')
+  .regex(/^\w+$/, 'The field must contain only letters, numbers, or underscores')
 
 const collectionName = ref('')
 const singleton = ref(false)
