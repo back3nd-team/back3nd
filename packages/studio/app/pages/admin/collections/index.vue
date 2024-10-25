@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useAddCollectionForm } from '@/composables/useCases/useAddCollectionForm'
+import CreateCollectionForm from '@/components/CreateCollectionForm.vue'
 import { useCollectionList } from '@/composables/useCases/useCollectionList'
-import { useCreateCollection } from '@/composables/useCases/useCreateCollection'
+import { ref } from 'vue'
 
 definePageMeta({
   title: 'Collections',
@@ -19,27 +19,21 @@ const columns = ref([
   { label: 'Created At', key: 'created_at' },
 ])
 const selectedColumns = ref([...columns.value])
-
-const { schema, form, validateForm, clearForm } = useAddCollectionForm()
 const isOpen = ref(false)
 const selected = ref([])
 
+// Referência para o componente CreateCollectionForm
+const collectionFormRef = ref(null)
+
 async function saveItem() {
-  if (!validateForm())
-    return
-  try {
-    const collection = {
-      name: form.value.name,
-      email: form.value.email,
-      role: form.value.role,
-    }
-    await useCreateCollection(collection)
-    clearForm()
-    isOpen.value = false
-    getCollections()
+  if (collectionFormRef.value) {
+    collectionFormRef.value.submitCollection() // Chama a função de salvar do filho
   }
-  catch (error) {
-    console.error(error)
+}
+
+function clearItem() {
+  if (collectionFormRef.value) {
+    collectionFormRef.value.clearForm() // Chama a função de limpar do filho
   }
 }
 
@@ -66,6 +60,7 @@ onMounted(() => {
         />
       </div>
     </div>
+
     <UTable v-model="selected" :rows="filteredCollections" :columns="selectedColumns">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
@@ -79,12 +74,14 @@ onMounted(() => {
         </div>
       </template>
     </UTable>
+
+    <!-- Slideover com o CreateCollectionForm -->
     <USlideover :model-value="isOpen" @update:model-value="isOpen = false">
       <UCard class="flex flex-col h-full">
         <template #header>
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-medium">
-              Add New Collection
+              Create New Collection
             </h3>
             <UButton
               id="close-button"
@@ -97,23 +94,14 @@ onMounted(() => {
           </div>
         </template>
 
-        <div class="p-4 space-y-4">
-          <UForm :schema="schema" :state="form" class="space-y-4" @submit="saveItem">
-            <UFormGroup label="Name" name="name">
-              <UInput id="name" v-model="form.name" placeholder="Enter name" class="w-full rounded-lg" />
-            </UFormGroup>
-            <UFormGroup label="Email" name="email">
-              <UInput id="email" v-model="form.email" placeholder="Enter email" class="w-full rounded-lg" />
-            </UFormGroup>
-            <UFormGroup label="Role" name="role">
-              <UInput id="role" v-model="form.role" placeholder="Enter role" class="w-full rounded-lg" />
-            </UFormGroup>
-          </UForm>
+        <div>
+          <!-- Usando a ref para acessar métodos no componente filho -->
+          <CreateCollectionForm ref="collectionFormRef" />
         </div>
 
         <template #footer>
           <div class="flex justify-end space-x-4 p-4">
-            <UButton label="Clear" color="gray" @click="clearForm" />
+            <UButton label="Clear" color="gray" @click="clearItem" />
             <UButton label="Save" color="primary" @click="saveItem" />
           </div>
         </template>

@@ -49,18 +49,32 @@ function submitCollection() {
   })
 }
 
+// Função para limpar o formulário
+function clearForm() {
+  collectionName.value = ''
+  singleton.value = false
+  primaryKeyField.value = ''
+  type.value = 'uuid'
+  errors.value = {
+    collectionName: '',
+    primaryKeyField: '',
+  }
+  console.log('Form has been cleared')
+}
+
+// Expor as funções para serem chamadas pelo pai
+defineExpose({
+  submitCollection,
+  clearForm,
+})
+
 function toggleCheckbox() {
   singleton.value = !singleton.value
 }
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">
-      Create New Collection
-    </h2>
-
-    <!-- Main Information -->
+  <div>
     <div class="mb-6">
       <UAlert
         icon="streamline:information-circle-solid"
@@ -117,13 +131,6 @@ function toggleCheckbox() {
           class="w-full"
         />
       </UFormGroup>
-    </div>
-
-    <!-- Confirmation Button -->
-    <div class="flex justify-end mt-6">
-      <UButton icon="material-symbols:arrow_forward" @click="submitCollection">
-        Confirm
-      </UButton>
     </div>
   </div>
 </template>

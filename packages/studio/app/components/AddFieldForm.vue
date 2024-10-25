@@ -69,12 +69,12 @@ function addField() {
         <UCheckbox v-model="newFieldRequired" label="Require value to be set on creation" />
       </UFormGroup>
 
-      <UFormGroup label="Placeholder">
+      <UFormGroup label="Placeholder" class="col-span-1 sm:col-span-2">
         <UInput v-model="newFieldPlaceholder" size="xl" placeholder="Enter a placeholder..." class="w-full" />
       </UFormGroup>
     </div>
 
-    <UButton class="mt-4" @click="addField">
+    <UButton class="mt-4" block @click="addField">
       Add Field
     </UButton>
   </div>
