@@ -41,7 +41,6 @@ export class EntityFieldsRepository {
         }
       }
 
-      // Tratamento genérico para outros erros
       console.error('Error saving field:', error)
       throw new Error('Could not save field. Please try again.')
     }

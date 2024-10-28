@@ -72,6 +72,7 @@ model back3nd_entity_fields {
   columnType     String
   defaultValue   String?
   entity_id      String @db.Uuid
+  created_at         DateTime             @default(now())
   back3nd_entity back3nd_entity  @relation(fields: [entity_id], references: [id])
 
   @@index([entity_id])

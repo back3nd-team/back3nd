@@ -83,6 +83,7 @@ CREATE TABLE "back3nd_entity_fields" (
     "columnType" TEXT NOT NULL,
     "defaultValue" TEXT,
     "entity_id" UUID NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "back3nd_entity_fields_pkey" PRIMARY KEY ("id")
 );

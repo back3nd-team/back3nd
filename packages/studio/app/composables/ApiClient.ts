@@ -198,6 +198,19 @@ class ApiClient {
       method: 'DELETE',
     })
   }
+
+  public async listEntityFields(entityId: string): Promise<any[]> {
+    return this.request<any[]>(`/fields/${entityId}`, {
+      method: 'GET',
+    })
+  }
+
+  public async createEntityField(entityId: string, fieldData: any): Promise<void> {
+    await this.request(`/fields/${entityId}`, {
+      method: 'POST',
+      body: JSON.stringify(fieldData),
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')

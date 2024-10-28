@@ -12,6 +12,7 @@ definePageMeta({
 const route = useRoute()
 const ENTITY_ID = route.params.entity as string
 const collectionData = ref<any>(null)
+const fieldsData = ref<any>(null)
 /**
  * @TODO
  *  - Get the name of collection
@@ -25,8 +26,13 @@ async function getCollectionById(id: string) {
   collectionData.value = data
 }
 
+async function getFieldsByCollectionId(id: string) {
+  fieldsData.value = await useApiClient.listEntityFields(id)
+}
+
 onMounted(async () => {
   getCollectionById(ENTITY_ID)
+  getFieldsByCollectionId(ENTITY_ID)
 })
 </script>
 
@@ -46,7 +52,6 @@ onMounted(async () => {
         />
       </div>
     </div>
-    {{ collectionData }}
-    <FieldList />
+    <FieldList :fields="fieldsData" />
   </div>
 </template>
