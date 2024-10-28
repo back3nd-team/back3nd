@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { checkTableExists, createCollectionInDB } from '../repositories/collectionRepository'
 import { isValidCollectionName } from '../utils/validateCollectionName'
+import { runDbPull } from './prismaService'
 
 const prisma = new PrismaClient()
 
@@ -29,6 +30,9 @@ export async function listCollections() {
           },
         },
       },
+      orderBy: {
+        created_at: 'desc',
+      },
     })
 
     const systemCollections = collections.filter((collection: any) =>
@@ -50,7 +54,16 @@ export async function getCollectionDetails(collectionName: string) {
     return { error: 'Invalid collection name', statusCode: 400 }
   }
   try {
-    const collection = await prisma.$queryRawUnsafe(`SELECT * FROM information_schema.columns WHERE table_name = '${collectionName}'`)
+    const collection = await prisma.back3nd_entity.findUnique({
+      where: { name: collectionName },
+      include: {
+        back3nd_permission: {
+          include: {
+            role: true,
+          },
+        },
+      },
+    })
     return { data: collection }
   }
   catch {
@@ -88,6 +101,10 @@ export async function createCollection(data: any) {
     return { error: 'Failed to create permissions for the collection', statusCode: 500 }
   }
 
+  const dbPullResult = await runDbPull()
+  if (!dbPullResult.success) {
+    return { error: 'Failed to synchronize schema', statusCode: 500 }
+  }
   return { message: 'Collection created successfully' }
 }
 

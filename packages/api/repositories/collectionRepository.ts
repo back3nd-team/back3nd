@@ -15,9 +15,14 @@ export async function checkTableExists(collectionName: string): Promise<boolean>
 }
 
 export async function createCollectionInDB(collectionName: string, primaryKeyField: string, type: string): Promise<boolean> {
+  let defaultClause = ''
+  if (type.toLowerCase() === 'uuid') {
+    defaultClause = 'DEFAULT gen_random_uuid()'
+  }
+
   const createTableQuery = `
     CREATE TABLE ${collectionName} (
-      ${primaryKeyField} ${type} PRIMARY KEY
+      ${primaryKeyField} ${type} PRIMARY KEY ${defaultClause}
     )
   `
   const result = await prisma.$executeRawUnsafe(createTableQuery)

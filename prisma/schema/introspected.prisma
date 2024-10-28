@@ -1,0 +1,47 @@
+model hermes {
+  id String @id @db.Uuid
+}
+
+model hermesxx {
+  id String @id @db.Uuid
+}
+
+model hermesxxx {
+  id String @id @db.Uuid
+}
+
+model mamae {
+  id String @id @db.Uuid
+}
+
+model mamaes {
+  id String @id @db.Uuid
+}
+
+model mamaessss {
+  id String @id @db.Uuid
+}
+
+model mamaex {
+  id String @id @db.Uuid
+}
+
+model mamaexxxxs {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model asa2w2w2w {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model asa2w2wsasa2w {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model asd23as {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model outratabela {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}

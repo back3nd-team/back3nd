@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { z } from 'zod'
 import { useCreateCollection } from '~/composables/useCases/useCreateCollection'
 
+const emit = defineEmits(['collectionCreated'])
 const idTypes = [
   { value: 'uuid', label: 'Generated UUID' },
   { value: 'increment', label: 'Auto-increment integer' },
@@ -23,6 +24,7 @@ const primaryKeyField = ref('')
 const type = ref('uuid')
 const alertMessage = ref('Name the collection and configure its unique "key" field.')
 const alertType = ref<'info' | 'error'>('info')
+const isSubmitting = ref(false)
 
 const errors = ref<Record<string, string>>({
   collectionName: '',
@@ -52,6 +54,7 @@ async function submitCollection() {
     type: type.value,
     roles: selectedRoles.value,
   }
+  isSubmitting.value = true
 
   try {
     const response: any = await useCreateCollection(collectionData)
@@ -70,6 +73,10 @@ async function submitCollection() {
     alertMessage.value = `Error creating collection: ${error}`
     alertType.value = 'error'
     console.error('Error creating collection:', error)
+  }
+  finally {
+    emit('collectionCreated', collectionData)
+    isSubmitting.value = false
   }
 }
 
@@ -101,6 +108,9 @@ onMounted(() => {
 
 <template>
   <div>
+    <div v-if="isSubmitting" class="-mt-6 pb-6">
+      <UProgress size="xs" animation="carousel" />
+    </div>
     <div class="mb-6">
       <LayoutAlertBox :type="alertType" :title="alertMessage" />
     </div>

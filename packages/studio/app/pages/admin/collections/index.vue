@@ -16,24 +16,43 @@ const columns = ref([
   { label: 'Table Name', key: 'name' },
   { label: 'Roles', key: 'roles' },
   { label: 'Created At', key: 'created_at' },
+  { label: 'Actions', key: 'actions' },
 ])
 const selectedColumns = ref([...columns.value])
 const isOpen = ref(false)
-const selected = ref([])
+function items(row: any) {
+  return [
+    [{
+      label: 'Fields',
+      icon: 'i-heroicons-pencil-square-20-solid',
+      click: () => console.warn('Edit', row.id),
+    }, {
+      label: 'Permissions',
+      icon: 'eos-icons:role-binding',
+    }],
+    [{
+      label: 'Delete',
+      icon: 'i-heroicons-trash-20-solid',
+    }],
+  ]
+}
 
-// Referência para o componente CreateCollectionForm
-const collectionFormRef = ref(null)
+const collectionFormRef = ref<InstanceType<typeof CreateCollectionForm> | null>(null)
 
 async function saveItem() {
   if (collectionFormRef.value) {
-    collectionFormRef.value.submitCollection() // Chama a função de salvar do filho
+    collectionFormRef.value.submitCollection()
   }
 }
 
 function clearItem() {
   if (collectionFormRef.value) {
-    collectionFormRef.value.clearForm() // Chama a função de limpar do filho
+    collectionFormRef.value.clearForm()
   }
+}
+function handleCollectionCreated() {
+  isOpen.value = false
+  getCollections()
 }
 
 onMounted(() => {
@@ -60,17 +79,29 @@ onMounted(() => {
       </div>
     </div>
 
-    <UTable v-model="selected" :rows="filteredCollections" :columns="selectedColumns">
+    <UTable :rows="filteredCollections" :columns="selectedColumns">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
           {{ collections.length }} rows in collections
         </caption>
       </template>
+
       <template #empty-state>
         <div class="flex flex-col items-center justify-center py-6 gap-3">
           <span class="italic text-sm">No item here!</span>
           <UButton label="Add something" @click="isOpen = true" />
         </div>
+      </template>
+
+      <template #actions-data="{ row }">
+        <UDropdown :items="items(row)">
+          <UButton
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-ellipsis-horizontal-20-solid"
+            class="w-8 h-8 flex justify-center items-center"
+          />
+        </UDropdown>
       </template>
     </UTable>
 
@@ -94,8 +125,7 @@ onMounted(() => {
         </template>
 
         <div>
-          <!-- Usando a ref para acessar métodos no componente filho -->
-          <CreateCollectionForm ref="collectionFormRef" />
+          <CreateCollectionForm ref="collectionFormRef" @collection-created="handleCollectionCreated" />
         </div>
 
         <template #footer>
