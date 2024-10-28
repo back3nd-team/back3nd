@@ -3,14 +3,15 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export async function checkTableExists(collectionName: string): Promise<boolean> {
-  const result = await prisma.$queryRawUnsafe<boolean>(`
+  const result = await prisma.$queryRawUnsafe<any[]>(`
     SELECT EXISTS (
       SELECT 1
       FROM information_schema.tables
       WHERE table_name = '${collectionName}'
-    )
+    ) as exists
   `)
-  return result
+  const exists = result[0]?.exists
+  return exists
 }
 
 export async function createCollectionInDB(collectionName: string, primaryKeyField: string, type: string): Promise<boolean> {

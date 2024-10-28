@@ -21,6 +21,8 @@ const roles = ref<any[]>([])
 const selectedRoles = ref<any[]>([])
 const primaryKeyField = ref('')
 const type = ref('uuid')
+const alertMessage = ref('Name the collection and configure its unique "key" field.')
+const alertType = ref<'info' | 'error'>('info')
 
 const errors = ref<Record<string, string>>({
   collectionName: '',
@@ -54,13 +56,19 @@ async function submitCollection() {
   try {
     const response: any = await useCreateCollection(collectionData)
     if (response?.error) {
+      alertMessage.value = `Error creating collection: ${response.error}`
+      alertType.value = 'error'
       console.error('Error creating collection:', response.error)
     }
     else {
+      alertMessage.value = 'Collection created successfully!'
+      alertType.value = 'info'
       console.warn('Collection created successfully:', response)
     }
   }
   catch (error) {
+    alertMessage.value = `Error creating collection: ${error}`
+    alertType.value = 'error'
     console.error('Error creating collection:', error)
   }
 }
@@ -94,13 +102,8 @@ onMounted(() => {
 <template>
   <div>
     <div class="mb-6">
-      <UAlert
-        icon="streamline:information-circle-solid"
-        variant="outline"
-        title="Name the collection and configure its unique 'key' field."
-      />
+      <LayoutAlertBox :type="alertType" :title="alertMessage" />
     </div>
-
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <UFormGroup label="Collection Name *" :error="errors.collectionName" help="Names are case-sensitive">
         <UInput

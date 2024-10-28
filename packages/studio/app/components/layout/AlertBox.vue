@@ -4,7 +4,7 @@ import { computed } from 'vue'
 type AlertColor = 'blue' | 'orange' | 'red'
 
 interface AlertSettings {
-  color: AlertColor
+  color?: AlertColor
   icon: string
   title: string
 }
@@ -17,18 +17,17 @@ const props = defineProps<{
 
 const defaultSettings: Record<'info' | 'warning' | 'error', AlertSettings> = {
   info: {
-    color: 'blue',
     icon: 'streamline:information-circle-solid',
     title: 'Info',
   },
   warning: {
     color: 'orange',
-    icon: 'streamline:alert-warning-solid',
+    icon: 'iconoir:bubble-warning',
     title: 'Warning!',
   },
   error: {
     color: 'red',
-    icon: 'streamline:circle-close-solid',
+    icon: 'icon-park-outline:error',
     title: 'Error!',
   },
 }
