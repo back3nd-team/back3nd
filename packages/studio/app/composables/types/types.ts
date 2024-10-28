@@ -5,3 +5,10 @@ export interface Field {
   required: boolean
   placeholder?: string
 }
+
+export interface CreateCollectionData {
+  collectionName: string
+  primaryKeyField: string
+  type: string
+  roles: string[]
+}

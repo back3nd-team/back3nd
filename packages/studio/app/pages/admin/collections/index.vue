@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import CreateCollectionForm from '@/components/CreateCollectionForm.vue'
 import { useCollectionList } from '@/composables/useCases/useCollectionList'
-import { ref } from 'vue'
 
 definePageMeta({
   title: 'Collections',

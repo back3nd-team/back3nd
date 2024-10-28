@@ -1,3 +1,4 @@
+import type { CreateCollectionData } from './types/types'
 import { useAuthStore } from '@/store/authStore'
 import { getActivePinia } from 'pinia'
 
@@ -178,8 +179,8 @@ class ApiClient {
     })
   }
 
-  public async createCollection(collection: { name: string, email: string, role: string }): Promise<void> {
-    await this.request('/collections', {
+  public async createCollection(collection: CreateCollectionData): Promise<void> {
+    return await this.request('/collections', {
       method: 'POST',
       body: JSON.stringify(collection),
     })
