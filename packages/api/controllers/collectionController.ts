@@ -9,8 +9,8 @@ export class CollectionController {
   }
 
   static async getDetails(c: Context) {
-    const collectionName = c.req.param('collection')
-    const result = await getCollectionDetails(collectionName)
+    const collectionId = c.req.param('collection')
+    const result = await getCollectionDetails(collectionId)
     return c.json(result)
   }
 

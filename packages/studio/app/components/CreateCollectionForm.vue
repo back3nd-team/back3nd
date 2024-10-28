@@ -66,7 +66,6 @@ async function submitCollection() {
     else {
       alertMessage.value = 'Collection created successfully!'
       alertType.value = 'info'
-      console.warn('Collection created successfully:', response)
     }
   }
   catch (error) {

@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
+import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import roleRoutes from './routes/roleRoutes'
@@ -30,6 +31,7 @@ app.route('/roles', roleRoutes)
 app.route('/collections', collectionRoutes)
 app.route('/items', itemRoutes)
 app.route('/hash', hashRoutes)
+app.route('/fields', entityFieldsRoutes)
 
 app.get('/me', (c: Context) => {
   const user = c.get('user')

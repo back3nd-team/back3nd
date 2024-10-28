@@ -49,13 +49,10 @@ export async function listCollections() {
   }
 }
 
-export async function getCollectionDetails(collectionName: string) {
-  if (!isValidCollectionName(collectionName)) {
-    return { error: 'Invalid collection name', statusCode: 400 }
-  }
+export async function getCollectionDetails(collectionId: string) {
   try {
     const collection = await prisma.back3nd_entity.findUnique({
-      where: { name: collectionName },
+      where: { id: collectionId },
       include: {
         back3nd_permission: {
           include: {
@@ -64,6 +61,9 @@ export async function getCollectionDetails(collectionName: string) {
         },
       },
     })
+    if (!collection) {
+      return { error: 'Collection not found', statusCode: 404 }
+    }
     return { data: collection }
   }
   catch {

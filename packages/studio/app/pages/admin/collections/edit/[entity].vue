@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { useApiClient } from '@/composables/ApiClient'
+
 definePageMeta({
   title: 'Fields',
   breadcrumb: [
     { label: 'Admin', to: '/admin' },
     { label: 'Collections', to: '/admin/collections' },
-    { label: 'Fields', to: '/admin/collections/edit/' },
+    { label: 'Fields', to: '/admin/collections/edit' },
   ],
 })
 const route = useRoute()
-const ENTITY_ID = route.params.entity
-
+const ENTITY_ID = route.params.entity as string
+const collectionData = ref<any>(null)
 /**
  * @TODO
  *  - Get the name of collection
@@ -18,12 +20,33 @@ const ENTITY_ID = route.params.entity
  *  - Get the permissions of collection
  *
  */
+async function getCollectionById(id: string) {
+  const { data } = await useApiClient.getCollection(id)
+  collectionData.value = data
+}
+
+onMounted(async () => {
+  getCollectionById(ENTITY_ID)
+})
 </script>
 
 <template>
   <div>
-    <p>{{ $route.params.entity }}  </p>
-    ENTITY_ID: {{ ENTITY_ID }}
-    <CreateFieldsForm />
+    <div class="flex justify-between items-center px-3 py-3.5">
+      <div class="">
+        {{ collectionData?.name?.toUpperCase() }}
+      </div>
+      <div id="actions-buttons">
+        <UButton
+          icon="material-symbols:add-2-rounded"
+          size="md"
+          color="primary"
+          square
+          variant="solid"
+        />
+      </div>
+    </div>
+    {{ collectionData }}
+    <FieldList />
   </div>
 </template>

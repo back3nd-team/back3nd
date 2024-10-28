@@ -22,7 +22,7 @@ function deleteField() {
 </script>
 
 <template>
-  <div v-if="props.fields.length > 0" id="fields" class="mb-6">
+  <div v-if="props.fields?.length > 0" id="fields" class="mb-6">
     <h3 class="text-lg font-semibold mb-2">
       Fields & Layout
     </h3>

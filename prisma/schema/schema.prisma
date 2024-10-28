@@ -62,6 +62,19 @@ model back3nd_entity {
   created_at         DateTime             @default(now())
   updated_at         DateTime             @updatedAt
   back3nd_permission back3nd_permission[]
+
+  back3nd_entity_fields back3nd_entity_fields[]
+}
+
+model back3nd_entity_fields {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  columnName     String
+  columnType     String
+  defaultValue   String?
+  entity_id      String @db.Uuid
+  back3nd_entity back3nd_entity  @relation(fields: [entity_id], references: [id])
+
+  @@index([entity_id])
 }
 
 model back3nd_password_reset {

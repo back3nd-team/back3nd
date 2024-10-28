@@ -4,12 +4,12 @@ import { useAddField } from '@/composables/useCases/useAddField'
 
 const fields = ref<{ key: string, type: string, defaultValue: string, required: boolean, placeholder: string }[]>([])
 const { addField, fieldError } = useAddField(fields)
-function onAddField(newField) {
+function onAddField(newField: any) {
   const result = addField(newField)
   return result
 }
 
-function onDeleteField(index) {
+function onDeleteField(index: any) {
   fields.value.splice(index, 1)
 }
 

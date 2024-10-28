@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import AddFieldForm from './AddFieldForm.vue'
-import FieldList from './FieldList.vue'
-
 const props = defineProps({
   fields: Array,
   onAddField: Function,

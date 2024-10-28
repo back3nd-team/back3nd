@@ -2,11 +2,13 @@
 import CreateCollectionForm from '@/components/CreateCollectionForm.vue'
 import { useCollectionList } from '@/composables/useCases/useCollectionList'
 
+const router = useRouter()
+
 definePageMeta({
   title: 'Collections',
   breadcrumb: [
     { label: 'Admin', to: '/admin' },
-    { label: 'Collections', to: '/admin/collections' },
+    { label: 'Collections', to: '/admin/collections/' },
   ],
 })
 
@@ -25,7 +27,7 @@ function items(row: any) {
     [{
       label: 'Fields',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => console.warn('Edit', row.id),
+      click: () => router.push(`${router.currentRoute.value.fullPath}/edit/${row.id}`),
     }, {
       label: 'Permissions',
       icon: 'eos-icons:role-binding',
