@@ -15,8 +15,9 @@ export class EntityFieldsController {
 
   static async create(c: Context) {
     try {
+      const { entityID } = c.req.param()
       const fieldData = await c.req.json()
-      const field = await EntityFieldsService.addField(fieldData)
+      const field = await EntityFieldsService.addField(entityID, fieldData)
       return c.json(field, 201)
     }
     catch {

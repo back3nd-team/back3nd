@@ -5,7 +5,7 @@ export class EntityFieldsService {
     return await EntityFieldsRepository.getAllFields(entityID)
   }
 
-  static async addField(fieldData: any) {
-    return await EntityFieldsRepository.saveField(fieldData)
+  static async addField(entityID: string, fieldData: any) {
+    return await EntityFieldsRepository.saveField(entityID, fieldData)
   }
 }

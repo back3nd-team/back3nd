@@ -78,7 +78,7 @@ CREATE TABLE "back3nd_entity" (
 
 -- CreateTable
 CREATE TABLE "back3nd_entity_fields" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "columnName" TEXT NOT NULL,
     "columnType" TEXT NOT NULL,
     "defaultValue" TEXT,
@@ -115,6 +115,9 @@ CREATE UNIQUE INDEX "back3nd_entity_name_key" ON "back3nd_entity"("name");
 
 -- CreateIndex
 CREATE INDEX "back3nd_entity_fields_entity_id_idx" ON "back3nd_entity_fields"("entity_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "back3nd_entity_fields_entity_id_columnName_key" ON "back3nd_entity_fields"("entity_id", "columnName");
 
 -- AddForeignKey
 ALTER TABLE "back3nd_user_role" ADD CONSTRAINT "back3nd_user_role_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "back3nd_role"("id") ON DELETE CASCADE ON UPDATE CASCADE;

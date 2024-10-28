@@ -75,6 +75,7 @@ model back3nd_entity_fields {
   back3nd_entity back3nd_entity  @relation(fields: [entity_id], references: [id])
 
   @@index([entity_id])
+  @@unique([entity_id, columnName])
 }
 
 model back3nd_password_reset {
