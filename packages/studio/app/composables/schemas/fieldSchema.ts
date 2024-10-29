@@ -8,6 +8,7 @@ export const fieldSchema = z.object({
     .regex(/^\w+$/, 'The field key must contain only letters, numbers, or underscores'), // PostgreSQL-valid column name
   type: z.enum(['String', 'UUID', 'Big Integer', 'Integer', 'Float', 'Decimal', 'Text']),
   defaultValue: z.string(),
+  size: z.number().int().optional(),
   required: z.boolean(),
   placeholder: z.string().optional(),
 })

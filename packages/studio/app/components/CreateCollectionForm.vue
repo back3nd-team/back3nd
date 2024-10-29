@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import type { CreateCollectionData } from '../composables/types/types'
 import { z } from 'zod'
+import { useCreateCollection } from '~/composables/useCases/useCreateCollection'
 
+const emit = defineEmits(['collectionCreated'])
 const idTypes = [
   { value: 'uuid', label: 'Generated UUID' },
   { value: 'increment', label: 'Auto-increment integer' },
@@ -15,9 +17,13 @@ const fieldSchema = z.string()
   .regex(/^\w+$/, 'The field must contain only letters, numbers, or underscores')
 
 const collectionName = ref('')
-const singleton = ref(false)
+const roles = ref<any[]>([])
+const selectedRoles = ref<any[]>([])
 const primaryKeyField = ref('')
 const type = ref('uuid')
+const alertMessage = ref('Name the collection and configure its unique "key" field.')
+const alertType = ref<'info' | 'error'>('info')
+const isSubmitting = ref(false)
 
 const errors = ref<Record<string, string>>({
   collectionName: '',
@@ -34,44 +40,79 @@ function validateField(value: unknown, fieldName: string) {
   return true
 }
 
-function submitCollection() {
+async function submitCollection() {
   const isCollectionNameValid = validateField(collectionName.value, 'collectionName')
   const isPrimaryKeyFieldValid = validateField(primaryKeyField.value, 'primaryKeyField')
 
   if (!isCollectionNameValid || !isPrimaryKeyFieldValid)
     return
 
-  console.warn({
+  const collectionData: CreateCollectionData = {
     collectionName: collectionName.value,
-    singleton: singleton.value,
     primaryKeyField: primaryKeyField.value,
     type: type.value,
-  })
+    roles: selectedRoles.value,
+  }
+  isSubmitting.value = true
+
+  try {
+    const response: any = await useCreateCollection(collectionData)
+    if (response?.error) {
+      alertMessage.value = `Error creating collection: ${response.error}`
+      alertType.value = 'error'
+      console.error('Error creating collection:', response.error)
+    }
+    else {
+      alertMessage.value = 'Collection created successfully!'
+      alertType.value = 'info'
+    }
+  }
+  catch (error) {
+    alertMessage.value = `Error creating collection: ${error}`
+    alertType.value = 'error'
+    console.error('Error creating collection:', error)
+  }
+  finally {
+    emit('collectionCreated', collectionData)
+    isSubmitting.value = false
+  }
 }
 
-function toggleCheckbox() {
-  singleton.value = !singleton.value
+function clearForm() {
+  collectionName.value = ''
+  primaryKeyField.value = ''
+  type.value = 'uuid'
+  errors.value = {
+    collectionName: '',
+    primaryKeyField: '',
+  }
+  selectedRoles.value = []
+  console.warn('Form has been cleared')
 }
+
+defineExpose({
+  submitCollection,
+  clearForm,
+})
+
+async function listRoles() {
+  roles.value = await useApiClient.listRoles()
+}
+
+onMounted(() => {
+  listRoles()
+})
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-    <h2 class="text-xl font-semibold mb-4">
-      Create New Collection
-    </h2>
-
-    <!-- Main Information -->
-    <div class="mb-6">
-      <UAlert
-        icon="streamline:information-circle-solid"
-        variant="outline"
-        title="Name the collection and configure its unique 'key' field."
-      />
+  <div>
+    <div v-if="isSubmitting" class="-mt-6 pb-6">
+      <UProgress size="xs" animation="carousel" />
     </div>
-
-    <!-- Form in two columns -->
+    <div class="mb-6">
+      <LayoutAlertBox :type="alertType" :title="alertMessage" />
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <!-- Collection Name -->
       <UFormGroup label="Collection Name *" :error="errors.collectionName" help="Names are case-sensitive">
         <UInput
           v-model="collectionName"
@@ -83,20 +124,17 @@ function toggleCheckbox() {
         />
       </UFormGroup>
 
-      <!-- Singleton with UCard and negative margin for alignment -->
-      <UFormGroup label="Singleton" @click="toggleCheckbox">
-        <UCard bordered class="mt-1 cursor-pointer">
-          <UCheckbox
-            v-model="singleton"
-            name="singleton"
-            label="Treat as a unique object"
-            class="pl-2 -m-3"
-            @click.stop
-          />
-        </UCard>
+      <UFormGroup label="Roles">
+        <USelectMenu
+          v-model="selectedRoles"
+          :options="roles" multiple
+          value-attribute="id"
+          option-attribute="name"
+          placeholder="Select permissions"
+          size="xl"
+        />
       </UFormGroup>
 
-      <!-- Primary Key Field -->
       <UFormGroup label="Primary Key Field" :error="errors.primaryKeyField">
         <UInput
           v-model="primaryKeyField"
@@ -107,7 +145,6 @@ function toggleCheckbox() {
         />
       </UFormGroup>
 
-      <!-- ID Type -->
       <UFormGroup label="ID Type">
         <USelect
           v-model="type"
@@ -117,13 +154,6 @@ function toggleCheckbox() {
           class="w-full"
         />
       </UFormGroup>
-    </div>
-
-    <!-- Confirmation Button -->
-    <div class="flex justify-end mt-6">
-      <UButton icon="material-symbols:arrow_forward" @click="submitCollection">
-        Confirm
-      </UButton>
     </div>
   </div>
 </template>

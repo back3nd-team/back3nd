@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex", "driverAdapters", "prismaSchemaFolder"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "fullTextIndex", "fullTextSearch", "prismaSchemaFolder"]
 }
 
 datasource db {
@@ -13,11 +13,11 @@ model back3nd_user {
   name                   String
   email                  String                   @unique
   password               String
-  reset_token            String? // Token for password reset
+  reset_token            String?
   created_at             DateTime                 @default(now())
   updated_at             DateTime                 @updatedAt
-  roles                  back3nd_user_role[] // Relation with roles
   back3nd_password_reset back3nd_password_reset[]
+  roles                  back3nd_user_role[]
 }
 
 model back3nd_role {
@@ -26,51 +26,66 @@ model back3nd_role {
   description String?
   created_at  DateTime             @default(now())
   updated_at  DateTime             @updatedAt
-  users       back3nd_user_role[] // Many-to-many relationship with users
-  permissions back3nd_permission[] // Permissions related to this role
+  permissions back3nd_permission[]
+  users       back3nd_user_role[]
 }
 
 model back3nd_user_role {
   id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id    String       @db.Uuid
   role_id    String       @db.Uuid
-  user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  role       back3nd_role @relation(fields: [role_id], references: [id], onDelete: Cascade)
   created_at DateTime     @default(now())
+  role       back3nd_role @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_id, role_id]) // Ensure the user doesn't have the same role twice
+  @@unique([user_id, role_id])
 }
 
 model back3nd_permission {
-  id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  role_id    String             @db.Uuid
-  table_id   String             @db.Uuid
-  table      back3nd_entity     @relation(fields: [table_id], references: [id], onDelete: Cascade) 
-  can_create Boolean            @default(false)
-  can_read   Boolean            @default(false)
-  can_update Boolean            @default(false)
-  can_delete Boolean            @default(false)
-  role       back3nd_role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  created_at DateTime           @default(now())
+  id         String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role_id    String         @db.Uuid
+  table_id   String         @db.Uuid
+  can_create Boolean        @default(false)
+  can_read   Boolean        @default(false)
+  can_update Boolean        @default(false)
+  can_delete Boolean        @default(false)
+  created_at DateTime       @default(now())
+  role       back3nd_role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  table      back3nd_entity @relation(fields: [table_id], references: [id], onDelete: Cascade)
 
-  @@unique([role_id, table_id]) // Ensure unique permission for each role-table combo
+  @@unique([role_id, table_id])
 }
 
 model back3nd_entity {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name               String               @unique
-  created_at         DateTime             @default(now())
-  updated_at         DateTime             @updatedAt
-  back3nd_permission back3nd_permission[]
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String                  @unique
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
+  back3nd_entity_fields back3nd_entity_fields[]
+  back3nd_permission    back3nd_permission[]
 }
 
+model back3nd_entity_fields {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  columnName     String
+  columnType     String
+  size           Int?
+  placeholder    String?
+  defaultValue   String?
+  isUnique       Boolean
+  entity_id      String         @db.Uuid
+  created_at     DateTime       @default(now())
+  back3nd_entity back3nd_entity @relation(fields: [entity_id], references: [id])
+
+  @@unique([entity_id, columnName])
+  @@index([entity_id])
+}
 
 model back3nd_password_reset {
   id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id    String       @db.Uuid
-  user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  token      String // Token for password reset
+  token      String
   created_at DateTime     @default(now())
-  expires_at DateTime // Expiration time for the reset token
+  expires_at DateTime
+  user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
-

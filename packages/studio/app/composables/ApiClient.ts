@@ -1,3 +1,4 @@
+import type { CreateCollectionData } from './types/types'
 import { useAuthStore } from '@/store/authStore'
 import { getActivePinia } from 'pinia'
 
@@ -178,8 +179,8 @@ class ApiClient {
     })
   }
 
-  public async createCollection(collection: { name: string, email: string, role: string }): Promise<void> {
-    await this.request('/collections', {
+  public async createCollection(collection: CreateCollectionData): Promise<void> {
+    return await this.request('/collections', {
       method: 'POST',
       body: JSON.stringify(collection),
     })
@@ -195,6 +196,19 @@ class ApiClient {
   public async deleteCollection(collectionId: string): Promise<void> {
     await this.request(`/collections/${collectionId}`, {
       method: 'DELETE',
+    })
+  }
+
+  public async listEntityFields(entityId: string): Promise<any[]> {
+    return this.request<any[]>(`/fields/${entityId}`, {
+      method: 'GET',
+    })
+  }
+
+  public async createEntityField(entityId: string, fieldData: any): Promise<void> {
+    await this.request(`/fields/${entityId}`, {
+      method: 'POST',
+      body: JSON.stringify(fieldData),
     })
   }
 }
