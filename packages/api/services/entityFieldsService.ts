@@ -1,4 +1,5 @@
 import { EntityFieldsRepository } from '../repositories/entityFieldsRepository'
+import { runDbPull } from './prismaService'
 
 export class EntityFieldsService {
   static async getFields(entityID: string) {
@@ -33,7 +34,13 @@ export class EntityFieldsService {
 
       if (responseAdd) {
         const savedField = await EntityFieldsRepository.saveField(entityID, fieldData)
-        return savedField
+        const dbPullResult = await runDbPull()
+        if (!dbPullResult.success) {
+          return { error: 'Failed to synchronize schema', statusCode: 500 }
+        }
+        else {
+          return savedField
+        }
       }
 
       return null

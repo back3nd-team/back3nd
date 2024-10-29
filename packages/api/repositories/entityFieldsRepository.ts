@@ -9,6 +9,9 @@ export class EntityFieldsRepository {
       where: {
         entity_id: entityId,
       },
+      orderBy: {
+        created_at: 'desc',
+      },
     })
   }
 
@@ -92,7 +95,6 @@ export class EntityFieldsRepository {
         ALTER TABLE ${tableName}
         ADD COLUMN ${fieldName} ${postgresFieldType} ${uniqueClause} ${defaultValueClause}
       `
-
       await prisma.$executeRawUnsafe(alterTableQuery)
       return `Column ${fieldName} added to ${tableName}`
     }

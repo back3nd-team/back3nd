@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Field } from '@/composables/types/types.ts'
+import { columnOptions } from '@/utils/columnOptions'
+import { handleColumnTypeChange } from '@/utils/columnTypeUtils'
 import { z } from 'zod'
 
 const props = defineProps<{
@@ -16,9 +18,10 @@ const fieldSchema = z.string()
 const columnName = ref('')
 const columnType = ref<Field['columnType']>('String')
 const defaultValue = ref('')
-const size = ref(125)
+const size = ref<number | undefined>(undefined)
 const placeholder = ref('')
 const isSubmitting = ref(false)
+const isUnique = ref(false)
 const alertMessage = ref('')
 const alertType = ref<'info' | 'error'>('info') // Variável para tipo de alerta
 
@@ -51,6 +54,7 @@ async function submitField() {
     columnType: columnType.value as Field['columnType'],
     defaultValue: defaultValue.value || undefined,
     placeholder: placeholder.value || undefined,
+    isUnique: isUnique.value,
     size: size.value || 125,
     entity_id: entityId.value,
   }
@@ -84,12 +88,15 @@ function clearForm() {
   columnName.value = ''
   columnType.value = 'String'
   defaultValue.value = ''
-  size.value = 0
+  size.value = undefined
   placeholder.value = ''
   errors.value = {
     columnName: '',
   }
   alertMessage.value = ''
+}
+function updateDefaultValue() {
+  defaultValue.value = handleColumnTypeChange(columnType.value) ?? ''
 }
 
 defineExpose({
@@ -122,28 +129,13 @@ defineExpose({
         <USelect
           v-model="columnType"
           size="xl"
-          :options="[
-            'String',
-            'UUID',
-            'Integer',
-            'Big Integer',
-            'Float',
-            'Double',
-            'Decimal',
-            'Text',
-            'Boolean',
-            'Date',
-            'Timestamp',
-            'Time',
-            'JSON',
-            'JSONB',
-            'Point',
-            'Line',
-            'Polygon',
-            'Bytea',
-          ]"
+          :options="columnOptions"
           class="w-full"
+          @change="updateDefaultValue"
         />
+      </UFormGroup>
+      <UFormGroup label="Is Unique">
+        <UCheckbox v-model="isUnique" label="Make field unique" />
       </UFormGroup>
 
       <UFormGroup label="Field Size (Optional)">
@@ -152,6 +144,10 @@ defineExpose({
 
       <UFormGroup label="Default Value (Optional)">
         <UInput v-model="defaultValue" size="xl" placeholder="Default value (optional)" class="w-full" />
+      </UFormGroup>
+
+      <UFormGroup label="Placeholder (Optional)">
+        <UInput v-model="placeholder" size="xl" placeholder="Field placeholder (optional)" class="w-full" />
       </UFormGroup>
     </div>
   </div>

@@ -4,6 +4,7 @@ export interface Field {
   columnType: 'String' | 'UUID' | 'Big Integer' | 'Integer' | 'Float' | 'Decimal' | 'Text'
   size?: number | null
   placeholder?: string
+  isUnique: boolean
   defaultValue?: string
   entity_id: string
   created_at?: Date

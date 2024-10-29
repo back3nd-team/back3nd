@@ -1,0 +1,21 @@
+// Options available for the USelect component
+export const columnOptions = [
+  'String',
+  'UUID',
+  'Integer',
+  'Big Integer',
+  'Float',
+  'Double',
+  'Decimal',
+  'Text',
+  'Boolean',
+  'Date',
+  'Timestamp',
+  'Time',
+  'JSON',
+  'JSONB',
+  'Point',
+  'Line',
+  'Polygon',
+  'Bytea',
+]

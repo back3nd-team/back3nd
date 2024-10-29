@@ -21,8 +21,19 @@ const columns = ref([
 
 const selectedColumns = ref([...columns.value])
 const isOpen = ref(false)
-const fieldToDeleteIndex = ref(null)
+const fieldToDeleteIndex = ref<number | null>(null)
+const q = ref('')
+const filteredFields = computed<{ [key: string]: any }[]>(() => {
+  if (!q.value) {
+    return fields.value as { [key: string]: any }[]
+  }
 
+  return fields.value.filter((field: any) => {
+    return Object.values(field).some(value =>
+      String(value).toLowerCase().includes(q.value.toLowerCase()),
+    )
+  }) as { [key: string]: any }[]
+})
 function items(row: any) {
   return [
     [{
@@ -50,7 +61,9 @@ function confirmDeleteField(index: number) {
 
 function deleteField() {
   if (fieldToDeleteIndex.value !== null) {
-    props.onDeleteField(fieldToDeleteIndex.value)
+    if (props.onDeleteField) {
+      props.onDeleteField(fieldToDeleteIndex.value)
+    }
     isOpen.value = false
     fieldToDeleteIndex.value = null
   }
@@ -61,12 +74,12 @@ function deleteField() {
   <div>
     <div class="flex justify-between items-center px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
       <div class="flex space-x-4">
-        <UInput placeholder="Filter fields..." />
+        <UInput v-model="q" placeholder="Filter fields..." />
         <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
       </div>
     </div>
 
-    <UTable :rows="fields || []" :columns="selectedColumns">
+    <UTable :rows="filteredFields || []" :columns="selectedColumns">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
           {{ fields?.length || 0 }} rows in fields

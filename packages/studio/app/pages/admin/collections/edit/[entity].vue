@@ -8,7 +8,7 @@ definePageMeta({
   breadcrumb: [
     { label: 'Admin', to: '/admin' },
     { label: 'Collections', to: '/admin/collections/' },
-    { label: 'Fields', to: '/admin/collections/edit' },
+    { label: 'Fields', to: '' },
   ],
 })
 

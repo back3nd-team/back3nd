@@ -1,8 +1,18 @@
 model test_table {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   data_field String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  unico      String?   @unique @db.VarChar(125)
+  opa        DateTime? @default(dbgenerated("CURRENT_DATE")) @db.Date
+  asasas     String?   @db.VarChar(125)
+  teste      String?   @db.VarChar(125)
+  outro      String?   @db.VarChar(125)
+  asasasas   String?   @db.VarChar(125)
+  testee     String?   @db.VarChar(125)
+  asaawww    String?   @db.VarChar(125)
+  sdgsdfsdf  String?   @db.VarChar(125)
+  asdasd     String?   @db.VarChar(125)
 }
 
 model another {

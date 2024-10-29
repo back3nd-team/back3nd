@@ -57,28 +57,28 @@ model back3nd_permission {
 }
 
 model back3nd_entity {
-  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name               String               @unique
-  created_at         DateTime             @default(now())
-  updated_at         DateTime             @updatedAt
-  back3nd_permission back3nd_permission[]
-
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String                  @unique
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
   back3nd_entity_fields back3nd_entity_fields[]
+  back3nd_permission    back3nd_permission[]
 }
 
 model back3nd_entity_fields {
-  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   columnName     String
   columnType     String
   size           Int?
   placeholder    String?
   defaultValue   String?
-  entity_id      String @db.Uuid
-  created_at         DateTime             @default(now())
-  back3nd_entity back3nd_entity  @relation(fields: [entity_id], references: [id])
+  isUnique       Boolean
+  entity_id      String         @db.Uuid
+  created_at     DateTime       @default(now())
+  back3nd_entity back3nd_entity @relation(fields: [entity_id], references: [id])
 
-  @@index([entity_id])
   @@unique([entity_id, columnName])
+  @@index([entity_id])
 }
 
 model back3nd_password_reset {

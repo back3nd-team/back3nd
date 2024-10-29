@@ -84,6 +84,7 @@ CREATE TABLE "back3nd_entity_fields" (
     "size" INTEGER,
     "placeholder" TEXT,
     "defaultValue" TEXT,
+    "isUnique" BOOLEAN NOT NULL,
     "entity_id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
