@@ -1,0 +1,132 @@
+<script setup lang="ts">
+import { useCollectionList } from '@/composables/useCases/useCollectionList'
+
+const route = useRoute()
+const router = useRouter()
+const ENTITY_ID = route.params.entity as string
+definePageMeta({
+  title: 'Permissions',
+  breadcrumb: [
+    { label: 'Admin', to: '/admin' },
+    { label: 'Permissions', to: '/admin/collections/permissions' },
+  ],
+})
+
+const { collections, q, filteredCollections, getCollections } = useCollectionList()
+const processedPermissions = ref([])
+const columns = ref([
+  { label: 'Table Name', key: 'tableName' },
+  { label: 'Role', key: 'roleName' },
+  { label: 'Can Create', key: 'can_create' },
+  { label: 'Can Read', key: 'can_read' },
+  { label: 'Can Update', key: 'can_update' },
+  { label: 'Can Delete', key: 'can_delete' },
+  { label: 'Actions', key: 'actions' },
+])
+const selectedColumns = ref([...columns.value])
+const isOpen = ref(false)
+
+function items(row: any) {
+  return [
+    [{
+      label: 'Edit',
+      icon: 'i-heroicons-pencil-square-20-solid',
+      click: () => router.push(`${router.currentRoute.value.fullPath}/edit/${row.id}`),
+    }],
+    [{
+      label: 'Delete',
+      icon: 'i-heroicons-trash-20-solid',
+    }],
+  ]
+}
+
+function processPermissions() {
+  // Flatten the permissions data
+  processedPermissions.value = collections.value.flatMap((collection: any) => {
+    return collection.back3nd_permission.map((permission: any) => ({
+      tableName: collection.name,
+      roleName: permission.role.name,
+      can_create: permission.can_create,
+      can_read: permission.can_read,
+      can_update: permission.can_update,
+      can_delete: permission.can_delete,
+    }))
+  })
+}
+
+onMounted(() => {
+  getCollections().then(() => {
+    processPermissions()
+  })
+})
+</script>
+
+<template>
+  <div>
+    <div class="flex justify-between items-center px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex space-x-4">
+        <UInput v-model="q" placeholder="Filter permissions..." />
+        <USelectMenu v-model="selectedColumns" :options="columns" multiple placeholder="Columns" />
+      </div>
+      <div id="actions-buttons">
+        <UButton
+          icon="material-symbols:add-2-rounded"
+          size="md"
+          color="primary"
+          square
+          variant="solid"
+          @click="isOpen = true"
+        />
+      </div>
+    </div>
+
+    <UTable :rows="processedPermissions" :columns="selectedColumns">
+      <template #can_create-data="{ row }">
+        <span v-if="row.can_create">
+          <UIcon name="material-symbols:check-box" class="w-5 h-5" />
+        </span>
+        <span v-else>
+          <UIcon name="material-symbols:check-box-outline-blank-sharp" class="w-5 h-5" /> <!-- Ícone de x -->
+        </span>
+      </template>
+
+      <template #can_read-data="{ row }">
+        <span v-if="row.can_read">
+          <UIcon name="material-symbols:check-box" class="w-5 h-5" />
+        </span>
+        <span v-else>
+          <UIcon name="material-symbols:check-box-outline-blank-sharp" class="w-5 h-5" />
+        </span>
+      </template>
+
+      <template #can_update-data="{ row }">
+        <span v-if="row.can_update">
+          <UIcon name="material-symbols:check-box" class="w-5 h-5" />
+        </span>
+        <span v-else>
+          <UIcon name="material-symbols:check-box-outline-blank-sharp" class="w-5 h-5" />
+        </span>
+      </template>
+
+      <template #can_delete-data="{ row }">
+        <span v-if="row.can_delete">
+          <UIcon name="material-symbols:check-box" class="w-5 h-5" />
+        </span>
+        <span v-else>
+          <UIcon name="material-symbols:check-box-outline-blank-sharp" class="w-5 h-5" />
+        </span>
+      </template>
+
+      <template #actions-data="{ row }">
+        <UDropdown :items="items(row)">
+          <UButton
+            color="gray"
+            variant="ghost"
+            icon="i-heroicons-ellipsis-horizontal-20-solid"
+            class="w-8 h-8 flex justify-center items-center"
+          />
+        </UDropdown>
+      </template>
+    </UTable>
+  </div>
+</template>
