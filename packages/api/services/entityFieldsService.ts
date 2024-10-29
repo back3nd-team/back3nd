@@ -28,19 +28,8 @@ export class EntityFieldsService {
       throw new Error(`Field ${columnName} is already registered in back3nd_entity_fields for entity with ID ${entityID}.`)
     }
 
-    // Logar antes de chamar a função de adicionar coluna
-    console.log('Preparing to add field with params:', {
-      tableName,
-      columnName,
-      columnType,
-      isUnique,
-      size,
-      defaultValue,
-    })
-
     try {
       const responseAdd = await EntityFieldsRepository.addFieldToTable(tableName, columnName, columnType, isUnique, size, defaultValue)
-      console.log('responseAdd:', responseAdd)
 
       if (responseAdd) {
         const savedField = await EntityFieldsRepository.saveField(entityID, fieldData)

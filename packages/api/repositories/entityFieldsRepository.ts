@@ -85,7 +85,6 @@ export class EntityFieldsRepository {
       const postgresFieldType = mapFieldTypeToPostgreSQL(fieldType, size)
 
       const defaultValueClause = getDefaultValueClause(fieldType, defaultValue)
-      console.log('defaultValueClause:', defaultValueClause)
 
       const uniqueClause = isUnique ? 'UNIQUE' : ''
 
@@ -93,10 +92,8 @@ export class EntityFieldsRepository {
         ALTER TABLE ${tableName}
         ADD COLUMN ${fieldName} ${postgresFieldType} ${uniqueClause} ${defaultValueClause}
       `
-      console.log('alterTableQuery:', alterTableQuery)
 
-      const queryResponse = await prisma.$executeRawUnsafe(alterTableQuery)
-      console.log('Query response:', queryResponse)
+      await prisma.$executeRawUnsafe(alterTableQuery)
       return `Column ${fieldName} added to ${tableName}`
     }
     catch (error: any) {
