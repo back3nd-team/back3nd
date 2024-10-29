@@ -9,7 +9,7 @@ export class EntityFieldsController {
       return c.json(fields)
     }
     catch {
-      return c.json({ error: 'Yikes! We hit a snag while fetching those entity fields. Give it another go in a bit!' }, 500)
+      return c.json({ error: 'Yikes(1) We hit a snag while fetching those entity fields. Give it another go in a bit!' }, 500)
     }
   }
 
@@ -20,8 +20,9 @@ export class EntityFieldsController {
       const field = await EntityFieldsService.addField(entityID, fieldData)
       return c.json(field, 201)
     }
-    catch {
-      return c.json({ error: 'Yikes! We hit a snag while fetching those entity fields. Give it another go in a bit!' }, 500)
+    catch (error: any) {
+      console.error('Error creating entity field:', error)
+      return c.json({ error: 'Yikes(2) We hit a snag while creating the entity field. Give it another go in a bit!', message: error.message }, 500)
     }
   }
 }

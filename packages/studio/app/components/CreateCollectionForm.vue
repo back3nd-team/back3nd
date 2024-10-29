@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { CreateCollectionData } from '../composables/types/types'
-import { onMounted, ref } from 'vue'
 import { z } from 'zod'
 import { useCreateCollection } from '~/composables/useCases/useCreateCollection'
 

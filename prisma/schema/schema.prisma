@@ -70,6 +70,8 @@ model back3nd_entity_fields {
   id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   columnName     String
   columnType     String
+  size           Int?
+  placeholder    String?
   defaultValue   String?
   entity_id      String @db.Uuid
   created_at         DateTime             @default(now())

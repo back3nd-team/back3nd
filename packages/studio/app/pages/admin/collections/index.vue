@@ -107,7 +107,6 @@ onMounted(() => {
       </template>
     </UTable>
 
-    <!-- Slideover com o CreateCollectionForm -->
     <USlideover :model-value="isOpen" @update:model-value="isOpen = false">
       <UCard class="flex flex-col h-full">
         <template #header>

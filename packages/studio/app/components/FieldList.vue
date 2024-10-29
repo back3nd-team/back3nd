@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -38,13 +37,17 @@ function items(row: any) {
     }],
   ]
 }
+function openModal() {
+  isOpen.value = true
+}
+
+defineExpose({ openModal })
 
 function confirmDeleteField(index: number) {
   fieldToDeleteIndex.value = index
   isOpen.value = true
 }
 
-// Função para executar a deleção
 function deleteField() {
   if (fieldToDeleteIndex.value !== null) {
     props.onDeleteField(fieldToDeleteIndex.value)
@@ -52,10 +55,6 @@ function deleteField() {
     fieldToDeleteIndex.value = null
   }
 }
-
-onMounted(() => {
-  // Se houver lógica adicional na montagem
-})
 </script>
 
 <template>
@@ -67,7 +66,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Tabela exibindo os campos -->
     <UTable :rows="fields || []" :columns="selectedColumns">
       <template #caption>
         <caption id="rows" class="text-xs text-gray-500 text-right pr-4 py-3">
@@ -82,7 +80,6 @@ onMounted(() => {
         </div>
       </template>
 
-      <!-- Template de ações (editar e deletar) -->
       <template #actions-data="{ row }">
         <UDropdown :items="items(row)">
           <UButton
@@ -95,7 +92,6 @@ onMounted(() => {
       </template>
     </UTable>
 
-    <!-- Modal de Confirmação para Deleção -->
     <UModal v-model="isOpen" prevent-close>
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header>

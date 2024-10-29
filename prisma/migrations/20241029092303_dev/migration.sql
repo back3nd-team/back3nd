@@ -81,6 +81,8 @@ CREATE TABLE "back3nd_entity_fields" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "columnName" TEXT NOT NULL,
     "columnType" TEXT NOT NULL,
+    "size" INTEGER,
+    "placeholder" TEXT,
     "defaultValue" TEXT,
     "entity_id" UUID NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
