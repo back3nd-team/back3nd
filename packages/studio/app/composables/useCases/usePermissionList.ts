@@ -1,7 +1,6 @@
-import { useGetCollections } from './useGetCollections'
 import { useGetPermissions } from './useGetPermissions'
 
-export function useCollectionList() {
+export function usePermissionList() {
   const collections = ref<{ [key: string]: any }[]>([])
   const q = ref('')
 
@@ -15,16 +14,10 @@ export function useCollectionList() {
     )
   })
 
-  async function getCollections() {
+  async function getPermissionCollection(collectionId: string) {
     try {
-      const rawData = await useGetCollections()
-      collections.value = (rawData as unknown as { userCollections: any[] }).userCollections.map((collection: any) => {
-        const roles = collection.back3nd_permission.map((permission: any) => permission.role.name).join(', ')
-        return {
-          ...collection,
-          roles,
-        }
-      })
+      collections.value = await useGetPermissions(collectionId)
+      return collections.value
     }
     catch (error) {
       console.error(error)
@@ -35,6 +28,6 @@ export function useCollectionList() {
     collections,
     q,
     filteredCollections,
-    getCollections,
+    getPermissionCollection,
   }
 }

@@ -179,6 +179,12 @@ class ApiClient {
     })
   }
 
+  public async getPermissions(collectionId: string): Promise<any> {
+    return this.request<any>(`/collections/${collectionId}/permissions`, {
+      method: 'GET',
+    })
+  }
+
   public async createCollection(collection: CreateCollectionData): Promise<void> {
     return await this.request('/collections', {
       method: 'POST',

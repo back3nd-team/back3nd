@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useCollectionList } from '@/composables/useCases/useCollectionList'
+import CreatePermissionForm from '@/components/CreatePermissionForm.vue'
+import { usePermissionList } from '@/composables/useCases/usePermissionList'
 
 const route = useRoute()
 const router = useRouter()
@@ -8,11 +9,12 @@ definePageMeta({
   title: 'Permissions',
   breadcrumb: [
     { label: 'Admin', to: '/admin' },
-    { label: 'Permissions', to: '/admin/collections/permissions' },
+    { label: 'Collections', to: '/admin/collections' },
+    { label: 'Permissions' },
   ],
 })
 
-const { collections, q, filteredCollections, getCollections } = useCollectionList()
+const { collections, q, getPermissionCollection } = usePermissionList()
 const processedPermissions = ref([])
 const columns = ref([
   { label: 'Table Name', key: 'tableName' },
@@ -41,21 +43,37 @@ function items(row: any) {
 }
 
 function processPermissions() {
-  // Flatten the permissions data
-  processedPermissions.value = collections.value.flatMap((collection: any) => {
-    return collection.back3nd_permission.map((permission: any) => ({
-      tableName: collection.name,
-      roleName: permission.role.name,
-      can_create: permission.can_create,
-      can_read: permission.can_read,
-      can_update: permission.can_update,
-      can_delete: permission.can_delete,
-    }))
-  })
+  processedPermissions.value = collections.value.map((permission: any) => ({
+    tableName: permission.table.name,
+    roleName: permission.role.name,
+    can_create: permission.can_create,
+    can_read: permission.can_read,
+    can_update: permission.can_update,
+    can_delete: permission.can_delete,
+  }))
+}
+
+const permissionFormRef = ref<InstanceType<typeof CreatePermissionForm> | null>(null)
+
+async function savePermission() {
+  if (permissionFormRef.value) {
+    permissionFormRef.value.submitPermission()
+  }
+}
+
+function clearPermission() {
+  if (permissionFormRef.value) {
+    permissionFormRef.value.clearForm()
+  }
+}
+
+function handlePermissionCreated() {
+  isOpen.value = false
+  getPermissionCollection(ENTITY_ID)
 }
 
 onMounted(() => {
-  getCollections().then(() => {
+  getPermissionCollection(ENTITY_ID).then(() => {
     processPermissions()
   })
 })
@@ -86,7 +104,7 @@ onMounted(() => {
           <UIcon name="material-symbols:check-box" class="w-5 h-5" />
         </span>
         <span v-else>
-          <UIcon name="material-symbols:check-box-outline-blank-sharp" class="w-5 h-5" /> <!-- Ícone de x -->
+          <UIcon name="material-symbols:check-box-outline-blank-sharp" class="w-5 h-5" />
         </span>
       </template>
 
@@ -128,5 +146,36 @@ onMounted(() => {
         </UDropdown>
       </template>
     </UTable>
+
+    <USlideover :model-value="isOpen" @update:model-value="isOpen = false">
+      <UCard class="flex flex-col h-full">
+        <template #header>
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium">
+              Create New Permission
+            </h3>
+            <UButton
+              id="close-button"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-x-mark-20-solid"
+              class="-my-1"
+              @click="isOpen = false"
+            />
+          </div>
+        </template>
+
+        <div>
+          <CreatePermissionForm ref="permissionFormRef" :collection="collections" @permission-created="handlePermissionCreated" />
+        </div>
+
+        <template #footer>
+          <div class="flex justify-end space-x-4 p-4">
+            <UButton label="Clear" color="gray" @click="clearPermission" />
+            <UButton label="Save" color="primary" @click="savePermission" />
+          </div>
+        </template>
+      </UCard>
+    </USlideover>
   </div>
 </template>

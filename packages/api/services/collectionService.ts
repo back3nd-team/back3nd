@@ -167,3 +167,17 @@ export async function deleteCollection(collectionName: string) {
     return { error: 'Database error', statusCode: 500 }
   }
 }
+
+export async function getPermissions(collectionId: string) {
+  return prisma.back3nd_permission.findMany({
+    where: {
+      table: {
+        id: collectionId,
+      },
+    },
+    include: {
+      role: true,
+      table: true,
+    },
+  })
+}
