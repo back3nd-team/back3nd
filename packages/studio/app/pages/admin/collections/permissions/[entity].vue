@@ -15,7 +15,16 @@ definePageMeta({
 })
 
 const { collections, q, getPermissionCollection } = usePermissionList()
-const processedPermissions = ref([])
+interface Permission {
+  tableName: string
+  roleName: string
+  can_create: boolean
+  can_read: boolean
+  can_update: boolean
+  can_delete: boolean
+}
+
+const processedPermissions = ref<Permission[]>([])
 const columns = ref([
   { label: 'Table Name', key: 'tableName' },
   { label: 'Role', key: 'roleName' },
@@ -27,6 +36,8 @@ const columns = ref([
 ])
 const selectedColumns = ref([...columns.value])
 const isOpen = ref(false)
+const isDeleteModalOpen = ref(false)
+const permissionToDelete = ref(null)
 
 function items(row: any) {
   return [
@@ -38,6 +49,10 @@ function items(row: any) {
     [{
       label: 'Delete',
       icon: 'i-heroicons-trash-20-solid',
+      click: () => {
+        permissionToDelete.value = row
+        isDeleteModalOpen.value = true
+      },
     }],
   ]
 }
@@ -73,6 +88,32 @@ function handlePermissionCreated() {
     .then(() => {
       processPermissions()
     })
+}
+function findRoleId(tableName: string, roleName: string): string | null {
+  const permission = collections.value.find((p: any) => p.table.name === tableName && p.role.name === roleName)
+  return permission ? permission.role_id : null
+}
+async function deletePermission() {
+  if (permissionToDelete.value) {
+    try {
+      const { tableName, roleName } = permissionToDelete.value
+      const role_id = findRoleId(tableName, roleName)
+
+      if (role_id && ENTITY_ID) {
+        await useApiClient.deletePermission(role_id, ENTITY_ID)
+        isDeleteModalOpen.value = false
+        getPermissionCollection(ENTITY_ID).then(() => {
+          processPermissions()
+        })
+      }
+      else {
+        console.error('Role ID or Table ID not found')
+      }
+    }
+    catch (error) {
+      console.error('Error deleting permission:', error)
+    }
+  }
 }
 
 onMounted(() => {
@@ -169,7 +210,7 @@ onMounted(() => {
         </template>
 
         <div>
-          <CreatePermissionForm ref="permissionFormRef" :collection="collections" @permission-created="handlePermissionCreated" />
+          <CreatePermissionForm ref="permissionFormRef" :entity-i-d="ENTITY_ID" @permission-created="handlePermissionCreated" />
         </div>
 
         <template #footer>
@@ -180,5 +221,33 @@ onMounted(() => {
         </template>
       </UCard>
     </USlideover>
+
+    <UModal v-model="isDeleteModalOpen" prevent-close>
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+              Confirm Delete
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isDeleteModalOpen = false" />
+          </div>
+        </template>
+
+        <div class="p-4">
+          <p>Are you sure you want to delete this permission? This action cannot be undone.</p>
+        </div>
+
+        <template #footer>
+          <div class="flex justify-end space-x-4 p-4">
+            <UButton color="gray" @click="isDeleteModalOpen = false">
+              Cancel
+            </UButton>
+            <UButton color="red" @click="deletePermission">
+              Delete
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>

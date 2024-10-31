@@ -194,3 +194,40 @@ export async function createPermission(data: any) {
     throw new Error(`Failed to create permission: ${error.message}`)
   }
 }
+export async function updatePermission(role_id: string, table_id: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean) {
+  try {
+    const updatedPermission = await prisma.back3nd_permission.updateMany({
+      where: {
+        role_id,
+        table_id,
+      },
+      data: {
+        can_create,
+        can_read,
+        can_update,
+        can_delete,
+      },
+    })
+    return updatedPermission
+  }
+  catch (error: any) {
+    throw new Error(`Failed to update permission: ${error.message}`)
+  }
+}
+export async function deletePermission(role_id: string, table_id: string) {
+  try {
+    const response = await prisma.back3nd_permission.deleteMany({
+      where: {
+        role_id,
+        table_id,
+      },
+    })
+    if (response.count === 0) {
+      throw new Error('Permission not found')
+    }
+    return { message: 'Permission deleted successfully' }
+  }
+  catch (error: any) {
+    throw new Error(`Failed to delete permission: ${error.message}`)
+  }
+}

@@ -1,36 +1,42 @@
 <script setup lang="ts">
-import { useCollectionList } from '~/composables/useCases/useCollectionList'
-import { useCreatePermission } from '~/composables/useCases/useCreatePermission'
+import { useUpdatePermission } from '@/composables/useCases/useUpdatePermission'
+
+interface CollectionItem {
+  table?: {
+    name?: string
+    id?: string
+  }
+}
 
 const props = defineProps<{
-  entityID: string
+  collection: CollectionItem[]
+  initialPermissions: {
+    role_id: string
+    can_create: boolean
+    can_read: boolean
+    can_update: boolean
+    can_delete: boolean
+  }
 }>()
-
-const emit = defineEmits(['permissionCreated'])
-
+const emit = defineEmits(['permissionUpdated'])
 const roles = ref<any[]>([])
-const selectedRole = ref('')
-const canCreate = ref(false)
-const canRead = ref(false)
-const canUpdate = ref(false)
-const canDelete = ref(false)
-const tableName = ref('')
-const tableId = ref('')
+const selectedRole = ref(props.initialPermissions.role_id)
+const canCreate = ref(props.initialPermissions.can_create)
+const canRead = ref(props.initialPermissions.can_read)
+const canUpdate = ref(props.initialPermissions.can_update)
+const canDelete = ref(props.initialPermissions.can_delete)
+const tableName = computed(() => props.collection[0]?.table?.name || '')
+const tableId = computed(() => props.collection[0]?.table?.id || '')
 const alertMessage = ref(`Configure the permissions for the selected role and for ${tableName.value}`)
 const alertType = ref<'info' | 'error'>('info')
 const isSubmitting = ref(false)
 const distinctRoles = ref()
-const collections = ref<any[]>([])
+
 const errors = ref<Record<string, string>>({
   selectedRole: '',
 })
 
-async function submitPermission() {
-  if (!selectedRole.value) {
-    errors.value.selectedRole = 'Role is required'
-    return
-  }
-
+async function updatePermission() {
   const permissionData = {
     role_id: selectedRole.value,
     table_id: tableId.value,
@@ -43,7 +49,7 @@ async function submitPermission() {
   isSubmitting.value = true
 
   try {
-    const response: any = await useCreatePermission(
+    const response: any = await useUpdatePermission(
       permissionData.role_id,
       permissionData.table_id,
       permissionData.can_create,
@@ -52,30 +58,24 @@ async function submitPermission() {
       permissionData.can_delete,
     )
     if (response?.error) {
-      handleError(response.error)
+      alertMessage.value = `Error updating permission: ${response.error}`
+      alertType.value = 'error'
+      console.error('Error updating permission:', response.error)
     }
     else {
-      handleSuccess(permissionData)
+      alertMessage.value = 'Permission updated successfully!'
+      alertType.value = 'info'
     }
   }
-  catch (error: any) {
-    handleError(error.message || error)
+  catch (error) {
+    alertMessage.value = `Error updating permission: ${error}`
+    alertType.value = 'error'
+    console.error('Error updating permission:', error)
   }
   finally {
+    emit('permissionUpdated', permissionData)
     isSubmitting.value = false
   }
-}
-
-function handleError(error: string) {
-  alertMessage.value = `Error creating permission: ${error}`
-  alertType.value = 'error'
-  console.error('Error creating permission:', error)
-}
-
-function handleSuccess(permissionData: any) {
-  alertMessage.value = 'Permission created successfully!'
-  alertType.value = 'info'
-  emit('permissionCreated', permissionData)
 }
 
 function clearForm() {
@@ -91,24 +91,23 @@ function clearForm() {
 }
 
 defineExpose({
-  submitPermission,
+  updatePermission,
   clearForm,
 })
 
-async function fetchCollection() {
-  const { data } = await useApiClient.getCollection(props.entityID)
-  collections.value = data.back3nd_permission
-  tableName.value = data.name
-  tableId.value = data.id
+async function listRoles() {
   roles.value = await useApiClient.listRoles()
-  const existingRoleIds = new Set(collections.value.map((c: any) => c.role_id))
+  extractDistinctRoles()
+}
+
+function extractDistinctRoles() {
+  const existingRoleIds = new Set(props.collection.map((c: any) => c.role?.id))
   distinctRoles.value = roles.value
     .filter((role: any) => !existingRoleIds.has(role.id))
     .map((role: any) => ({ id: role.id, name: role.name }))
 }
-
-onMounted(async () => {
-  await fetchCollection()
+onMounted(() => {
+  listRoles()
 })
 </script>
 
@@ -156,6 +155,11 @@ onMounted(async () => {
       <UFormGroup label="Can Delete">
         <UCheckbox v-model="canDelete" label="Allow delete" />
       </UFormGroup>
+    </div>
+    <div class="mt-6">
+      <UButton :disabled="isSubmitting" @click="updatePermission">
+        Update Permission
+      </UButton>
     </div>
   </div>
 </template>
