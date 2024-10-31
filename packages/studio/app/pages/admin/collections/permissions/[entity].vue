@@ -70,6 +70,9 @@ function clearPermission() {
 function handlePermissionCreated() {
   isOpen.value = false
   getPermissionCollection(ENTITY_ID)
+    .then(() => {
+      processPermissions()
+    })
 }
 
 onMounted(() => {

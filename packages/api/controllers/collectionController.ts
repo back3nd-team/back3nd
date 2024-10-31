@@ -1,6 +1,6 @@
 import type { back3nd_entity } from '@prisma/client'
 import type { Context } from 'hono'
-import { createCollection, deleteCollection, getCollectionDetails, getPermissions, listCollections, updateCollection } from '../services/collectionService'
+import { createCollection, createPermission, deleteCollection, getCollectionDetails, getPermissions, listCollections, updateCollection } from '../services/collectionService'
 
 export class CollectionController {
   static async list(c: Context) {
@@ -37,5 +37,16 @@ export class CollectionController {
     const collectionId = ctx.req.param('collection')
     const permissions = await getPermissions(collectionId)
     return ctx.json(permissions)
+  }
+
+  static async createPermission(ctx: Context) {
+    try {
+      const data = await ctx.req.json()
+      const permissions = await createPermission(data)
+      return ctx.json(permissions)
+    }
+    catch (error: any) {
+      return ctx.json({ error: 'Internal Server Error', message: error.message }, 500)
+    }
   }
 }

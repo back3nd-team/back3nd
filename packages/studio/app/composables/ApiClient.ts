@@ -185,6 +185,20 @@ class ApiClient {
     })
   }
 
+  public async createPermission(role_id: string, table_id: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean): Promise<any> {
+    return this.request<any>(`/collections/${table_id}/permissions`, {
+      method: 'POST',
+      body: JSON.stringify({
+        role_id,
+        table_id,
+        can_create,
+        can_read,
+        can_update,
+        can_delete,
+      }),
+    })
+  }
+
   public async createCollection(collection: CreateCollectionData): Promise<void> {
     return await this.request('/collections', {
       method: 'POST',

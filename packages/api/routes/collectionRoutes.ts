@@ -9,4 +9,5 @@ collectionRoutes.post('/', CollectionController.create)
 collectionRoutes.put('/:collection', CollectionController.update)
 collectionRoutes.delete('/:collection', CollectionController.delete)
 collectionRoutes.get('/:collection/permissions', CollectionController.getPermissions)
+collectionRoutes.post('/:collection/permissions', CollectionController.createPermission)
 export default collectionRoutes

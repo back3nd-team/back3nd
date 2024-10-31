@@ -141,14 +141,6 @@ async function createEntityWithPermission(roles: string[], entityName: string) {
   }
 }
 
-/**
- * Updates a collection in the database.
- *
- * @returns {Promise<{ message?: string, error?: string, statusCode?: number }>}
- * A promise that resolves to an object containing a success message or an error message with a status code.
- *
- * @TODO Implement collection update logic
- */
 export async function updateCollection() {
   try {
     return { message: 'Collection updated successfully' }
@@ -179,5 +171,26 @@ export async function getPermissions(collectionId: string) {
       role: true,
       table: true,
     },
+    orderBy: {
+      created_at: 'desc',
+    },
   })
+}
+export async function createPermission(data: any) {
+  try {
+    const permission = await prisma.back3nd_permission.create({
+      data: {
+        role_id: data.role_id,
+        table_id: data.table_id,
+        can_create: data.can_create,
+        can_read: data.can_read,
+        can_update: data.can_update,
+        can_delete: data.can_delete,
+      },
+    })
+    return permission
+  }
+  catch (error: any) {
+    throw new Error(`Failed to create permission: ${error.message}`)
+  }
 }

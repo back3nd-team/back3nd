@@ -2,12 +2,16 @@
 import { z } from 'zod'
 import { useCreatePermission } from '~/composables/useCases/useCreatePermission'
 
-const props = defineProps({
-  collection: {
-    type: Array,
-    required: true,
-  },
-})
+interface CollectionItem {
+  table?: {
+    name?: string
+    id?: string
+  }
+}
+
+const props = defineProps<{
+  collection: CollectionItem[]
+}>()
 const emit = defineEmits(['permissionCreated'])
 const roles = ref<any[]>([])
 const selectedRole = ref('')
@@ -16,6 +20,7 @@ const canRead = ref(false)
 const canUpdate = ref(false)
 const canDelete = ref(false)
 const tableName = computed(() => props.collection[0]?.table?.name || '')
+const tableId = computed(() => props.collection[0]?.table?.id || '')
 const alertMessage = ref(`Configure the permissions for the selected role and for ${tableName.value}`)
 const alertType = ref<'info' | 'error'>('info')
 const isSubmitting = ref(false)
@@ -25,37 +30,31 @@ const errors = ref<Record<string, string>>({
   selectedRole: '',
 })
 
-function validateField(value: unknown, fieldName: string) {
-  if (!value) {
-    errors.value[fieldName] = 'This field is required'
-    return false
-  }
-  errors.value[fieldName] = ''
-  return true
-}
-
 async function submitPermission() {
-  const isRoleValid = validateField(selectedRole.value, 'selectedRole')
-
-  if (!isRoleValid)
-    return
-
-  const permissionData: CreatePermissionData = {
+  const permissionData = {
     role_id: selectedRole.value,
-    table_id: props.tableId,
+    table_id: tableId.value,
     can_create: canCreate.value,
     can_read: canRead.value,
     can_update: canUpdate.value,
     can_delete: canDelete.value,
+    roles: roles.value,
   }
   isSubmitting.value = true
 
   try {
-    const response: any = await useCreatePermission(permissionData)
+    const response: any = await useCreatePermission(
+      permissionData.role_id,
+      permissionData.table_id,
+      permissionData.can_create,
+      permissionData.can_read,
+      permissionData.can_update,
+      permissionData.can_delete,
+    )
     if (response?.error) {
-      alertMessage.value = `Error creating permission: ${response.error}`
+      alertMessage.value = `Error creating permission1: ${response.error}`
       alertType.value = 'error'
-      console.error('Error creating permission:', response.error)
+      console.error('Error creating permission2:', response.error)
     }
     else {
       alertMessage.value = 'Permission created successfully!'
@@ -63,9 +62,9 @@ async function submitPermission() {
     }
   }
   catch (error) {
-    alertMessage.value = `Error creating permission: ${error}`
+    alertMessage.value = `Error creating permission3: ${error}`
     alertType.value = 'error'
-    console.error('Error creating permission:', error)
+    console.error('Error creating permission4:', error)
   }
   finally {
     emit('permissionCreated', permissionData)
@@ -118,7 +117,7 @@ onMounted(() => {
       <UFormGroup label="Table" :error="errors.selectedRole">
         <USelectMenu
           v-model="tableName"
-          :options="[tabSleName]"
+          :options="[tableName]"
           readonly
           placeholder="Select a role"
           size="xl"
