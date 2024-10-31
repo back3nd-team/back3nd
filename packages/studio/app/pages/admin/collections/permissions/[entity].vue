@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import CreatePermissionForm from '@/components/CreatePermissionForm.vue'
+import EditPermissionForm from '@/components/EditPermissionForm.vue'
 import { usePermissionList } from '@/composables/useCases/usePermissionList'
 
 const route = useRoute()
-const router = useRouter()
 const ENTITY_ID = route.params.entity as string
 definePageMeta({
   title: 'Permissions',
@@ -36,15 +36,20 @@ const columns = ref([
 ])
 const selectedColumns = ref([...columns.value])
 const isOpen = ref(false)
+const isEditOpen = ref(false)
 const isDeleteModalOpen = ref(false)
-const permissionToDelete = ref(null)
-
+const permissionToDelete = ref<any>(null)
+const permissionToEdit = ref<any>(null)
+const editPermissionFormRef = ref<InstanceType<typeof EditPermissionForm> | null>(null)
 function items(row: any) {
   return [
     [{
       label: 'Edit',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => router.push(`${router.currentRoute.value.fullPath}/edit/${row.id}`),
+      click: () => {
+        permissionToEdit.value = row
+        isEditOpen.value = true
+      },
     }],
     [{
       label: 'Delete',
@@ -68,6 +73,11 @@ function processPermissions() {
   }))
 }
 
+function findRoleId(tableName: string, roleName: string): string | null {
+  const permission = collections.value.find((p: any) => p.table.name === tableName && p.role.name === roleName)
+  return permission ? permission.role_id : null
+}
+
 const permissionFormRef = ref<InstanceType<typeof CreatePermissionForm> | null>(null)
 
 async function savePermission() {
@@ -89,18 +99,16 @@ function handlePermissionCreated() {
       processPermissions()
     })
 }
-function findRoleId(tableName: string, roleName: string): string | null {
-  const permission = collections.value.find((p: any) => p.table.name === tableName && p.role.name === roleName)
-  return permission ? permission.role_id : null
-}
+
 async function deletePermission() {
   if (permissionToDelete.value) {
     try {
       const { tableName, roleName } = permissionToDelete.value
       const role_id = findRoleId(tableName, roleName)
+      const table_id = collections.value.find((p: any) => p.table.name === tableName)?.table_id
 
-      if (role_id && ENTITY_ID) {
-        await useApiClient.deletePermission(role_id, ENTITY_ID)
+      if (role_id && table_id) {
+        await useApiClient.deletePermission(role_id, table_id)
         isDeleteModalOpen.value = false
         getPermissionCollection(ENTITY_ID).then(() => {
           processPermissions()
@@ -114,6 +122,19 @@ async function deletePermission() {
       console.error('Error deleting permission:', error)
     }
   }
+}
+function updatePermission() {
+  if (editPermissionFormRef.value) {
+    editPermissionFormRef.value.updatePermission()
+  }
+}
+
+function handlePermissionUpdated() {
+  isEditOpen.value = false
+  getPermissionCollection(ENTITY_ID)
+    .then(() => {
+      processPermissions()
+    })
 }
 
 onMounted(() => {
@@ -217,6 +238,44 @@ onMounted(() => {
           <div class="flex justify-end space-x-4 p-4">
             <UButton label="Clear" color="gray" @click="clearPermission" />
             <UButton label="Save" color="primary" @click="savePermission" />
+          </div>
+        </template>
+      </UCard>
+    </USlideover>
+
+    <USlideover :model-value="isEditOpen" @update:model-value="isEditOpen = false">
+      <UCard class="flex flex-col h-full">
+        <template #header>
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium">
+              Edit Permission
+            </h3>
+            <UButton
+              id="close-button"
+              color="gray"
+              variant="ghost"
+              icon="i-heroicons-x-mark-20-solid"
+              class="-my-1"
+              @click="isEditOpen = false"
+            />
+          </div>
+        </template>
+
+        <div>
+          <EditPermissionForm
+            v-if="permissionToEdit"
+            ref="editPermissionFormRef"
+            :table-id="ENTITY_ID"
+            :role-id="findRoleId(permissionToEdit.tableName, permissionToEdit.roleName)"
+            @permission-updated="handlePermissionUpdated"
+          />
+        </div>
+
+        <!-- Adicionar o botão Save no footer do USlideover de edição -->
+        <template #footer>
+          <div class="flex justify-end space-x-4 p-4">
+            <UButton label="Close" color="gray" @click="isEditOpen = false" />
+            <UButton label="Save" color="primary" @click="updatePermission" />
           </div>
         </template>
       </UCard>

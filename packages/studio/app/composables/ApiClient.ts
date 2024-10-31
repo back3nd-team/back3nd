@@ -196,7 +196,7 @@ class ApiClient {
   }
 
   public async updatePermission(role_id: string, table_id: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean): Promise<any> {
-    return this.request<any>(`/collections/${table_id}/permissions/${role_id}`, {
+    return this.request<any>(`/collections/${table_id}/permissions`, {
       method: 'PUT',
       body: JSON.stringify({
         can_create,
