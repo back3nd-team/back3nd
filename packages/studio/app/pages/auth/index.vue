@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/store/authStore'
+
 import { z } from 'zod'
 
 definePageMeta({
   layout: 'auth',
 })
 
+const authStore = useAuthStore()
 const state = ref({
   email: '',
   password: '',
@@ -39,6 +42,21 @@ async function login() {
 </script>
 
 <template>
+  <div v-if="authStore.token">
+    <p>User is connected</p>
+    <p>Token: {{ authStore.token }}</p>
+    <p>User: {{ authStore.user }}</p>
+    <UButton
+      type="button"
+      block
+      label="Logout"
+      size="lg"
+      @click="authStore.logout"
+    />
+  </div>
+  <div v-else>
+    <p>User is not connected</p>
+  </div>
   <UForm :state="state" :error="Object.keys(errors).length > 0" @submit.prevent="login">
     <UFormGroup label="E-mail" :error="errors.email?.[0]" class="mb-4">
       <UInput

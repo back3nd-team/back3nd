@@ -50,9 +50,20 @@ export class AuthController {
       if (!validPassword)
         return c.json({ message: 'Invalid password' }, 401)
 
-      const role = user.roles.map(r => r.role_id)
-      const token = await AuthService.generateToken({ sub: user.email, role: role[0] })
-
+      delete (user as { password?: string }).password
+      delete (user as { reset_token?: string }).reset_token
+      const tokenPayload = {
+        sub: user.id,
+        name: user.name,
+        email: user.email,
+        roles: user.roles.map(role => ({
+          id: role.id,
+          role_id: role.role_id,
+        })),
+        iss: 'back3nd',
+        aud: 'back3nd-studio',
+      }
+      const token = await AuthService.generateToken(tokenPayload)
       return c.json({ token })
     }
     catch (error: any) {
@@ -65,8 +76,7 @@ export class AuthController {
 
     const newToken = await AuthService.generateToken({
       sub: user.sub,
-      role: user.role,
-    }, 2220) // 37 minutes
+    }, 2220)
 
     return c.json({ token: newToken })
   }

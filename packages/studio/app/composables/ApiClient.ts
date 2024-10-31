@@ -85,17 +85,13 @@ class ApiClient {
   }
 
   public async logout(): Promise<void> {
-    await this.request('/auth/logout', {
-      method: 'POST',
-    })
-
     const pinia = getActivePinia()
     if (!pinia) {
       throw new Error('Pinia is not active! Ensure Pinia is properly initialized.')
     }
 
     const authStore = useAuthStore(pinia)
-    authStore.setToken(null)
+    authStore.clearAuthData()
     authStore.user = null
   }
 

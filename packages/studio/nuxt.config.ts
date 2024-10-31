@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
 
@@ -6,7 +7,6 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
   hooks: {
-    // Define `@nuxt/ui` components as global to use them in `.md` (feel free to add those you need)
     'components:extend': (components) => {
       const globals = components.filter(c => ['UButton'].includes(c.pascalName))
 

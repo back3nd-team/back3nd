@@ -18,13 +18,13 @@ const accountLinks = [
   {
     label: 'Logout',
     icon: 'lets-icons:sign-out-circle',
-    action: logout,
+    click: logout,
   },
 ]
 
 function logout() {
   authStore.logout()
-  router.push('/login')
+  router.push('/auth')
 }
 </script>
 
@@ -38,6 +38,7 @@ function logout() {
     :trailing="false"
     @click="toggleSettings"
   />
+
   <transition name="expand" mode="out-in">
     <UVerticalNavigation v-if="showSettings" :links="accountLinks" class="mt-2" />
   </transition>

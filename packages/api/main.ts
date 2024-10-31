@@ -35,10 +35,8 @@ app.route('/fields', entityFieldsRoutes)
 
 app.get('/me', (c: Context) => {
   const user = c.get('user')
-  return c.json({ message: `Hello, ${user.sub}`, role: user.role })
+  return c.json(user)
 })
-
-app.get('/', c => c.text('Alf Things'))
 
 app.notFound((c: Context) => {
   return c.json({ error: 'Not Found', message: 'The requested resource was not found' }, 404)
