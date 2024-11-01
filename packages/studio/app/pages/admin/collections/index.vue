@@ -31,6 +31,7 @@ function items(row: any) {
     }, {
       label: 'Permissions',
       icon: 'eos-icons:role-binding',
+      click: () => router.push(`${router.currentRoute.value.fullPath}/permissions/${row.id}`),
     }],
     [{
       label: 'Delete',
