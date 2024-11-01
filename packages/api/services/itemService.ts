@@ -213,3 +213,64 @@ export async function listCollectionsForUser(userId: string) {
     return { error: 'Database error', statusCode: 500 }
   }
 }
+
+/**
+ * Service to create an item in a specific collection.
+ * @param collectionName The name of the collection
+ * @param itemData The data of the item to create
+ * @returns The created item or an error object
+ */
+export async function createItemInCollection(collectionName: string, itemData: any) {
+  if (!isValidCollectionName(collectionName)) {
+    return { error: 'Invalid collection name', statusCode: 400 }
+  }
+
+  try {
+    const createdItem = await prisma.$queryRawUnsafe(`INSERT INTO ${collectionName} (${Object.keys(itemData).join(', ')}) VALUES (${Object.values(itemData).map(value => `'${value}'`).join(', ')}) RETURNING *`)
+    return { data: createdItem }
+  }
+  catch {
+    return { error: 'Database error', statusCode: 500 }
+  }
+}
+
+/**
+ * Service to update an item in a specific collection.
+ * @param collectionName The name of the collection
+ * @param itemId The ID of the item to update
+ * @param itemData The data of the item to update
+ * @returns The updated item or an error object
+ */
+export async function updateItemInCollection(collectionName: string, itemId: string, itemData: any) {
+  if (!isValidCollectionName(collectionName)) {
+    return { error: 'Invalid collection name', statusCode: 400 }
+  }
+
+  try {
+    const updatedItem = await prisma.$queryRawUnsafe(`UPDATE ${collectionName} SET ${Object.entries(itemData).map(([key, value]) => `${key} = '${value}'`).join(', ')} WHERE id = '${itemId}' RETURNING *`)
+    return { data: updatedItem }
+  }
+  catch {
+    return { error: 'Database error', statusCode: 500 }
+  }
+}
+
+/**
+ * Service to delete an item from a specific collection.
+ * @param collectionName The name of the collection
+ * @param itemId The ID of the item to delete
+ * @returns A success message or an error object
+ */
+export async function deleteItemFromCollection(collectionName: string, itemId: string) {
+  if (!isValidCollectionName(collectionName)) {
+    return { error: 'Invalid collection name', statusCode: 400 }
+  }
+
+  try {
+    await prisma.$queryRawUnsafe(`DELETE FROM ${collectionName} WHERE id = '${itemId}'`)
+    return { message: 'Item deleted successfully' }
+  }
+  catch {
+    return { error: 'Database error', statusCode: 500 }
+  }
+}

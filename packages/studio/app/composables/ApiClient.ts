@@ -199,6 +199,8 @@ class ApiClient {
     return this.request<any>(`/collections/${table_id}/permissions`, {
       method: 'PUT',
       body: JSON.stringify({
+        table_id,
+        role_id,
         can_create,
         can_read,
         can_update,

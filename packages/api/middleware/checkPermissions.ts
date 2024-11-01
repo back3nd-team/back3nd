@@ -11,13 +11,14 @@ const prisma = new PrismaClient()
 export function checkPermissions(tableName: string, permissionType: keyof { can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean }) {
   return async (c: Context, next: Next) => {
     const user = c.get('user')
-
-    if (!user || !user.role) {
+    if (!user || !user.roles || user.roles.length === 0) {
       return c.json({ error: 'User or role not found' }, 403)
     }
 
+    const userRole = user.roles[0] // Assuming the user has only one role
+
     const role = await prisma.back3nd_role.findUnique({
-      where: { id: user.role },
+      where: { id: userRole.role_id },
     })
 
     if (!role) {
