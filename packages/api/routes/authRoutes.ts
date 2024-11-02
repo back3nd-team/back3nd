@@ -6,34 +6,45 @@ import { ErrorSchema } from '../schemas/errorSchema'
 
 const authRoutes = new OpenAPIHono()
 
-authRoutes.openapi(
-  createRoute({
-    method: 'post',
-    path: '/register',
-    request: {
-      body: {
-        content: {
-          'application/json': { schema: RegisterSchema },
-        },
-      },
+authRoutes.openapi({
+  info: {
+    title: 'Auth API',
+    version: '1.0.0',
+  },
+  servers: [
+    {
+      url: 'http://localhost:3000',
     },
-    responses: {
-      200: {
-        content: {
-          'application/json': { schema: RegisterResponseSchema },
+  ],
+  paths: {
+    '/register': createRoute({
+      method: 'post',
+      path: '/register',
+      request: {
+        body: {
+          content: {
+            'application/json': { schema: RegisterSchema },
+          },
         },
-        description: 'User registration successful with JWT token response',
       },
-      400: {
-        content: {
-          'application/json': { schema: ErrorSchema },
+      responses: {
+        200: {
+          content: {
+            'application/json': { schema: RegisterResponseSchema },
+          },
+          description: 'User registration successful with JWT token response',
         },
-        description: 'Bad Request - Validation errors for registration',
+        400: {
+          content: {
+            'application/json': { schema: ErrorSchema },
+          },
+          description: 'Bad Request - Validation errors for registration',
+        },
       },
-    },
-  }),
-  AuthController.register,
-)
+      handler: AuthController.register,
+    }),
+  },
+})
 authRoutes.post('/login', AuthController.login)
 authRoutes.post('/renew', authMiddleware, AuthController.renewToken)
 
