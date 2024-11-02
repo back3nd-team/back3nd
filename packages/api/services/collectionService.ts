@@ -141,14 +141,6 @@ async function createEntityWithPermission(roles: string[], entityName: string) {
   }
 }
 
-/**
- * Updates a collection in the database.
- *
- * @returns {Promise<{ message?: string, error?: string, statusCode?: number }>}
- * A promise that resolves to an object containing a success message or an error message with a status code.
- *
- * @TODO Implement collection update logic
- */
 export async function updateCollection() {
   try {
     return { message: 'Collection updated successfully' }
@@ -165,5 +157,77 @@ export async function deleteCollection(collectionName: string) {
   }
   catch {
     return { error: 'Database error', statusCode: 500 }
+  }
+}
+
+export async function getPermissions(collectionId: string) {
+  return prisma.back3nd_permission.findMany({
+    where: {
+      table: {
+        id: collectionId,
+      },
+    },
+    include: {
+      role: true,
+      table: true,
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+  })
+}
+export async function createPermission(data: any) {
+  try {
+    const permission = await prisma.back3nd_permission.create({
+      data: {
+        role_id: data.role_id,
+        table_id: data.table_id,
+        can_create: data.can_create,
+        can_read: data.can_read,
+        can_update: data.can_update,
+        can_delete: data.can_delete,
+      },
+    })
+    return permission
+  }
+  catch (error: any) {
+    throw new Error(`Failed to create permission: ${error.message}`)
+  }
+}
+export async function updatePermission(role_id: string, table_id: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean) {
+  try {
+    const updatedPermission = await prisma.back3nd_permission.updateMany({
+      where: {
+        role_id,
+        table_id,
+      },
+      data: {
+        can_create,
+        can_read,
+        can_update,
+        can_delete,
+      },
+    })
+    return updatedPermission
+  }
+  catch (error: any) {
+    throw new Error(`Failed to update permission: ${error.message}`)
+  }
+}
+export async function deletePermission(role_id: string, table_id: string) {
+  try {
+    const response = await prisma.back3nd_permission.deleteMany({
+      where: {
+        role_id,
+        table_id,
+      },
+    })
+    if (response.count === 0) {
+      throw new Error('Permission not found')
+    }
+    return { message: 'Permission deleted successfully' }
+  }
+  catch (error: any) {
+    throw new Error(`Failed to delete permission: ${error.message}`)
   }
 }

@@ -53,8 +53,7 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       try {
         await useApiClient.logout()
-        this.token = null
-        this.user = null
+        this.clearAuthData()
       }
       catch (error) {
         console.error('Logout failed:', error)
@@ -75,6 +74,11 @@ export const useAuthStore = defineStore('auth', {
 
     setToken(token: string | null) {
       this.token = token
+    },
+    clearAuthData() {
+      this.token = null
+      this.user = null
+      localStorage.removeItem('auth_token')
     },
   },
   persist: true,

@@ -1,6 +1,6 @@
 import type { back3nd_entity } from '@prisma/client'
 import type { Context } from 'hono'
-import { createCollection, deleteCollection, getCollectionDetails, listCollections, updateCollection } from '../services/collectionService'
+import { createCollection, createPermission, deleteCollection, deletePermission, getCollectionDetails, getPermissions, listCollections, updateCollection, updatePermission } from '../services/collectionService'
 
 export class CollectionController {
   static async list(c: Context) {
@@ -31,5 +31,44 @@ export class CollectionController {
     const collectionName = c.req.param('collection')
     const result = await deleteCollection(collectionName)
     return c.json(result)
+  }
+
+  static async getPermissions(ctx: Context) {
+    const collectionId = ctx.req.param('collection')
+    const permissions = await getPermissions(collectionId)
+    return ctx.json(permissions)
+  }
+
+  static async createPermission(ctx: Context) {
+    try {
+      const data = await ctx.req.json()
+      const permissions = await createPermission(data)
+      return ctx.json(permissions)
+    }
+    catch (error: any) {
+      return ctx.json({ error: 'Internal Server Error', message: error.message }, 500)
+    }
+  }
+
+  static async updatePermission(ctx: Context) {
+    try {
+      const { role_id, table_id, can_create, can_read, can_update, can_delete } = await ctx.req.json()
+      const permissions = await updatePermission(role_id, table_id, can_create, can_read, can_update, can_delete)
+      return ctx.json(permissions)
+    }
+    catch (error: any) {
+      return ctx.json({ error: 'Internal Server Error', message: error.message }, 500)
+    }
+  }
+
+  static async deletePermission(ctx: Context) {
+    try {
+      const { role_id, table_id } = await ctx.req.json()
+      await deletePermission(role_id, table_id)
+      return ctx.json({ message: 'Permission deleted successfully' })
+    }
+    catch (error: any) {
+      return ctx.json({ error: 'Internal Server Error', message: error.message }, 500)
+    }
   }
 }

@@ -9,7 +9,6 @@ import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import roleRoutes from './routes/roleRoutes'
-import swaggerRoutes from './routes/swaggerRoutes'
 import userRoutes from './routes/userRoutes'
 
 const app = new OpenAPIHono({ strict: false })
