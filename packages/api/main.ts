@@ -8,6 +8,7 @@ import collectionRoutes from './routes/collectionRoutes'
 import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
+import prismaFileRoutes from './routes/prismaFIleRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
 
@@ -44,6 +45,7 @@ app.route('/collections', collectionRoutes)
 app.route('/items', itemRoutes)
 app.route('/hash', hashRoutes)
 app.route('/fields', entityFieldsRoutes)
+app.route('/prisma/files', prismaFileRoutes)
 
 app.get('/me', (c: Context) => {
   const user = c.get('user')
