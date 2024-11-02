@@ -2,6 +2,22 @@ import { useApiClient } from '@/composables/ApiClient'
 import { useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
+export function isTokenExpired(token: string): boolean {
+  try {
+    const tokenPart = token.split('.')[1]
+    if (!tokenPart) {
+      throw new Error('Invalid token format')
+    }
+    const payload = JSON.parse(atob(tokenPart))
+    const exp = payload.exp * 1000 // Convert to milliseconds
+    return Date.now() >= exp
+  }
+  catch (error) {
+    console.error('Error decoding token:', error)
+    return true // Assume expired if there's an error
+  }
+}
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: useLocalStorage<string | null>('auth_token', null),
@@ -9,7 +25,7 @@ export const useAuthStore = defineStore('auth', {
   }),
   actions: {
     async initializeAuthState() {
-      if (this.token) {
+      if (this.token && !isTokenExpired(this.token)) {
         try {
           await this.fetchUserData()
         }
@@ -17,6 +33,9 @@ export const useAuthStore = defineStore('auth', {
           console.error('Failed to fetch user data during initialization:', error)
           this.logout()
         }
+      }
+      else {
+        this.logout() // Token is expired or missing
       }
     },
     async login(email: string, password: string) {
