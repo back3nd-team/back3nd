@@ -5,25 +5,23 @@ import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
+import docsRoute from './routes/docsRoutes'
 import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import prismaFileRoutes from './routes/prismaFIleRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
+import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a função
 
 const app = new OpenAPIHono({ strict: false })
 
-// The OpenAPI documentation will be available at /doc
-app.doc('/doc', {
-  openapi: '3.0.0',
-  info: {
-    version: '1.0.0',
-    title: 'Back3nd API',
-  },
-})
-app.get('/docs', swaggerUI({ url: '/doc' }))
+// Gerar a especificação OpenAPI
+const openAPISpec = await generateOpenAPISpec()
 
+// The OpenAPI documentation will be available at /doc
+app.doc('/doc', openAPISpec) // Usar a especificação gerada
+app.route('/docs', docsRoute) // Usar a rota de documentação
 /**
  * @todo Add CORS configuration to allow only localhost:3737
  */

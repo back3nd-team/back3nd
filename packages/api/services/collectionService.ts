@@ -52,7 +52,6 @@ export async function listCollections() {
 
 export async function syncEntityFieldsWithPostgres(entityName: string) {
   try {
-    // Primeiro, buscar todos os campos registrados em back3nd_entity_fields
     const entity = await prisma.back3nd_entity.findUnique({
       where: { name: entityName },
       include: {
@@ -67,7 +66,6 @@ export async function syncEntityFieldsWithPostgres(entityName: string) {
 
     const entityFields = entity.back3nd_entity_fields
 
-    // Executar queryRaw para pegar as colunas e o tipo da tabela no PostgreSQL
     const result = await prisma.$queryRaw<
       { column_name: string, data_type: string, character_maximum_length: number | null }[]
     >`SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = ${entityName}`
@@ -78,7 +76,6 @@ export async function syncEntityFieldsWithPostgres(entityName: string) {
       size: col.character_maximum_length,
     }))
 
-    // Executar queryRaw para pegar informações sobre restrições de unicidade
     const uniqueConstraints = await prisma.$queryRaw<
       { column_name: string }[]
     >`
@@ -92,7 +89,6 @@ export async function syncEntityFieldsWithPostgres(entityName: string) {
 
     const uniqueColumns = uniqueConstraints.map(uc => uc.column_name)
 
-    // Sincronizar as colunas: Inserir as que faltam em back3nd_entity_fields e remover as que não existem mais
     const fieldsToAdd = pgColumns.filter(
       col => !entityFields.some(field => field.columnName === col.columnName),
     )
@@ -103,13 +99,10 @@ export async function syncEntityFieldsWithPostgres(entityName: string) {
 
     for (const field of fieldsToAdd) {
       try {
-        // Mapear o tipo da coluna do PostgreSQL para o formato utilizado no back-end
         const mappedColumnType = mapFieldTypeToPostgreSQL(field.columnType, field.size)
 
-        // Verificar se o campo é único
         const isUnique = uniqueColumns.includes(field.columnName)
 
-        // Criar o campo no back3nd_entity_fields
         await prisma.back3nd_entity_fields.create({
           data: {
             columnName: field.columnName,
@@ -146,7 +139,6 @@ export async function getCollectionDetails(collectionId: string) {
       return { error: 'Collection not found', statusCode: 404 }
     }
 
-    // Sincronizar campos antes de pegar os detalhes da coleção
     await syncEntityFieldsWithPostgres(collection.name)
 
     const detailedCollection = await prisma.back3nd_entity.findUnique({
