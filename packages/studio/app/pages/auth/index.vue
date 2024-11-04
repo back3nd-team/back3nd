@@ -44,15 +44,6 @@ async function login() {
 <template>
   <div v-if="authStore.token">
     <p>User is connected</p>
-    <p>Token: {{ authStore.token }}</p>
-    <p>User: {{ authStore.user }}</p>
-    <UButton
-      type="button"
-      block
-      label="Logout"
-      size="lg"
-      @click="authStore.logout"
-    />
   </div>
   <div v-else>
     <p>User is not connected</p>

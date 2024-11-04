@@ -251,6 +251,18 @@ class ApiClient {
       body: JSON.stringify(fieldData),
     })
   }
+
+  public async listPrismaFiles(): Promise<string[]> {
+    return this.request<string[]>('/prisma/files', {
+      method: 'GET',
+    })
+  }
+
+  public async readPrismaFile(filename: string): Promise<{ model: string }> {
+    return this.request<{ model: string }>(`/prisma/files/${filename}`, {
+      method: 'GET',
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')

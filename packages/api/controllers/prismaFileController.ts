@@ -10,8 +10,8 @@ export class PrismaFileController {
   static async read(c: Context) {
     const filename = c.req.param('filename')
     try {
-      const content = await readPrismaFile(filename)
-      return c.text(content)
+      const encodedContent = await readPrismaFile(filename)
+      return c.json({ model: encodedContent })
     }
     catch (error: any) {
       return c.json({ error: 'File not found', message: error.message }, 404)

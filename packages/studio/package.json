@@ -12,20 +12,23 @@
     "lint:fix": "eslint . --fix --ext .vue,.js,.ts"
   },
   "dependencies": {
+    "@guolao/vue-monaco-editor": "^1.5.4",
     "@nuxt/fonts": "^0.10.2",
     "@nuxt/image": "^1.8.1",
     "@nuxt/ui": "latest",
     "@pinia/nuxt": "^0.5.5",
     "@prisma/client": "^5.21.1",
-    "@vueuse/nuxt": "^11.1.0",
-    "monaco-editor": "^0.52.0",
+    "@vueuse/nuxt": "^11.2.0",
     "nuxt": "^3.13.2",
-    "nuxt-og-image": "^3.0.6",
+    "nuxt-og-image": "^3.0.8",
     "pinia-plugin-persistedstate": "^4.1.2",
     "vue": "latest",
     "vue-router": "latest"
   },
   "overrides": {
     "vue": "latest"
+  },
+  "devDependencies": {
+    "@iconify-json/lets-icons": "^1.2.1"
   }
 }

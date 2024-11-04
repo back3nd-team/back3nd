@@ -1,9 +1,5 @@
-import { ref } from 'vue'
-
 export async function initializePrismaEditor(container: HTMLElement, initialContent: string) {
-  const monaco = await import('monaco-editor')
-
-  // Define um tema customizado (opcional, pode manter o padrão do Monaco)
+  const monaco = await import('monaco-editor/esm/vs/editor/editor.api')
   monaco.editor.defineTheme('prisma-theme', {
     base: 'vs-dark',
     inherit: true,
@@ -19,11 +15,10 @@ export async function initializePrismaEditor(container: HTMLElement, initialCont
     },
   })
 
-  // Cria o editor com a linguagem TypeScript para facilitar o syntax highlighting e autocompletar
   return monaco.editor.create(container, {
     value: initialContent,
-    language: 'typescript', // Usando TypeScript como base
-    theme: 'prisma-theme', // Aplicando o tema customizado (opcional)
+    language: 'typescript',
+    theme: 'prisma-theme',
     automaticLayout: true,
   })
 }

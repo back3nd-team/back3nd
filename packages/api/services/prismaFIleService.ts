@@ -6,7 +6,7 @@ const prismaDirectory = './prisma/schema'
 export async function listPrismaFiles(): Promise<string[]> {
   try {
     const files = await readdir(prismaDirectory)
-    return files.filter(file => file.endsWith('.prisma'))
+    return files.filter(file => file.endsWith('.prisma') && file !== 'schema.prisma')
   }
   catch (error) {
     console.error(`Failed to list Prisma files: ${error}`)
@@ -18,7 +18,8 @@ export async function readPrismaFile(filename: string): Promise<string> {
   const filePath = join(prismaDirectory, filename)
   try {
     const file = Bun.file(filePath)
-    return await file.text()
+    const content = await file.text()
+    return btoa(content)
   }
   catch (error) {
     console.error(`Failed to read Prisma file (${filename}): ${error}`)
