@@ -20,9 +20,10 @@ export class PrismaFileController {
 
   static async update(c: Context) {
     const filename = c.req.param('filename')
-    const content = await c.req.text()
+    const { model } = await c.req.json()
+    const decodedModel = atob(model)
     try {
-      await savePrismaFile(filename, content)
+      await savePrismaFile(filename, decodedModel)
       return c.json({ success: true })
     }
     catch (error: any) {

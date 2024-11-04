@@ -25,10 +25,10 @@
     "vue": "latest",
     "vue-router": "latest"
   },
-  "overrides": {
-    "vue": "latest"
-  },
   "devDependencies": {
     "@iconify-json/lets-icons": "^1.2.1"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

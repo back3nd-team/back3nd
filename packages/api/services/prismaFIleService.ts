@@ -1,5 +1,6 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { runDbPush, runPrismaGenerate } from './prismaService'
 
 const prismaDirectory = './prisma/schema'
 
@@ -31,9 +32,18 @@ export async function savePrismaFile(filename: string, content: string): Promise
   const filePath = join(prismaDirectory, filename)
   try {
     await Bun.write(filePath, content)
+
+    const createSQLMigration = await runDbPush()
+    if (!createSQLMigration.success) {
+      throw new Error(`SQL migration creation failed: ${createSQLMigration.message}`)
+    }
+    const generateResult = await runPrismaGenerate()
+    if (!generateResult.success) {
+      throw new Error(`Prisma client generation failed: ${generateResult.message}`)
+    }
   }
-  catch (error) {
+  catch (error: any) {
     console.error(`Failed to save Prisma file (${filename}): ${error}`)
-    throw new Error(`Could not save the file: ${filename}`)
+    throw new Error(`Could not save the file: ${filename}. Error: ${error.message}`)
   }
 }

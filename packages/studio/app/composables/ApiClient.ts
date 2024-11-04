@@ -263,6 +263,16 @@ class ApiClient {
       method: 'GET',
     })
   }
+
+  public async updatePrismaFile(filename: string, model: string): Promise<void> {
+    await this.request(`/prisma/files/${filename}`, {
+      method: 'POST',
+      body: JSON.stringify({ model }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')
