@@ -1,110 +1,78 @@
+import { mkdir } from 'node:fs/promises'
+import { join } from 'node:path'
 import { spawn } from 'bun'
+/**
+ * Utility function to read process output.
+ * @param reader - The stream reader (stdout or stderr).
+ * @returns {Promise<string>} - The accumulated output as a string.
+ */
+async function readStream(reader: ReadableStreamDefaultReader<Uint8Array>): Promise<string> {
+  const decoder = new TextDecoder()
+  let output = ''
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done)
+      break
+    output += decoder.decode(value)
+  }
+  return output
+}
 
 /**
- * Function to run the Prisma db pull using Bun's spawn.
- *
+ * General function to run a Prisma command using Bun's spawn.
+ * @param cmdArgs - Array of command arguments for Prisma CLI.
  * @returns {Promise<{ success: boolean, message: string }>} The result of the command execution.
  */
-export async function runDbPull(): Promise<{ success: boolean, message: string }> {
+async function runPrismaCommand(cmdArgs: string[]): Promise<{ success: boolean, message: string }> {
   try {
     const proc = spawn({
-      cmd: ['bun', 'prisma', 'db', 'pull'],
+      cmd: ['bun', 'prisma', ...cmdArgs],
       stdout: 'pipe',
       stderr: 'pipe',
     })
 
-    let output = ''
-    let errorOutput = ''
-
-    // Use getReader to handle ReadableStream<Uint8Array>
-    const reader = proc.stdout.getReader()
-    const decoder = new TextDecoder()
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) {
-        break
-      }
-      output += decoder.decode(value)
-    }
-
-    const errorReader = proc.stderr.getReader()
-    while (true) {
-      const { done, value } = await errorReader.read()
-      if (done) {
-        break
-      }
-      errorOutput += decoder.decode(value)
-    }
-
+    const output = await readStream(proc.stdout.getReader())
+    const errorOutput = await readStream(proc.stderr.getReader())
     const exitCode = await proc.exited
 
-    if (exitCode === 0) {
-      const generateResult = await runPrismaGenerate()
-      if (!generateResult.success) {
-        return { success: false, message: `Generate failed: ${generateResult.message}` }
-      }
-      return { success: true, message: output }
-    }
-    else {
-      console.error('Error during db pull:', errorOutput)
-      return { success: false, message: errorOutput }
-    }
+    return exitCode === 0
+      ? { success: true, message: output }
+      : { success: false, message: errorOutput }
   }
   catch (error: any) {
-    console.error('Error executing db pull:', error)
+    console.error(`Error executing prisma ${cmdArgs.join(' ')}:`, error)
     return { success: false, message: error.message }
   }
 }
 
 /**
- * Function to run the Prisma generate using Bun's spawn.
- *
- * @returns {Promise<{ success: boolean, message: string }>} The result of the command execution.
+ * Function to run Prisma db pull, followed by Prisma generate.
  */
-export async function runPrismaGenerate(): Promise<{ success: boolean, message: string }> {
-  try {
-    const proc = spawn({
-      cmd: ['bun', 'prisma', 'generate'],
-      stdout: 'pipe',
-      stderr: 'pipe',
-    })
+export async function runDbPull(): Promise<{ success: boolean, message: string }> {
+  const pullResult = await runPrismaCommand(['db', 'pull'])
+  if (!pullResult.success)
+    return pullResult
 
-    let output = ''
-    let errorOutput = ''
+  const generateResult = await runPrismaGenerate()
+  return generateResult.success
+    ? { success: true, message: pullResult.message }
+    : { success: false, message: `Generate failed: ${generateResult.message}` }
+}
 
-    // Reading stdout
-    const reader = proc.stdout.getReader()
-    const decoder = new TextDecoder()
+/**
+ * Function to run Prisma generate.
+ */
+export async function runPrismaGenerate() {
+  return await runPrismaCommand(['generate'])
+}
 
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done)
-        break
-      output += decoder.decode(value)
-    }
+/**
+ * Function to apply migrations in production.
+ */
+export async function runPrismaMigrateDeploy() {
+  return await runPrismaCommand(['migrate', 'deploy'])
+}
 
-    // Reading stderr
-    const errorReader = proc.stderr.getReader()
-    while (true) {
-      const { done, value } = await errorReader.read()
-      if (done)
-        break
-      errorOutput += decoder.decode(value)
-    }
-
-    const exitCode = await proc.exited
-
-    if (exitCode === 0) {
-      return { success: true, message: output }
-    }
-    else {
-      console.error('Error during prisma generate:', errorOutput)
-      return { success: false, message: errorOutput }
-    }
-  }
-  catch (error: any) {
-    console.error('Error executing prisma generate:', error)
-    return { success: false, message: error.message }
-  }
+export async function runDbPush() {
+  return await runPrismaCommand(['db', 'push'])
 }

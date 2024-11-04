@@ -33,5 +33,8 @@ export default defineAppConfig({
         wrapper: 'lg:py-24',
       },
     },
+    notifications: {
+      position: 'top-0 bottom-[unset]',
+    },
   },
 })

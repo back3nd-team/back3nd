@@ -17,6 +17,8 @@ model test_table {
 
 model another {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  phone      Float
   data_field String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

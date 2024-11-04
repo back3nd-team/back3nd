@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "bunx prisma generate --schema=./prisma/schema",
-    "prisma:migrate:dev": "bunx prisma migrate dev --schema=./prisma/schema",
+    "prisma:migrate:dev": "bunx prisma migrate dev --schema=./prisma/schema  --name",
     "prisma:migrate:prod": "bunx prisma migrate deploy --schema=./prisma/schema",
     "prisma:studio": "bunx prisma studio --schema=./prisma/schema",
     "prisma:push": "bunx prisma db push --schema=./prisma/schema",

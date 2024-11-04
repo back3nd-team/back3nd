@@ -251,6 +251,28 @@ class ApiClient {
       body: JSON.stringify(fieldData),
     })
   }
+
+  public async listPrismaFiles(): Promise<string[]> {
+    return this.request<string[]>('/prisma/files', {
+      method: 'GET',
+    })
+  }
+
+  public async readPrismaFile(filename: string): Promise<{ model: string }> {
+    return this.request<{ model: string }>(`/prisma/files/${filename}`, {
+      method: 'GET',
+    })
+  }
+
+  public async updatePrismaFile(filename: string, model: string): Promise<void> {
+    await this.request(`/prisma/files/${filename}`, {
+      method: 'POST',
+      body: JSON.stringify({ model }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }
 }
 
 export const useApiClient = new ApiClient('http://localhost:3737')
