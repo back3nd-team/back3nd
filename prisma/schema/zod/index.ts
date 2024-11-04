@@ -12,7 +12,7 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const Test_tableScalarFieldEnumSchema = z.enum(['id','data_field','created_at','updated_at','unico','opa','asasas','teste','outro','asasasas','testee','asaawww','sdgsdfsdf','asdasd']);
+export const Test_tableScalarFieldEnumSchema = z.enum(['id','data_field','created_at','updated_at','unico','opa','asasas','teste','outro','asasasas','testee','asaawww','sdgsdfsdf','asdasd','hermes','madeira']);
 
 export const AnotherScalarFieldEnumSchema = z.enum(['id','name','phone','data_field','created_at','updated_at']);
 
@@ -38,7 +38,7 @@ export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
 
-export const test_tableOrderByRelevanceFieldEnumSchema = z.enum(['id','data_field','unico','asasas','teste','outro','asasasas','testee','asaawww','sdgsdfsdf','asdasd']);
+export const test_tableOrderByRelevanceFieldEnumSchema = z.enum(['id','data_field','unico','asasas','teste','outro','asasasas','testee','asaawww','sdgsdfsdf','asdasd','hermes','madeira']);
 
 export const anotherOrderByRelevanceFieldEnumSchema = z.enum(['id','name','data_field']);
 
@@ -80,6 +80,8 @@ export const test_tableSchema = z.object({
   asaawww: z.string().nullable(),
   sdgsdfsdf: z.string().nullable(),
   asdasd: z.string().nullable(),
+  hermes: z.string().nullable(),
+  madeira: z.string().nullable(),
 })
 
 export type test_table = z.infer<typeof test_tableSchema>
@@ -237,6 +239,8 @@ export const test_tableSelectSchema: z.ZodType<Prisma.test_tableSelect> = z.obje
   asaawww: z.boolean().optional(),
   sdgsdfsdf: z.boolean().optional(),
   asdasd: z.boolean().optional(),
+  hermes: z.boolean().optional(),
+  madeira: z.boolean().optional(),
 }).strict()
 
 // ANOTHER
@@ -479,6 +483,8 @@ export const test_tableWhereInputSchema: z.ZodType<Prisma.test_tableWhereInput> 
   asaawww: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   asdasd: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  hermes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  madeira: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const test_tableOrderByWithRelationInputSchema: z.ZodType<Prisma.test_tableOrderByWithRelationInput> = z.object({
@@ -496,6 +502,8 @@ export const test_tableOrderByWithRelationInputSchema: z.ZodType<Prisma.test_tab
   asaawww: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   sdgsdfsdf: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   asdasd: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  hermes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  madeira: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _relevance: z.lazy(() => test_tableOrderByRelevanceInputSchema).optional()
 }).strict();
 
@@ -529,6 +537,8 @@ export const test_tableWhereUniqueInputSchema: z.ZodType<Prisma.test_tableWhereU
   asaawww: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   asdasd: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  hermes: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  madeira: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict());
 
 export const test_tableOrderByWithAggregationInputSchema: z.ZodType<Prisma.test_tableOrderByWithAggregationInput> = z.object({
@@ -546,6 +556,8 @@ export const test_tableOrderByWithAggregationInputSchema: z.ZodType<Prisma.test_
   asaawww: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   sdgsdfsdf: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   asdasd: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  hermes: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  madeira: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => test_tableCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => test_tableMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => test_tableMinOrderByAggregateInputSchema).optional()
@@ -569,6 +581,8 @@ export const test_tableScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.te
   asaawww: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   asdasd: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  hermes: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  madeira: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const anotherWhereInputSchema: z.ZodType<Prisma.anotherWhereInput> = z.object({
@@ -1211,7 +1225,9 @@ export const test_tableCreateInputSchema: z.ZodType<Prisma.test_tableCreateInput
   testee: z.string().optional().nullable(),
   asaawww: z.string().optional().nullable(),
   sdgsdfsdf: z.string().optional().nullable(),
-  asdasd: z.string().optional().nullable()
+  asdasd: z.string().optional().nullable(),
+  hermes: z.string().optional().nullable(),
+  madeira: z.string().optional().nullable()
 }).strict();
 
 export const test_tableUncheckedCreateInputSchema: z.ZodType<Prisma.test_tableUncheckedCreateInput> = z.object({
@@ -1228,7 +1244,9 @@ export const test_tableUncheckedCreateInputSchema: z.ZodType<Prisma.test_tableUn
   testee: z.string().optional().nullable(),
   asaawww: z.string().optional().nullable(),
   sdgsdfsdf: z.string().optional().nullable(),
-  asdasd: z.string().optional().nullable()
+  asdasd: z.string().optional().nullable(),
+  hermes: z.string().optional().nullable(),
+  madeira: z.string().optional().nullable()
 }).strict();
 
 export const test_tableUpdateInputSchema: z.ZodType<Prisma.test_tableUpdateInput> = z.object({
@@ -1246,6 +1264,8 @@ export const test_tableUpdateInputSchema: z.ZodType<Prisma.test_tableUpdateInput
   asaawww: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   asdasd: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  hermes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  madeira: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const test_tableUncheckedUpdateInputSchema: z.ZodType<Prisma.test_tableUncheckedUpdateInput> = z.object({
@@ -1263,6 +1283,8 @@ export const test_tableUncheckedUpdateInputSchema: z.ZodType<Prisma.test_tableUn
   asaawww: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   asdasd: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  hermes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  madeira: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const test_tableCreateManyInputSchema: z.ZodType<Prisma.test_tableCreateManyInput> = z.object({
@@ -1279,7 +1301,9 @@ export const test_tableCreateManyInputSchema: z.ZodType<Prisma.test_tableCreateM
   testee: z.string().optional().nullable(),
   asaawww: z.string().optional().nullable(),
   sdgsdfsdf: z.string().optional().nullable(),
-  asdasd: z.string().optional().nullable()
+  asdasd: z.string().optional().nullable(),
+  hermes: z.string().optional().nullable(),
+  madeira: z.string().optional().nullable()
 }).strict();
 
 export const test_tableUpdateManyMutationInputSchema: z.ZodType<Prisma.test_tableUpdateManyMutationInput> = z.object({
@@ -1297,6 +1321,8 @@ export const test_tableUpdateManyMutationInputSchema: z.ZodType<Prisma.test_tabl
   asaawww: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   asdasd: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  hermes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  madeira: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const test_tableUncheckedUpdateManyInputSchema: z.ZodType<Prisma.test_tableUncheckedUpdateManyInput> = z.object({
@@ -1314,6 +1340,8 @@ export const test_tableUncheckedUpdateManyInputSchema: z.ZodType<Prisma.test_tab
   asaawww: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   sdgsdfsdf: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   asdasd: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  hermes: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  madeira: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const anotherCreateInputSchema: z.ZodType<Prisma.anotherCreateInput> = z.object({
@@ -1965,7 +1993,9 @@ export const test_tableCountOrderByAggregateInputSchema: z.ZodType<Prisma.test_t
   testee: z.lazy(() => SortOrderSchema).optional(),
   asaawww: z.lazy(() => SortOrderSchema).optional(),
   sdgsdfsdf: z.lazy(() => SortOrderSchema).optional(),
-  asdasd: z.lazy(() => SortOrderSchema).optional()
+  asdasd: z.lazy(() => SortOrderSchema).optional(),
+  hermes: z.lazy(() => SortOrderSchema).optional(),
+  madeira: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const test_tableMaxOrderByAggregateInputSchema: z.ZodType<Prisma.test_tableMaxOrderByAggregateInput> = z.object({
@@ -1982,7 +2012,9 @@ export const test_tableMaxOrderByAggregateInputSchema: z.ZodType<Prisma.test_tab
   testee: z.lazy(() => SortOrderSchema).optional(),
   asaawww: z.lazy(() => SortOrderSchema).optional(),
   sdgsdfsdf: z.lazy(() => SortOrderSchema).optional(),
-  asdasd: z.lazy(() => SortOrderSchema).optional()
+  asdasd: z.lazy(() => SortOrderSchema).optional(),
+  hermes: z.lazy(() => SortOrderSchema).optional(),
+  madeira: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const test_tableMinOrderByAggregateInputSchema: z.ZodType<Prisma.test_tableMinOrderByAggregateInput> = z.object({
@@ -1999,7 +2031,9 @@ export const test_tableMinOrderByAggregateInputSchema: z.ZodType<Prisma.test_tab
   testee: z.lazy(() => SortOrderSchema).optional(),
   asaawww: z.lazy(() => SortOrderSchema).optional(),
   sdgsdfsdf: z.lazy(() => SortOrderSchema).optional(),
-  asdasd: z.lazy(() => SortOrderSchema).optional()
+  asdasd: z.lazy(() => SortOrderSchema).optional(),
+  hermes: z.lazy(() => SortOrderSchema).optional(),
+  madeira: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UuidWithAggregatesFilterSchema: z.ZodType<Prisma.UuidWithAggregatesFilter> = z.object({

@@ -33,9 +33,9 @@ export async function savePrismaFile(filename: string, content: string): Promise
   try {
     await Bun.write(filePath, content)
 
-    const createSQLMigration = await runDbPush()
-    if (!createSQLMigration.success) {
-      throw new Error(`SQL migration creation failed: ${createSQLMigration.message}`)
+    const pushToDb = await runDbPush()
+    if (!pushToDb.success) {
+      throw new Error(`SQL migration creation failed: ${pushToDb.message}`)
     }
     const generateResult = await runPrismaGenerate()
     if (!generateResult.success) {

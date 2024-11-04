@@ -2,7 +2,7 @@ import type { Context } from 'hono'
 import { AuthService } from '../services/authService'
 
 export async function authMiddleware(c: Context, next: () => Promise<void>) {
-  if (c.req.path.startsWith('/auth')) {
+  if (c.req.path.startsWith('/auth') || c.req.path.startsWith('/docs')) {
     return await next()
   }
 

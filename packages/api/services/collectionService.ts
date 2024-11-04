@@ -1,23 +1,74 @@
 import { PrismaClient } from '@prisma/client'
 import { checkTableExists, createCollectionInDB } from '../repositories/collectionRepository'
+import { mapFieldTypeToPostgreSQL } from '../utils/columnTypeMapper'
 import { isValidCollectionName } from '../utils/validateCollectionName'
 import { runDbPull } from './prismaService'
 
 const prisma = new PrismaClient()
 
 /**
- * Lists the collections (tables) in the database, separating them into system and user collections.
+ * Retrieves the ID of the "admin" role from the back3nd_role table.
  *
- * This function queries the database to retrieve all tables in the `public` schema.
- * It then filters these tables into two groups:
- * - `systemCollections`: Tables that start with 'back3nd_' and are not '_prisma_migrations'.
- * - `userCollections`: Tables that do not start with 'back3nd_' and are not '_prisma_migrations'.
- *
- * @returns {Promise<{ systemCollections: { table_name: string }[], userCollections: { table_name: string }[] } | { error: string, statusCode: number }>}
- * An object containing two arrays: `systemCollections` and `userCollections`, or an error object with a message and status code.
+ * @returns {Promise<string | null>} The ID of the "admin" role, or null if not found.
  */
+async function getRoleId(roleName: string): Promise<string | null> {
+  try {
+    const adminRole = await prisma.back3nd_role.findUnique({
+      where: { name: roleName },
+      select: { id: true },
+    })
+    return adminRole ? adminRole.id : null
+  }
+  catch (error) {
+    console.error('Error fetching admin role ID:', error)
+    return null
+  }
+}
+
+async function syncCollectionsWithPostgres() {
+  try {
+    const result = await prisma.$queryRaw<
+      { table_name: string }[]
+    >`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name NOT LIKE 'back3nd_%' AND table_name != '_prisma_migrations'`
+    const pgTables = result.map(table => table.table_name)
+
+    const existingEntities = await prisma.back3nd_entity.findMany({
+      select: { name: true },
+    })
+
+    const existingEntityNames = existingEntities.map(entity => entity.name)
+
+    const tablesToAdd = pgTables.filter(table => !existingEntityNames.includes(table))
+
+    const adminRoleId = await getRoleId('admin')
+    if (!adminRoleId) {
+      console.error('Admin role ID not found')
+      return
+    }
+
+    for (const tableName of tablesToAdd) {
+      const columns = await prisma.$queryRaw<
+        { column_name: string, data_type: string }[]
+      >`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ${tableName}`
+
+      const hasIdColumn = columns.some(column => column.column_name === 'id' && column.data_type === 'uuid')
+
+      if (hasIdColumn) {
+        return await createEntityWithPermission([adminRoleId], tableName)
+      }
+      else {
+        console.warn(`Table ${tableName} does not have an 'id' column of type 'UUID'`)
+      }
+    }
+  }
+  catch (error) {
+    console.error('Error syncing collections:', error)
+  }
+}
+
 export async function listCollections() {
   try {
+    await syncCollectionsWithPostgres()
     const collections = await prisma.back3nd_entity.findMany({
       include: {
         back3nd_permission: {
@@ -49,9 +100,98 @@ export async function listCollections() {
   }
 }
 
+export async function syncEntityFieldsWithPostgres(entityName: string) {
+  try {
+    const entity = await prisma.back3nd_entity.findUnique({
+      where: { name: entityName },
+      include: {
+        back3nd_entity_fields: true,
+      },
+    })
+
+    if (!entity) {
+      console.error('Entity not found:', entityName)
+      return
+    }
+
+    const entityFields = entity.back3nd_entity_fields
+
+    const result = await prisma.$queryRaw<
+      { column_name: string, data_type: string, character_maximum_length: number | null }[]
+    >`SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = ${entityName}`
+
+    const pgColumns = result.map(col => ({
+      columnName: col.column_name,
+      columnType: col.data_type,
+      size: col.character_maximum_length,
+    }))
+
+    const uniqueConstraints = await prisma.$queryRaw<
+      { column_name: string }[]
+    >`
+      SELECT kcu.column_name
+      FROM information_schema.table_constraints tc
+      JOIN information_schema.key_column_usage kcu
+      ON tc.constraint_name = kcu.constraint_name
+      WHERE tc.table_name = ${entityName}
+      AND tc.constraint_type = 'UNIQUE'
+    `
+
+    const uniqueColumns = uniqueConstraints.map(uc => uc.column_name)
+
+    const fieldsToAdd = pgColumns.filter(
+      col => !entityFields.some(field => field.columnName === col.columnName),
+    )
+
+    const fieldsToRemove = entityFields.filter(
+      field => !pgColumns.some(col => col.columnName === field.columnName),
+    )
+
+    for (const field of fieldsToAdd) {
+      try {
+        const mappedColumnType = mapFieldTypeToPostgreSQL(field.columnType, field.size)
+
+        const isUnique = uniqueColumns.includes(field.columnName)
+
+        await prisma.back3nd_entity_fields.create({
+          data: {
+            columnName: field.columnName,
+            columnType: mappedColumnType,
+            entity_id: entity.id,
+            isUnique,
+          },
+        })
+      }
+      catch (error) {
+        console.error(`Error mapping field type for column ${field.columnName}:`, error)
+      }
+    }
+
+    for (const field of fieldsToRemove) {
+      await prisma.back3nd_entity_fields.delete({
+        where: {
+          id: field.id,
+        },
+      })
+    }
+  }
+  catch (error) {
+    console.error('Error syncing fields:', error)
+  }
+}
 export async function getCollectionDetails(collectionId: string) {
   try {
     const collection = await prisma.back3nd_entity.findUnique({
+      where: { id: collectionId },
+    })
+
+    if (!collection) {
+      return { error: 'Collection not found', statusCode: 404 }
+    }
+
+    await syncEntityFieldsWithPostgres(collection.name)
+
+    const detailedCollection = await prisma.back3nd_entity.findUnique({
       where: { id: collectionId },
       include: {
         back3nd_permission: {
@@ -61,10 +201,10 @@ export async function getCollectionDetails(collectionId: string) {
         },
       },
     })
-    if (!collection) {
+    if (!detailedCollection) {
       return { error: 'Collection not found', statusCode: 404 }
     }
-    return { data: collection }
+    return { data: detailedCollection }
   }
   catch {
     return { error: 'Database error', statusCode: 500 }

@@ -1,28 +1,29 @@
 import type { Context } from 'hono'
-import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
+import docsRoute from './routes/docsRoutes'
 import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import prismaFileRoutes from './routes/prismaFIleRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
+import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a função
 
 const app = new OpenAPIHono({ strict: false })
 
-// The OpenAPI documentation will be available at /doc
-app.doc('/doc', {
-  openapi: '3.0.0',
-  info: {
-    version: '1.0.0',
-    title: 'Back3nd API',
-  },
+async function initializeDocs() {
+  const openAPISpec = await generateOpenAPISpec()
+  app.doc('/doc', openAPISpec)
+  app.route('/docs', docsRoute)
+}
+
+initializeDocs().catch((err) => {
+  console.error('Failed to initialize docs:', err)
 })
-app.get('/docs', swaggerUI({ url: '/doc' }))
 
 /**
  * @todo Add CORS configuration to allow only localhost:3737

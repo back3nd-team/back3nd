@@ -50,3 +50,29 @@ export function getDefaultValueClause(fieldType: string, defaultValue?: string |
 
   return `DEFAULT ${defaultValue}`
 }
+
+export function mapFieldTypeToSwagger(fieldType: string): { type: string, format?: string, description?: string } {
+  const normalizedFieldType = fieldType.trim().toLowerCase()
+  const swaggerTypeMap: Record<string, { type: string, format?: string, description?: string }> = {
+    'varchar': { type: 'string' },
+    'uuid': { type: 'string', format: 'uuid', description: 'Universally Unique Identifier' },
+    'integer': { type: 'integer', format: 'int32' },
+    'bigint': { type: 'integer', format: 'int64' },
+    'real': { type: 'number', format: 'float' },
+    'double precision': { type: 'number', format: 'double' },
+    'decimal': { type: 'number' },
+    'text': { type: 'string' },
+    'boolean': { type: 'boolean' },
+    'date': { type: 'string', format: 'date', description: 'Date in the format YYYY-MM-DD' },
+    'timestamp': { type: 'string', format: 'date-time', description: 'Date and time in the format YYYY-MM-DDTHH:MM:SS' },
+    'time': { type: 'string', format: 'time' },
+    'json': { type: 'object' },
+    'jsonb': { type: 'object' },
+    'point': { type: 'string' },
+    'line': { type: 'string' },
+    'polygon': { type: 'string' },
+    'bytea': { type: 'string', format: 'byte' },
+  }
+
+  return swaggerTypeMap[normalizedFieldType] || { type: 'string' }
+}
