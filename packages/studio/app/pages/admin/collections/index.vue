@@ -21,6 +21,7 @@ const columns = ref([
   { label: 'Actions', key: 'actions' },
 ])
 const selectedColumns = ref([...columns.value])
+const isSubmitting = ref(true)
 const isOpen = ref(false)
 function items(row: any) {
   return [
@@ -58,13 +59,17 @@ function handleCollectionCreated() {
   getCollections()
 }
 
-onMounted(() => {
-  getCollections()
+onMounted(async () => {
+  await getCollections()
+  isSubmitting.value = false
 })
 </script>
 
 <template>
   <div>
+    <div v-if="isSubmitting" class="-mt-6 pb-6">
+      <UProgress size="xs" animation="carousel" />
+    </div>
     <div class="flex justify-between items-center px-3 py-3.5 border-b border-gray-200 dark:border-gray-700">
       <div class="flex space-x-4">
         <UInput v-model="q" placeholder="Filter collections..." />

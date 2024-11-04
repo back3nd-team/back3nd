@@ -1,26 +1,23 @@
+import type { OpenAPIHono } from '@hono/zod-openapi'
 import { PrismaClient } from '@prisma/client'
 import { mapFieldTypeToSwagger } from '../utils/columnTypeMapper'
 
 const prisma = new PrismaClient()
 
 export async function generateOpenAPISpec() {
-  // Fetch all entities from the database
   const entities = await prisma.back3nd_entity.findMany()
 
-  // Fetch all entity fields from the database
   const entityFields = await prisma.back3nd_entity_fields.findMany()
 
   const paths: Record<string, any> = {}
   const schemas: Record<string, any> = {}
 
-  // Iterate over each entity to build its schema and paths
   entities.forEach((entity) => {
     const entityName = entity.name
     const entityFieldsForModel = entityFields.filter(
       field => field.entity_id === entity.id,
     )
 
-    // Define the schema for the current entity
     schemas[entityName] = {
       type: 'object',
       properties: entityFieldsForModel.reduce((acc: Record<string, any>, field) => {
@@ -37,14 +34,12 @@ export async function generateOpenAPISpec() {
       }, {}),
     }
 
-    // Define the base path for the current entity
     const pathName = `/items/${entityName.toLowerCase()}`
 
-    // Define the GET and POST operations for the base path
     paths[pathName] = {
       get: {
         summary: `Retrieve all ${entityName} items`,
-        security: [{ BearerAuth: [] }], // Requires authentication
+        security: [{ BearerAuth: [] }],
         responses: {
           200: {
             description: `List of ${entityName} items`,
@@ -62,7 +57,7 @@ export async function generateOpenAPISpec() {
       },
       post: {
         summary: `Create a new ${entityName} item`,
-        security: [{ BearerAuth: [] }], // Requires authentication
+        security: [{ BearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
@@ -85,11 +80,10 @@ export async function generateOpenAPISpec() {
       },
     }
 
-    // Define the PUT and DELETE operations for the entity item by ID
     paths[`${pathName}/{id}`] = {
       put: {
         summary: `Update an existing ${entityName} item`,
-        security: [{ BearerAuth: [] }], // Requires authentication
+        security: [{ BearerAuth: [] }],
         parameters: [
           {
             name: 'id',
@@ -122,7 +116,7 @@ export async function generateOpenAPISpec() {
       },
       delete: {
         summary: `Delete an existing ${entityName} item`,
-        security: [{ BearerAuth: [] }], // Requires authentication
+        security: [{ BearerAuth: [] }],
         parameters: [
           {
             name: 'id',
@@ -143,7 +137,6 @@ export async function generateOpenAPISpec() {
     }
   })
 
-  // Define the complete OpenAPI specification
   const openAPISpec = {
     openapi: '3.0.0',
     info: {

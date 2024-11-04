@@ -1,5 +1,4 @@
 import { useGetCollections } from './useGetCollections'
-import { useGetPermissions } from './useGetPermissions'
 
 export function useCollectionList() {
   const collections = ref<{ [key: string]: any }[]>([])

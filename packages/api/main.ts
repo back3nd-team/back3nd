@@ -1,5 +1,4 @@
 import type { Context } from 'hono'
-import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { cors } from 'hono/cors'
 import { authMiddleware } from './middleware/authMiddleware'
@@ -16,12 +15,16 @@ import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a f
 
 const app = new OpenAPIHono({ strict: false })
 
-// Gerar a especificação OpenAPI
-const openAPISpec = await generateOpenAPISpec()
+async function initializeDocs() {
+  const openAPISpec = await generateOpenAPISpec()
+  app.doc('/doc', openAPISpec)
+  app.route('/docs', docsRoute)
+}
 
-// The OpenAPI documentation will be available at /doc
-app.doc('/doc', openAPISpec) // Usar a especificação gerada
-app.route('/docs', docsRoute) // Usar a rota de documentação
+initializeDocs().catch((err) => {
+  console.error('Failed to initialize docs:', err)
+})
+
 /**
  * @todo Add CORS configuration to allow only localhost:3737
  */
