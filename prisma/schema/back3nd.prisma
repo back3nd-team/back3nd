@@ -13,6 +13,8 @@ model test_table {
   asaawww    String?   @db.VarChar(125)
   sdgsdfsdf  String?   @db.VarChar(125)
   asdasd     String?   @db.VarChar(125)
+  hermes     String? 
+  madeira    String?
 }
 
 model another {

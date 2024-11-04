@@ -3,7 +3,22 @@ import { createItem, deleteItem, getCollectionFields, getItems, listUserCollecti
 import { checkPermissions } from '../middleware/checkPermissions'
 
 const itemRoutes = new Hono()
-itemRoutes.get('/collections', listUserCollections)
+itemRoutes.get('/collections', async (c) => {
+  try {
+    const permissionMiddleware = checkPermissions('collections', 'can_read')
+    const permissionCheck = await permissionMiddleware(c, async () => {})
+
+    if (permissionCheck) {
+      return permissionCheck
+    }
+
+    return await listUserCollections(c)
+  }
+  catch (error: any) {
+    console.error(`Error during permission check or listing collections: ${error.message}`)
+    return c.json({ error: 'Failed to process request', message: error.message }, 500)
+  }
+})
 
 itemRoutes.get('/:collection', async (c) => {
   const tableName = c.req.param('collection')
