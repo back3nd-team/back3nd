@@ -102,12 +102,3 @@ export async function seedRoles() {
 
   console.warn('Roles and permissions have been seeded successfully.')
 }
-
-seedRoles()
-  .catch((e) => {
-    console.error(e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })

@@ -1,0 +1,26 @@
+name: Build and Publish Docker Image
+on:
+  push:
+    branches:
+      - main   
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:pre-alpha .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/back3nd:pre-alpha

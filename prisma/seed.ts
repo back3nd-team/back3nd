@@ -2,8 +2,6 @@
  * @file seed.ts
  * @description Main seed file that triggers the seeding process for roles and users.
  * It calls the seed functions from separate files located in the "data/" directory.
- *
- * Usage: Run this file with Deno to seed the database.
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -35,4 +33,26 @@ async function main() {
   }
 }
 
-main()
+/**
+ * Check if there are any users in the database.
+ */
+async function checkAndSeed() {
+  try {
+    const userCount = await prisma.back3nd_user.count()
+    if (userCount === 0) {
+      console.log('No users found. Seeding the database...')
+      await main()
+    } else {
+      console.log('Users found. Skipping seeding.')
+    }
+  } catch (error) {
+    console.error('Error during check and seed:', error)
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+checkAndSeed().catch((error) => {
+  console.error('Error during check and seed:', error)
+  prisma.$disconnect()
+})
