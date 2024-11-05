@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   postgres_db:
     image: postgres:17.0-alpine
     container_name: postgres_db
     env_file:
-      - .env
+      - ../.env
     volumes:
       - postgresql_data:/var/lib/postgresql/data
       - ./prisma/custom:/docker-entrypoint-initdb.d/
@@ -16,22 +14,17 @@ services:
       retries: 5
     ports:
       - 5432:5432
-    networks:
-      - postgres-network
-
   api:
-    image: back3nd:alpha  # Usando a imagem que você construiu
-    container_name: back3nd
-    depends_on:
-      - postgres_db  # Garante que o banco de dados esteja disponível antes da API
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile
     ports:
-      - "3737:3737"  # Mapeia a porta da API
-      - "3000:3000"  # Mapeia a porta do Studio
+      - "3737:3737"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
-    networks:
-      - postgres-network
+    depends_on:
+      postgres_db:
+        condition: service_healthy
 
 volumes:
   postgresql_data:
@@ -39,3 +32,4 @@ volumes:
 networks:
   postgres-network:
     driver: bridge
+

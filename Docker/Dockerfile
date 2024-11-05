@@ -1,0 +1,39 @@
+## docker build -f Docker/Dockerfile -t back3nd:alpha . 
+# Use the latest LTS version of Node.js based on Bullseye
+FROM node:lts-bullseye
+
+# Set the working directory
+WORKDIR /app
+
+# Copy all files to the working directory
+COPY . .
+
+# Copy the entrypoint script and give execution permissions
+COPY Docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Install Bun
+RUN curl -fsSL https://bun.sh/install | bash
+
+# Add Bun to the PATH
+ENV PATH="/root/.bun/bin:${PATH}"
+
+# Install project dependencies
+RUN bun install 
+
+# Preparing the API (Hono) environment
+WORKDIR /app/packages/api
+RUN bun install 
+RUN bun tsc
+EXPOSE 3737
+
+# Preparing the Studio environment (nuxt)
+WORKDIR /app/packages/studio
+RUN bun install 
+RUN bun nuxt build
+EXPOSE 3000
+
+WORKDIR /app/
+
+# Command to run the application
+CMD ["/entrypoint.sh"]

@@ -62,7 +62,7 @@ app.onError((err, c: Context) => {
   return c.json({ error: 'Internal Server Error', message: err.message }, 500)
 })
 
-const port = Number.parseInt(Bun.env.API_PORT || '3037')
+const port = Number.parseInt(Bun.env.API_PORT || '3737')
 export default {
   port,
   fetch: app.fetch,
