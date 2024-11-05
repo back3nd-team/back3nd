@@ -33,6 +33,11 @@ RUN bun install
 RUN bun nuxt build
 EXPOSE 3000
 
+# Install Nginx
+RUN apt-get update && apt-get install -y nginx
+COPY Docker/nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+
 WORKDIR /app/
 
 # Command to run the application

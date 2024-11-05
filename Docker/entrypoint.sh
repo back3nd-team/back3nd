@@ -1,13 +1,16 @@
 #!/bin/sh
 
-# Gerar o cliente Prisma
+# Generate the Prisma client
 bunx prisma generate  
 
-# Aplicar as migrações do Prisma
+# Apply the Prisma migrations
 bunx prisma migrate deploy --schema=./prisma/schema
 
-# Inicia a API Hono na porta 3737
+# Start the Hono API on port 3737
 bun packages/api/dist/main.js &
 
-# Iniciar o studio Nuxt na porta 3000
-node packages/studio/.output/server/index.mjs
+# Start the Nuxt studio on port 3000
+node packages/studio/.output/server/index.mjs &
+
+# Start Nginx
+nginx -g 'daemon off;'

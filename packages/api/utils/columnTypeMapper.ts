@@ -11,6 +11,7 @@ const columnTypeMap: Record<string, string> = {
   'boolean': 'BOOLEAN',
   'date': 'DATE',
   'timestamp': 'TIMESTAMP',
+  'timestamp without time zone': 'TIMESTAMP',
   'time': 'TIME',
   'json': 'JSON',
   'jsonb': 'JSONB',
