@@ -9,7 +9,7 @@ export async function hashPassword(c: Context) {
   try {
     const hashedPassword = await HashService.hashPassword(password)
     return c.json({ hashedPassword })
-  } catch (error) {
+  } catch (error:any) {
     console.error('Error hashing password:', error)
     return c.json({ error: 'Internal Server Error', message: error.message }, 500)
   }

@@ -9,6 +9,6 @@ docsRoute.get('/', async (c) => {
   return c.json(openAPISpec)
 })
 
-docsRoute.get('/swagger', swaggerUI({ url: '/docs' }))
+docsRoute.get('/swagger', swaggerUI({ url: '/api/docs' }))
 
 export default docsRoute

@@ -17,8 +17,8 @@ const app = new OpenAPIHono({ strict: false })
 
 async function initializeDocs() {
   const openAPISpec = await generateOpenAPISpec()
-  app.doc('/doc', openAPISpec)
-  app.route('/docs', docsRoute)
+  app.doc('/api/doc', openAPISpec)
+  app.route('/api/docs', docsRoute)
 }
 
 initializeDocs().catch((err) => {
@@ -29,12 +29,7 @@ initializeDocs().catch((err) => {
  * @todo Add CORS configuration to allow only localhost:3737
  */
 app.use('*', cors({
-  origin: (origin: string) => {
-    if (origin?.startsWith('http://localhost')) {
-      return origin
-    }
-    return 'http://localhost:3737'
-  },
+  origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
@@ -62,7 +57,7 @@ app.onError((err, c: Context) => {
   return c.json({ error: 'Internal Server Error', message: err.message }, 500)
 })
 
-const port = Number.parseInt(Bun.env.API_PORT || '3037')
+const port = Number.parseInt(Bun.env.API_PORT || '3737')
 export default {
   port,
   fetch: app.fetch,

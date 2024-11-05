@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres_db:
     image: postgres:17.0-alpine
@@ -12,27 +14,25 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
     ports:
       - 5432:5432
     networks:
       - postgres-network
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "back3nd@softagon.com.br"
-      PGADMIN_DEFAULT_PASSWORD: "back3ndSamplePassword"
-      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False" 
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    ports:
-      - "8037:80"  
+  api:
+    image: back3nd:alpha  # Usando a imagem que você construiu
+    container_name: back3nd
     depends_on:
-      - postgres_db
+      - postgres_db  # Garante que o banco de dados esteja disponível antes da API
+    ports:
+      - "3737:3737"  # Mapeia a porta da API
+      - "3000:3000"  # Mapeia a porta do Studio
+      - "8087:80"  # Mapeia a porta do Nginx
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
     networks:
       - postgres-network
-    restart: unless-stopped
 
 volumes:
   postgresql_data:

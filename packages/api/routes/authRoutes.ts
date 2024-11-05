@@ -32,6 +32,7 @@ authRoutes.openapi(
       },
     },
   }),
+  //@ts-expect-error
   AuthController.register,
 )
 authRoutes.post('/login', AuthController.login)
