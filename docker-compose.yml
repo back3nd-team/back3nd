@@ -20,14 +20,14 @@ services:
       - postgres-network
 
   api:
-    image: back3nd:alpha  # Usando a imagem que você construiu
+    image: ghcr.io/back3nd-team/back3nd:pre-alpha
     container_name: back3nd
     depends_on:
-      - postgres_db  # Garante que o banco de dados esteja disponível antes da API
+      - postgres_db  # Ensures the database is available before the API
     ports:
-      - "3737:3737"  # Mapeia a porta da API
-      - "3000:3000"  # Mapeia a porta do Studio
-      - "8087:80"  # Mapeia a porta do Nginx
+      - "3737:3737"  # Maps the API port
+      - "3000:3000"  # Maps the Studio port
+      - "8087:80"  # Maps the Nginx port
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
