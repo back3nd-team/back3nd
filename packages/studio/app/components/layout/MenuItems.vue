@@ -14,13 +14,13 @@
       </NuxtLink>
     </li>
     <li>
-      <NuxtLink to="http://localhost:3737/docs/swagger" target="_blank" class="block py-3 px-5 rounded bg-gray-700 hover:bg-yellow-500 transition-all duration-300">
-        <i class="fas fa-table mr-2" /> API Doc´s
+      <NuxtLink to="/admin/editor" class="block py-3 px-5 rounded bg-gray-700 hover:bg-yellow-500 transition-all duration-300">
+        <i class="fas fa-table mr-2" /> Schema Prisma
       </NuxtLink>
     </li>
     <li>
-      <NuxtLink to="/admin/editor" class="block py-3 px-5 rounded bg-gray-700 hover:bg-yellow-500 transition-all duration-300">
-        <i class="fas fa-table mr-2" /> Schema Prisma
+      <NuxtLink to="http://localhost/api/docs/swagger" target="_blank" class="block py-3 px-5 rounded bg-gray-700 hover:bg-yellow-500 transition-all duration-300">
+        <i class="fas fa-table mr-2" /> API Doc´s
       </NuxtLink>
     </li>
   </ul>

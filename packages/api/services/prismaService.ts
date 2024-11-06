@@ -63,7 +63,13 @@ export async function runDbPull(): Promise<{ success: boolean, message: string }
  * Function to run Prisma generate.
  */
 export async function runPrismaGenerate() {
-  return await runPrismaCommand(['generate'])
+  try {
+    return await runPrismaCommand(['generate'])
+  }
+  catch (error: any) {
+    console.error('Error running prisma generate:', error)
+    return { success: false, message: error.message }
+  }
 }
 
 /**
@@ -73,6 +79,25 @@ export async function runPrismaMigrateDeploy() {
   return await runPrismaCommand(['migrate', 'deploy'])
 }
 
+/**
+ * Function to run Prisma format.
+ */
+export async function runPrismaFormat() {
+  try {
+    return await runPrismaCommand(['format'])
+  }
+  catch (error: any) {
+    console.error('Error running prisma format:', error)
+    return { success: false, message: error.message }
+  }
+}
+
 export async function runDbPush() {
-  return await runPrismaCommand(['db', 'push'])
+  try {
+    return await runPrismaCommand(['db', 'push', '--accept-data-loss'])
+  }
+  catch (error: any) {
+    console.error('Error running db push:', error)
+    return { success: false, message: error.message }
+  }
 }

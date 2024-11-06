@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres_db:
     image: postgres:17.0-alpine
@@ -8,7 +6,6 @@ services:
       - .env
     volumes:
       - postgresql_data:/var/lib/postgresql/data
-      - ./prisma/custom:/docker-entrypoint-initdb.d/
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 30s
@@ -16,27 +13,21 @@ services:
       retries: 5
     ports:
       - 5432:5432
-    networks:
-      - postgres-network
-
-  api:
-    image: ghcr.io/back3nd-team/back3nd:pre-alpha
-    container_name: back3nd
-    depends_on:
-      - postgres_db  # Ensures the database is available before the API
-    ports:
-      - "3737:3737"  # Maps the API port
-      - "3000:3000"  # Maps the Studio port
-      - "8087:80"  # Maps the Nginx port
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
-    networks:
-      - postgres-network
+ 
+  # api:
+  #   image: ghcr.io/back3nd-team/back3nd:pre-alpha
+  #   container_name: back3nd
+  #   depends_on:
+  #     - postgres_db  # Ensures the database is available before the API
+  #   ports:
+  #     - "3737:3737"  # Maps the API port
+  #     - "3000:3000"  # Maps the Studio port
+  #     - "8087:80"  # Maps the Nginx port
+  #   environment:
+  #     - NODE_ENV=production
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
+  #   networks:
+  #     - postgres-network
 
 volumes:
   postgresql_data:
-
-networks:
-  postgres-network:
-    driver: bridge

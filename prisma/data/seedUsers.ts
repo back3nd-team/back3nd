@@ -26,9 +26,9 @@ function generateRandomPassword(length = 8) {
 
 export async function seedUsers() {
   // Use environment variables for passwords or generate random ones
-  const adminPassword = Bun.env.BACK3ND_ADMIN_PASSWORD || generateRandomPassword()
-  const userPassword = Bun.env.BACK3ND_USER_PASSWORD || generateRandomPassword()
-  const publicPassword = Bun.env.BACK3ND_PUBLIC_PASSWORD || generateRandomPassword()
+  const adminPassword = import.meta.env.BACK3ND_ADMIN_PASSWORD || generateRandomPassword()
+  const userPassword = import.meta.env.BACK3ND_USER_PASSWORD || generateRandomPassword()
+  const publicPassword = import.meta.env.BACK3ND_PUBLIC_PASSWORD || generateRandomPassword()
 
   // Hash passwords for the users using argon2id
   const hashedAdminPassword = await hashPassword(adminPassword)
@@ -90,19 +90,13 @@ export async function seedUsers() {
   })
 
   // Log the generated passwords (for development purposes only)
-  if (!Bun.env.BACK3ND_ADMIN_PASSWORD) {
+  if (!import.meta.env.BACK3ND_ADMIN_PASSWORD) {
     console.warn(`Generated Admin password: ${adminPassword}`)
   }
-  if (!Bun.env.BACK3ND_USER_PASSWORD) {
+  if (!import.meta.env.BACK3ND_USER_PASSWORD) {
     console.warn(`Generated User password: ${userPassword}`)
   }
-  if (!Bun.env.BACK3ND_PUBLIC_PASSWORD) {
+  if (!import.meta.env.BACK3ND_PUBLIC_PASSWORD) {
     console.warn(`Generated Public password: ${publicPassword}`)
   }
 }
-
-seedUsers().catch((e) => {
-  console.error(e)
-}).finally(async () => {
-  await prisma.$disconnect()
-})

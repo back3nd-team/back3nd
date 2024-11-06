@@ -1,6 +1,6 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { runDbPush, runPrismaGenerate } from './prismaService'
+import { runDbPush, runPrismaFormat, runPrismaGenerate } from './prismaService'
 
 const prismaDirectory = './prisma/schema'
 
@@ -27,23 +27,30 @@ export async function readPrismaFile(filename: string): Promise<string> {
     throw new Error(`Could not read the file: ${filename}`)
   }
 }
-
-export async function savePrismaFile(filename: string, content: string): Promise<void> {
-  const filePath = join(prismaDirectory, filename)
+async function writeFile(filePath: string, content: string): Promise<void> {
   try {
     await Bun.write(filePath, content)
+    await runPrismaFormat()
+  }
+  catch (error) {
+    console.error(`Failed to write file (${filePath}): ${error}`)
+    throw new Error(`Could not write the file: ${filePath}`)
+  }
+}
+export async function savePrismaFile(filename: string, content: string): Promise<{ success: boolean, message?: string }> {
+  const filePath = join(prismaDirectory, filename)
+  const backupFile = await readPrismaFile(filename)
+  await writeFile(filePath, content)
 
-    const pushToDb = await runDbPush()
-    if (!pushToDb.success) {
-      throw new Error(`SQL migration creation failed: ${pushToDb.message}`)
-    }
-    const generateResult = await runPrismaGenerate()
-    if (!generateResult.success) {
-      throw new Error(`Prisma client generation failed: ${generateResult.message}`)
-    }
+  const pushToDb = await runDbPush()
+  if (!pushToDb.success) {
+    await writeFile(filePath, atob(backupFile))
+    return { success: false, message: pushToDb.message }
   }
-  catch (error: any) {
-    console.error(`Failed to save Prisma file (${filename}): ${error}`)
-    throw new Error(`Could not save the file: ${filename}. Error: ${error.message}`)
+  const generateResult = await runPrismaGenerate()
+  if (!generateResult.success) {
+    await writeFile(filePath, atob(backupFile))
+    return { success: false, message: `Generate failed: ${generateResult.message}` }
   }
+  return { success: true }
 }
