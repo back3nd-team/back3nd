@@ -22,12 +22,12 @@ export class PrismaFileController {
     const filename = c.req.param('filename')
     const { model } = await c.req.json()
     const decodedModel = atob(model)
-    try {
-      await savePrismaFile(filename, decodedModel)
-      return c.json({ success: true })
+    const result = await savePrismaFile(filename, decodedModel)
+    if (!result.success) {
+      console.error('Error saving Prisma file:', result.message)
+      return c.json(result)
     }
-    catch (error: any) {
-      return c.json({ error: 'Failed to save file', message: error.message }, 500)
-    }
+
+    return c.json(result)
   }
 }

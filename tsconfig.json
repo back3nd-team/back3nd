@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
     "baseUrl": ".",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "paths": {
       "@prisma/client": ["../../node_modules/@prisma/client"],
       "@zodTypes": ["./prisma/schema/zod"]

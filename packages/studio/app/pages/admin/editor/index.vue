@@ -64,8 +64,9 @@ async function updateFile(index: number) {
     }
     toast.add({ title: `${filename} updated successfully!` })
   }
-  catch (error) {
-    toast.add({ title: `${filename} not updated :^( `, color: 'red' })
+  catch (error: any) {
+    const errorMessage = error.message || 'Unknown error'
+    toast.add({ title: `${filename} not updated :^( ${errorMessage}`, color: 'red' })
     console.error('Error saving file:', error)
   }
   finally {

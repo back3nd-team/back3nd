@@ -8,7 +8,6 @@ services:
       - postgresql_data:/var/lib/postgresql/data
       - ./prisma/custom:/docker-entrypoint-initdb.d/
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -19,7 +18,7 @@ services:
       context: ..
       dockerfile: Docker/Dockerfile
     ports:
-      - "3737:3737"
+      - '3737:3737'
     environment:
       - NODE_ENV=production
     depends_on:
@@ -32,4 +31,3 @@ volumes:
 networks:
   postgres-network:
     driver: bridge
-

@@ -264,14 +264,18 @@ class ApiClient {
     })
   }
 
-  public async updatePrismaFile(filename: string, model: string): Promise<void> {
-    await this.request(`/prisma/files/${filename}`, {
+  public async updatePrismaFile(filename: string, model: string): Promise<{ success: boolean, message: string }> {
+    const result: { success: boolean, message: string } = await this.request(`/prisma/files/${filename}`, {
       method: 'POST',
       body: JSON.stringify({ model }),
       headers: {
         'Content-Type': 'application/json',
       },
     })
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+    return result
   }
 }
 
