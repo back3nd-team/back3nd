@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/authStore'
-
 import { z } from 'zod'
 
 definePageMeta({
@@ -39,9 +38,12 @@ async function login() {
     errors.value = { email: ['Login failed'], password: [] }
   }
 }
+const config = useRuntimeConfig()
+console.log('Entrou no config', config)
 </script>
 
 <template>
+  Hermes
   <div v-if="authStore.token">
     <p>User is connected</p>
   </div>
