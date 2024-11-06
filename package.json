@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "api": "bun run --hot packages/api/main.ts",
-    "studio": "cd packages/studio && bun run dev",
+    "studio": "cd packages/studio && nuxt dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "bunx prisma generate --schema=./prisma/schema",
