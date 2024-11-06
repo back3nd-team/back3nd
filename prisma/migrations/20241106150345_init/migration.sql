@@ -1,21 +1,9 @@
 -- CreateTable
-CREATE TABLE "test_table" (
+CREATE TABLE "category" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "data_field" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
 
-    CONSTRAINT "test_table_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "another" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "data_field" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "another_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "category_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -101,6 +89,9 @@ CREATE TABLE "back3nd_password_reset" (
 
     CONSTRAINT "back3nd_password_reset_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "back3nd_user_email_key" ON "back3nd_user"("email");

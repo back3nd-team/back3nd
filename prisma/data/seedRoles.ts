@@ -76,29 +76,29 @@ export async function seedRoles() {
   }
 
   // Ensure that the 'test_table' entity exists in the database
-  const testTable = await prisma.back3nd_entity.upsert({
-    where: { name: 'test_table' },
-    update: {},
-    create: {
-      name: 'test_table',
-    },
-  })
+  // const testTable = await prisma.back3nd_entity.upsert({
+  //   where: { name: 'test_table' },
+  //   update: {},
+  //   create: {
+  //     name: 'test_table',
+  //   },
+  // })
 
-  // Assign permissions for the Admin role on test_table
-  await assignPermissionsToRole('admin', testTable.id, {
-    can_create: true,
-    can_read: true,
-    can_update: true,
-    can_delete: true,
-  })
+  // // Assign permissions for the Admin role on test_table
+  // await assignPermissionsToRole('admin', testTable.id, {
+  //   can_create: true,
+  //   can_read: true,
+  //   can_update: true,
+  //   can_delete: true,
+  // })
 
-  // Assign permissions for the Comum role on test_table (no access)
-  await assignPermissionsToRole('comum', testTable.id, {
-    can_create: false,
-    can_read: false,
-    can_update: false,
-    can_delete: false,
-  })
+  // // Assign permissions for the Comum role on test_table (no access)
+  // await assignPermissionsToRole('comum', testTable.id, {
+  //   can_create: false,
+  //   can_read: false,
+  //   can_update: false,
+  //   can_delete: false,
+  // })
 
   console.warn('Roles and permissions have been seeded successfully.')
 }
