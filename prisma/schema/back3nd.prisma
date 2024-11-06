@@ -1,4 +1,5 @@
-model Category {
-  id    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name  String   @unique
+model category {
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name  String  @unique
+  teste String? @db.VarChar(125)
 }
