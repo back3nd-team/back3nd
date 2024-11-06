@@ -20,9 +20,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      apiBase: process.env.NODE_ENV === 'production'
-        ? 'http://localhost/api'
-        : process.env.NUXT_APP_API_URL || 'http://localhost:3737',
+      apiBase: process.env.NUXT_APP_API_URL || 'http://localhost:3737/',
     },
   },
 })

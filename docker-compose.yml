@@ -13,21 +13,20 @@ services:
       retries: 5
     ports:
       - 5432:5432
- 
-  # api:
-  #   image: ghcr.io/back3nd-team/back3nd:pre-alpha
-  #   container_name: back3nd
-  #   depends_on:
-  #     - postgres_db  # Ensures the database is available before the API
-  #   ports:
-  #     - "3737:3737"  # Maps the API port
-  #     - "3000:3000"  # Maps the Studio port
-  #     - "8087:80"  # Maps the Nginx port
-  #   environment:
-  #     - NODE_ENV=production
-  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
-  #   networks:
-  #     - postgres-network
+  api:
+    image: back3nd:alpha
+    container_name: back3nd
+    env_file:
+      - .env
+    depends_on:
+      - postgres_db  
+    ports:
+      - "3737:3737"
+      - "3000:3000"
+      - "8087:80"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
 
 volumes:
   postgresql_data:
