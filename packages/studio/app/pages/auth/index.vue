@@ -38,8 +38,6 @@ async function login() {
     errors.value = { email: ['Login failed'], password: [] }
   }
 }
-const config = useRuntimeConfig()
-console.log('Entrou no config', config)
 </script>
 
 <template>
