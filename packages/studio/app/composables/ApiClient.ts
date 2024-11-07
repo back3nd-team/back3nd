@@ -279,5 +279,5 @@ class ApiClient {
   }
 }
 
-const url = import.meta.env.NUXT_PUBLIC_API_BASE || process.env.NUXT_PUBLIC_API_BASE
-export const useApiClient = new ApiClient('https://edutrainning-back3nd.canopus.softagon.io/api')
+const url = import.meta.env.NUXT_PUBLIC_API_BASE || 'https://edutrainning-back3nd.canopus.softagon.io/api'
+export const useApiClient = new ApiClient(url)

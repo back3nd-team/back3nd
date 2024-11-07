@@ -1,7 +1,7 @@
 import { sign, verify as verifyJWT } from 'hono/jwt'
 
 export class AuthService {
-  static secret = Bun.env.JWT_SECRET || 'secret$tring'
+  static secret = Bun.env.JWT_SECRET as string
 
   /**
    * Generates a JWT token with a specified payload and expiration time.
