@@ -41,9 +41,6 @@ async function login() {
 </script>
 
 <template>
-  <div v-if="!authStore.token">
-    <p>User is not connected</p>
-  </div>
   <UForm :state="state" :error="Object.keys(errors).length > 0" @submit.prevent="login">
     <UFormGroup label="E-mail" :error="errors.email?.[0]" class="mb-4">
       <UInput
