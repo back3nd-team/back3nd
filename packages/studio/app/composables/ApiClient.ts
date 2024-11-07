@@ -278,7 +278,5 @@ class ApiClient {
     return result
   }
 }
-const url = process.env.NODE_ENV === 'production'
-  ? process.env.NUXT_PUBLIC_API_BASE
-  : import.meta.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3737'
+const url = process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3737'
 export const useApiClient = new ApiClient(url)

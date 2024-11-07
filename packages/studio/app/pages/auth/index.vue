@@ -41,11 +41,7 @@ async function login() {
 </script>
 
 <template>
-  Hermes
-  <div v-if="authStore.token">
-    <p>User is connected</p>
-  </div>
-  <div v-else>
+  <div v-if="!authStore.token">
     <p>User is not connected</p>
   </div>
   <UForm :state="state" :error="Object.keys(errors).length > 0" @submit.prevent="login">
