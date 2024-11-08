@@ -1,12 +1,4 @@
-function getApiBase() {
-  if (typeof window !== 'undefined') {
-    const isLocalhost = window.location.hostname === 'localhost'
-    return isLocalhost ? 'http://localhost:3737/api/' : `${window.location.origin}/api/`
-  }
-  return '/api/'
-}
 export default defineAppConfig({
-  apiBase: getApiBase(),
   ui: {
     primary: 'blue',
     secondary: 'green',

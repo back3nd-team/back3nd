@@ -5,12 +5,13 @@ import { getActivePinia } from 'pinia'
 class ApiClient {
   private baseURL: string
 
-  constructor(baseURL: string) {
-    this.baseURL = baseURL
+  constructor() {
+    this.baseURL = this.getBaseURL()
   }
 
   public getBaseURL(): string {
-    return this.baseURL
+    const isLocalhost = process.env.NODE_ENV === 'development'
+    return isLocalhost ? 'http://localhost:3737/api' : `api/`
   }
 
   public getToken(): string | null {
@@ -278,6 +279,4 @@ class ApiClient {
     return result
   }
 }
-const url = process.env.NUXT_PUBLIC_API_BASE || 'https://edutrainning-back3nd.canopus.softagon.io/api'
-
-export const useApiClient = new ApiClient(url)
+export const useApiClient = new ApiClient()
