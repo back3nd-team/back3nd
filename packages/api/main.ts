@@ -14,7 +14,6 @@ import userRoutes from './routes/userRoutes'
 import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a função
 
 const app = new OpenAPIHono({ strict: false })
-const apiRouter = new OpenAPIHono({ strict: false })
 
 async function initializeDocs() {
   const openAPISpec = await generateOpenAPISpec()
@@ -34,26 +33,24 @@ app.use('*', cors({
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
-apiRouter.use('*', authMiddleware)
-apiRouter.route('/auth', authRoutes)
-apiRouter.route('/users', userRoutes)
-apiRouter.route('/roles', roleRoutes)
-apiRouter.route('/collections', collectionRoutes)
-apiRouter.route('/items', itemRoutes)
-apiRouter.route('/hash', hashRoutes)
-apiRouter.route('/fields', entityFieldsRoutes)
-apiRouter.route('/prisma/files', prismaFileRoutes)
+app.use('*', authMiddleware)
+app.route('/api/auth', authRoutes)
+app.route('/api/users', userRoutes)
+app.route('/api/roles', roleRoutes)
+app.route('/api/collections', collectionRoutes)
+app.route('/api/items', itemRoutes)
+app.route('/api/hash', hashRoutes)
+app.route('/api/fields', entityFieldsRoutes)
+app.route('/api/prisma/files', prismaFileRoutes)
 
-apiRouter.get('/me', (c: Context) => {
+app.get('/api/me', (c: Context) => {
   const user = c.get('user')
   return c.json({ message: `Hello, ${user.name}`, user })
 })
 
-apiRouter.notFound((c: Context) => {
+app.notFound((c: Context) => {
   return c.json({ error: 'Not Found', message: 'The requested resource was not found' }, 404)
 })
-
-app.route('/api', apiRouter)
 
 app.onError((err, c: Context) => {
   console.error('An error occurred:', err)
