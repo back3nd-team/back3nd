@@ -1,5 +1,4 @@
 export default defineAppConfig({
-  apiBase: process.env.NUXT_APP_API_BASE,
   ui: {
     primary: 'blue',
     secondary: 'green',
