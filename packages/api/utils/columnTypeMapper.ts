@@ -1,6 +1,7 @@
 // Map of UI types to PostgreSQL column types
 const columnTypeMap: Record<string, string> = {
   'string': 'VARCHAR',
+  'character varying': 'VARCHAR',
   'uuid': 'UUID',
   'integer': 'INTEGER',
   'big integer': 'BIGINT',
@@ -23,7 +24,7 @@ const columnTypeMap: Record<string, string> = {
 
 export function mapFieldTypeToPostgreSQL(fieldType: string, size?: number | null): string {
   const normalizedFieldType = fieldType.trim().toLowerCase()
-  let postgresType = columnTypeMap[normalizedFieldType]
+  let postgresType = columnTypeMap[normalizedFieldType] || 'VARCHAR'
 
   if (!postgresType) {
     throw new Error(`Unsupported field type: ${fieldType}`)
