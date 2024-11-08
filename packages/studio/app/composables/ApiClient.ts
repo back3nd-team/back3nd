@@ -11,7 +11,7 @@ class ApiClient {
 
   public getBaseURL(): string {
     const isLocalhost = process.env.NODE_ENV === 'development'
-    return isLocalhost ? 'http://localhost:3737/api' : `api`
+    return isLocalhost ? 'http://localhost:3737/api/' : `api/`
   }
 
   public getToken(): string | null {
