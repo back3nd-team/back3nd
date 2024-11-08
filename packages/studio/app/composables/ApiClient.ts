@@ -62,7 +62,7 @@ class ApiClient {
   }
 
   public async login(email: string, password: string): Promise<void> {
-    const response = await fetch(`${this.baseURL}/auth/login`, {
+    const response = await fetch(`${this.baseURL}auth/login`, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
       headers: {
