@@ -34,8 +34,9 @@ class ApiClient {
       ...options.headers,
       Authorization: `Bearer ${token}`,
     }
-
-    const response = await fetch(`${this.baseURL}${url}`, {
+    const urlSanity = this.baseURL + url
+    const sanitizedURL = urlSanity.replace(/\/{2,}/g, '/')
+    const response = await fetch(sanitizedURL, {
       ...options,
       headers,
     })
