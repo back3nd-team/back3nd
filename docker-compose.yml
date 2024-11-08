@@ -14,7 +14,7 @@ services:
     ports:
       - 5432:5432
   api:
-    image: back3nd:alpha
+    image: ghcr.io/back3nd-team/back3nd:pre-alpha
     container_name: back3nd
     env_file:
       - .env
