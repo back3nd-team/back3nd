@@ -6,7 +6,7 @@ definePageMeta({
   layout: 'auth',
 })
 
-const authStore = useAuthStore()
+useAuthStore()
 const state = ref({
   email: '',
   password: '',

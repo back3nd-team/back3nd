@@ -1,4 +1,3 @@
-import { useApiClient } from '@/composables/ApiClient'
 import { useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
