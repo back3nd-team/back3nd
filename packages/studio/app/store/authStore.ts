@@ -1,6 +1,11 @@
 import { useLocalStorage } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
+function getApiClient() {
+  const apiBase = useAppConfig()
+  return useApiClient(apiBase)
+}
+
 export function isTokenExpired(token: string): boolean {
   try {
     const tokenPart = token.split('.')[1]
@@ -39,8 +44,9 @@ export const useAuthStore = defineStore('auth', {
     },
     async login(email: string, password: string) {
       try {
-        await useApiClient.login(email, password)
-        this.token = useApiClient.getToken()
+        const apiClient = getApiClient()
+        await apiClient.login(email, password)
+        this.token = apiClient.getToken()
         await this.fetchUserData()
       }
       catch (error) {
@@ -51,7 +57,8 @@ export const useAuthStore = defineStore('auth', {
 
     async logout() {
       try {
-        await useApiClient.logout()
+        const apiClient = getApiClient()
+        await apiClient.logout()
         this.clearAuthData()
       }
       catch (error) {
@@ -62,7 +69,8 @@ export const useAuthStore = defineStore('auth', {
 
     async fetchUserData() {
       try {
-        const userData = await useApiClient.fetchUserData()
+        const apiClient = getApiClient()
+        const userData = await apiClient.fetchUserData()
         this.user = userData
       }
       catch (error) {

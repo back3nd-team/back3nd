@@ -2,6 +2,8 @@
 import { useAuthStore } from '@/store/authStore'
 import { z } from 'zod'
 
+const apiBase = useAppConfig()
+const apiClient = useApiClient(apiBase)
 definePageMeta({
   layout: 'auth',
 })
@@ -29,7 +31,7 @@ async function login() {
     return
   }
   try {
-    await useApiClient.login(state.value.email, state.value.password)
+    await apiClient.login(state.value.email, state.value.password)
     console.warn('Login successful')
     router.push('/admin')
   }
