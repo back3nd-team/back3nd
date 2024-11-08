@@ -35,7 +35,7 @@ class ApiClient {
       Authorization: `Bearer ${token}`,
     }
 
-    const response = await fetch(`${this.baseURL}/${url}`, {
+    const response = await fetch(`${this.baseURL}${url}`, {
       ...options,
       headers,
     })
