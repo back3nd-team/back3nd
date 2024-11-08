@@ -12,7 +12,7 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const CategoryScalarFieldEnumSchema = z.enum(['id','name','teste']);
+export const CategoryScalarFieldEnumSchema = z.enum(['id','name','teste','alguma']);
 
 export const Back3nd_userScalarFieldEnumSchema = z.enum(['id','name','email','password','reset_token','created_at','updated_at']);
 
@@ -34,7 +34,7 @@ export const QueryModeSchema = z.enum(['default','insensitive']);
 
 export const NullsOrderSchema = z.enum(['first','last']);
 
-export const categoryOrderByRelevanceFieldEnumSchema = z.enum(['id','name','teste']);
+export const categoryOrderByRelevanceFieldEnumSchema = z.enum(['id','name','teste','alguma']);
 
 export const back3nd_userOrderByRelevanceFieldEnumSchema = z.enum(['id','name','email','password','reset_token']);
 
@@ -61,6 +61,7 @@ export const categorySchema = z.object({
   id: z.string(),
   name: z.string(),
   teste: z.string().nullable(),
+  alguma: z.string().nullable(),
 })
 
 export type category = z.infer<typeof categorySchema>
@@ -181,6 +182,7 @@ export const categorySelectSchema: z.ZodType<Prisma.categorySelect> = z.object({
   id: z.boolean().optional(),
   name: z.boolean().optional(),
   teste: z.boolean().optional(),
+  alguma: z.boolean().optional(),
 }).strict()
 
 // BACK 3 ND USER
@@ -392,12 +394,14 @@ export const categoryWhereInputSchema: z.ZodType<Prisma.categoryWhereInput> = z.
   id: z.union([ z.lazy(() => UuidFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   teste: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  alguma: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const categoryOrderByWithRelationInputSchema: z.ZodType<Prisma.categoryOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   teste: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  alguma: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _relevance: z.lazy(() => categoryOrderByRelevanceInputSchema).optional()
 }).strict();
 
@@ -420,12 +424,14 @@ export const categoryWhereUniqueInputSchema: z.ZodType<Prisma.categoryWhereUniqu
   OR: z.lazy(() => categoryWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => categoryWhereInputSchema),z.lazy(() => categoryWhereInputSchema).array() ]).optional(),
   teste: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  alguma: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict());
 
 export const categoryOrderByWithAggregationInputSchema: z.ZodType<Prisma.categoryOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
   teste: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  alguma: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => categoryCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => categoryMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => categoryMinOrderByAggregateInputSchema).optional()
@@ -438,6 +444,7 @@ export const categoryScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.cate
   id: z.union([ z.lazy(() => UuidWithAggregatesFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   teste: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  alguma: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const back3nd_userWhereInputSchema: z.ZodType<Prisma.back3nd_userWhereInput> = z.object({
@@ -965,43 +972,50 @@ export const back3nd_password_resetScalarWhereWithAggregatesInputSchema: z.ZodTy
 export const categoryCreateInputSchema: z.ZodType<Prisma.categoryCreateInput> = z.object({
   id: z.string().optional(),
   name: z.string(),
-  teste: z.string().optional().nullable()
+  teste: z.string().optional().nullable(),
+  alguma: z.string().optional().nullable()
 }).strict();
 
 export const categoryUncheckedCreateInputSchema: z.ZodType<Prisma.categoryUncheckedCreateInput> = z.object({
   id: z.string().optional(),
   name: z.string(),
-  teste: z.string().optional().nullable()
+  teste: z.string().optional().nullable(),
+  alguma: z.string().optional().nullable()
 }).strict();
 
 export const categoryUpdateInputSchema: z.ZodType<Prisma.categoryUpdateInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const categoryUncheckedUpdateInputSchema: z.ZodType<Prisma.categoryUncheckedUpdateInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const categoryCreateManyInputSchema: z.ZodType<Prisma.categoryCreateManyInput> = z.object({
   id: z.string().optional(),
   name: z.string(),
-  teste: z.string().optional().nullable()
+  teste: z.string().optional().nullable(),
+  alguma: z.string().optional().nullable()
 }).strict();
 
 export const categoryUpdateManyMutationInputSchema: z.ZodType<Prisma.categoryUpdateManyMutationInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const categoryUncheckedUpdateManyInputSchema: z.ZodType<Prisma.categoryUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const back3nd_userCreateInputSchema: z.ZodType<Prisma.back3nd_userCreateInput> = z.object({
@@ -1522,19 +1536,22 @@ export const categoryOrderByRelevanceInputSchema: z.ZodType<Prisma.categoryOrder
 export const categoryCountOrderByAggregateInputSchema: z.ZodType<Prisma.categoryCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.lazy(() => SortOrderSchema).optional()
+  teste: z.lazy(() => SortOrderSchema).optional(),
+  alguma: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const categoryMaxOrderByAggregateInputSchema: z.ZodType<Prisma.categoryMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.lazy(() => SortOrderSchema).optional()
+  teste: z.lazy(() => SortOrderSchema).optional(),
+  alguma: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const categoryMinOrderByAggregateInputSchema: z.ZodType<Prisma.categoryMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.lazy(() => SortOrderSchema).optional()
+  teste: z.lazy(() => SortOrderSchema).optional(),
+  alguma: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UuidWithAggregatesFilterSchema: z.ZodType<Prisma.UuidWithAggregatesFilter> = z.object({
