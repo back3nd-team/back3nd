@@ -11,7 +11,7 @@ class ApiClient {
 
   public getBaseURL(): string {
     const isLocalhost = process.env.NODE_ENV === 'development'
-    return isLocalhost ? 'http://localhost:3737/api' : `api/`
+    return isLocalhost ? 'http://localhost:3737/api/' : `/api/`
   }
 
   public getToken(): string | null {
@@ -48,22 +48,21 @@ class ApiClient {
   }
 
   public async readItem<T>(collection: string, id: string | number): Promise<T> {
-    return this.request<T>(`/items/${collection}/${id}`)
+    return this.request<T>(`items/${collection}/${id}`)
   }
 
   public async readItems<T>(collection: string, query: any = {}): Promise<T[]> {
     const queryString = new URLSearchParams(query).toString()
-    return this.request<T[]>(`/items/${collection}?${queryString}`)
+    return this.request<T[]>(`items/${collection}?${queryString}`)
   }
 
   public async fetchCollections(): Promise<string[]> {
-    const data = await this.request<{ collections: string[] }>('/items/collections')
+    const data = await this.request<{ collections: string[] }>('items/collections')
     return data.collections
   }
 
   public async login(email: string, password: string): Promise<void> {
-    const urlSanity = `${this.baseURL.replace(/\/$/, '')}/auth/login`
-    console.log('URL COMPLETA', urlSanity, this.baseURL)
+    const urlSanity = `${this.baseURL}/auth/login`
     const response = await fetch(urlSanity, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -99,7 +98,7 @@ class ApiClient {
   }
 
   public async fetchUserData(): Promise<any> {
-    return this.request<any>('/me')
+    return this.request<any>('me')
   }
 
   public async createUser(name: string, email: string, password: string, roles: string[]): Promise<void> {
@@ -110,7 +109,7 @@ class ApiClient {
   }
 
   public async listUsers(): Promise<any[]> {
-    return this.request<any[]>('/users', {
+    return this.request<any[]>('users', {
       method: 'GET',
     })
   }
@@ -142,7 +141,7 @@ class ApiClient {
   }
 
   public async listRoles(): Promise<any[]> {
-    return this.request<any[]>('/roles', {
+    return this.request<any[]>('roles', {
       method: 'GET',
     })
   }
@@ -167,7 +166,7 @@ class ApiClient {
   }
 
   public async listCollections(): Promise<any[]> {
-    return this.request<any[]>('/collections', {
+    return this.request<any[]>('collections', {
       method: 'GET',
     })
   }
@@ -256,19 +255,19 @@ class ApiClient {
   }
 
   public async listPrismaFiles(): Promise<string[]> {
-    return this.request<string[]>('/prisma/files', {
+    return this.request<string[]>('prisma/files', {
       method: 'GET',
     })
   }
 
   public async readPrismaFile(filename: string): Promise<{ model: string }> {
-    return this.request<{ model: string }>(`/prisma/files/${filename}`, {
+    return this.request<{ model: string }>(`prisma/files/${filename}`, {
       method: 'GET',
     })
   }
 
   public async updatePrismaFile(filename: string, model: string): Promise<{ success: boolean, message: string }> {
-    const result: { success: boolean, message: string } = await this.request(`/prisma/files/${filename}`, {
+    const result: { success: boolean, message: string } = await this.request(`prisma/files/${filename}`, {
       method: 'POST',
       body: JSON.stringify({ model }),
       headers: {
