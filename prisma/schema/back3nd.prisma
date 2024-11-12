@@ -1,4 +1,4 @@
-model category {
+model news {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String  @unique
 }

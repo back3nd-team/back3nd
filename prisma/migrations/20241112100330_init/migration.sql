@@ -1,12 +1,4 @@
 -- CreateTable
-CREATE TABLE "category" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "category_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "news" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" TEXT NOT NULL,
@@ -97,9 +89,6 @@ CREATE TABLE "back3nd_password_reset" (
 
     CONSTRAINT "back3nd_password_reset_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "category_name_key" ON "category"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "news_name_key" ON "news"("name");
