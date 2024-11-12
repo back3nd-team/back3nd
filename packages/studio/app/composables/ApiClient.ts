@@ -63,6 +63,7 @@ class ApiClient {
 
   public async login(email: string, password: string): Promise<void> {
     const urlSanity = `${this.baseURL}auth/login`
+    console.log('URL COMPLETA', urlSanity, this.baseURL)
     const response = await fetch(urlSanity, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
