@@ -23,6 +23,7 @@ const errors = ref<{ email?: string[], password?: string[] }>({})
 
 async function login() {
   const result = loginSchema.safeParse(state.value)
+  console.warn('Login CHEGOU!')
 
   if (!result.success) {
     errors.value = result.error.flatten().fieldErrors as { email?: string[], password?: string[] }

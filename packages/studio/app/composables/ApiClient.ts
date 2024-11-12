@@ -11,7 +11,7 @@ class ApiClient {
 
   public getBaseURL(): string {
     const isLocalhost = process.env.NODE_ENV === 'development'
-    return isLocalhost ? 'http://localhost:3737/api/' : `api/`
+    return isLocalhost ? 'http://localhost:3737/api' : `api/`
   }
 
   public getToken(): string | null {
@@ -35,8 +35,7 @@ class ApiClient {
       Authorization: `Bearer ${token}`,
     }
     const urlSanity = this.baseURL + url
-    const sanitizedURL = urlSanity.replace(/\/{2,}/g, '/')
-    const response = await fetch(sanitizedURL, {
+    const response = await fetch(urlSanity, {
       ...options,
       headers,
     })
@@ -63,7 +62,8 @@ class ApiClient {
   }
 
   public async login(email: string, password: string): Promise<void> {
-    const response = await fetch(`${this.baseURL}/auth/login`, {
+    const urlSanity = `${this.baseURL}/auth/login`
+    const response = await fetch(urlSanity, {
       method: 'POST',
       body: JSON.stringify({ email, password }),
       headers: {

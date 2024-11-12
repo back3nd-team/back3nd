@@ -12,7 +12,9 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const CategoryScalarFieldEnumSchema = z.enum(['id','name','teste','alguma']);
+export const CategoryScalarFieldEnumSchema = z.enum(['id','name']);
+
+export const NewsScalarFieldEnumSchema = z.enum(['id','name']);
 
 export const Back3nd_userScalarFieldEnumSchema = z.enum(['id','name','email','password','reset_token','created_at','updated_at']);
 
@@ -32,9 +34,11 @@ export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
 
-export const NullsOrderSchema = z.enum(['first','last']);
+export const categoryOrderByRelevanceFieldEnumSchema = z.enum(['id','name']);
 
-export const categoryOrderByRelevanceFieldEnumSchema = z.enum(['id','name','teste','alguma']);
+export const newsOrderByRelevanceFieldEnumSchema = z.enum(['id','name']);
+
+export const NullsOrderSchema = z.enum(['first','last']);
 
 export const back3nd_userOrderByRelevanceFieldEnumSchema = z.enum(['id','name','email','password','reset_token']);
 
@@ -60,11 +64,20 @@ export const back3nd_password_resetOrderByRelevanceFieldEnumSchema = z.enum(['id
 export const categorySchema = z.object({
   id: z.string(),
   name: z.string(),
-  teste: z.string().nullable(),
-  alguma: z.string().nullable(),
 })
 
 export type category = z.infer<typeof categorySchema>
+
+/////////////////////////////////////////
+// NEWS SCHEMA
+/////////////////////////////////////////
+
+export const newsSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+})
+
+export type news = z.infer<typeof newsSchema>
 
 /////////////////////////////////////////
 // BACK 3 ND USER SCHEMA
@@ -181,8 +194,14 @@ export type back3nd_password_reset = z.infer<typeof back3nd_password_resetSchema
 export const categorySelectSchema: z.ZodType<Prisma.categorySelect> = z.object({
   id: z.boolean().optional(),
   name: z.boolean().optional(),
-  teste: z.boolean().optional(),
-  alguma: z.boolean().optional(),
+}).strict()
+
+// NEWS
+//------------------------------------------------------
+
+export const newsSelectSchema: z.ZodType<Prisma.newsSelect> = z.object({
+  id: z.boolean().optional(),
+  name: z.boolean().optional(),
 }).strict()
 
 // BACK 3 ND USER
@@ -393,15 +412,11 @@ export const categoryWhereInputSchema: z.ZodType<Prisma.categoryWhereInput> = z.
   NOT: z.union([ z.lazy(() => categoryWhereInputSchema),z.lazy(() => categoryWhereInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => UuidFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  teste: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  alguma: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict();
 
 export const categoryOrderByWithRelationInputSchema: z.ZodType<Prisma.categoryOrderByWithRelationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  alguma: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _relevance: z.lazy(() => categoryOrderByRelevanceInputSchema).optional()
 }).strict();
 
@@ -423,15 +438,11 @@ export const categoryWhereUniqueInputSchema: z.ZodType<Prisma.categoryWhereUniqu
   AND: z.union([ z.lazy(() => categoryWhereInputSchema),z.lazy(() => categoryWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => categoryWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => categoryWhereInputSchema),z.lazy(() => categoryWhereInputSchema).array() ]).optional(),
-  teste: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  alguma: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
 }).strict());
 
 export const categoryOrderByWithAggregationInputSchema: z.ZodType<Prisma.categoryOrderByWithAggregationInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
-  alguma: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   _count: z.lazy(() => categoryCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => categoryMaxOrderByAggregateInputSchema).optional(),
   _min: z.lazy(() => categoryMinOrderByAggregateInputSchema).optional()
@@ -443,8 +454,56 @@ export const categoryScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.cate
   NOT: z.union([ z.lazy(() => categoryScalarWhereWithAggregatesInputSchema),z.lazy(() => categoryScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   id: z.union([ z.lazy(() => UuidWithAggregatesFilterSchema),z.string() ]).optional(),
   name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  teste: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
-  alguma: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+}).strict();
+
+export const newsWhereInputSchema: z.ZodType<Prisma.newsWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => newsWhereInputSchema),z.lazy(() => newsWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => newsWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => newsWhereInputSchema),z.lazy(() => newsWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => UuidFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
+export const newsOrderByWithRelationInputSchema: z.ZodType<Prisma.newsOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  _relevance: z.lazy(() => newsOrderByRelevanceInputSchema).optional()
+}).strict();
+
+export const newsWhereUniqueInputSchema: z.ZodType<Prisma.newsWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string(),
+    name: z.string()
+  }),
+  z.object({
+    id: z.string(),
+  }),
+  z.object({
+    name: z.string(),
+  }),
+])
+.and(z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  AND: z.union([ z.lazy(() => newsWhereInputSchema),z.lazy(() => newsWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => newsWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => newsWhereInputSchema),z.lazy(() => newsWhereInputSchema).array() ]).optional(),
+}).strict());
+
+export const newsOrderByWithAggregationInputSchema: z.ZodType<Prisma.newsOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => newsCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => newsMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => newsMinOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const newsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.newsScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => newsScalarWhereWithAggregatesInputSchema),z.lazy(() => newsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => newsScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => newsScalarWhereWithAggregatesInputSchema),z.lazy(() => newsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => UuidWithAggregatesFilterSchema),z.string() ]).optional(),
+  name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
 export const back3nd_userWhereInputSchema: z.ZodType<Prisma.back3nd_userWhereInput> = z.object({
@@ -971,51 +1030,72 @@ export const back3nd_password_resetScalarWhereWithAggregatesInputSchema: z.ZodTy
 
 export const categoryCreateInputSchema: z.ZodType<Prisma.categoryCreateInput> = z.object({
   id: z.string().optional(),
-  name: z.string(),
-  teste: z.string().optional().nullable(),
-  alguma: z.string().optional().nullable()
+  name: z.string()
 }).strict();
 
 export const categoryUncheckedCreateInputSchema: z.ZodType<Prisma.categoryUncheckedCreateInput> = z.object({
   id: z.string().optional(),
-  name: z.string(),
-  teste: z.string().optional().nullable(),
-  alguma: z.string().optional().nullable()
+  name: z.string()
 }).strict();
 
 export const categoryUpdateInputSchema: z.ZodType<Prisma.categoryUpdateInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const categoryUncheckedUpdateInputSchema: z.ZodType<Prisma.categoryUncheckedUpdateInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const categoryCreateManyInputSchema: z.ZodType<Prisma.categoryCreateManyInput> = z.object({
   id: z.string().optional(),
-  name: z.string(),
-  teste: z.string().optional().nullable(),
-  alguma: z.string().optional().nullable()
+  name: z.string()
 }).strict();
 
 export const categoryUpdateManyMutationInputSchema: z.ZodType<Prisma.categoryUpdateManyMutationInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const categoryUncheckedUpdateManyInputSchema: z.ZodType<Prisma.categoryUncheckedUpdateManyInput> = z.object({
   id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  teste: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  alguma: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const newsCreateInputSchema: z.ZodType<Prisma.newsCreateInput> = z.object({
+  id: z.string().optional(),
+  name: z.string()
+}).strict();
+
+export const newsUncheckedCreateInputSchema: z.ZodType<Prisma.newsUncheckedCreateInput> = z.object({
+  id: z.string().optional(),
+  name: z.string()
+}).strict();
+
+export const newsUpdateInputSchema: z.ZodType<Prisma.newsUpdateInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const newsUncheckedUpdateInputSchema: z.ZodType<Prisma.newsUncheckedUpdateInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const newsCreateManyInputSchema: z.ZodType<Prisma.newsCreateManyInput> = z.object({
+  id: z.string().optional(),
+  name: z.string()
+}).strict();
+
+export const newsUpdateManyMutationInputSchema: z.ZodType<Prisma.newsUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const newsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.newsUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const back3nd_userCreateInputSchema: z.ZodType<Prisma.back3nd_userCreateInput> = z.object({
@@ -1506,27 +1586,6 @@ export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
   not: z.union([ z.string(),z.lazy(() => NestedStringFilterSchema) ]).optional(),
 }).strict();
 
-export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
-  equals: z.string().optional().nullable(),
-  in: z.string().array().optional().nullable(),
-  notIn: z.string().array().optional().nullable(),
-  lt: z.string().optional(),
-  lte: z.string().optional(),
-  gt: z.string().optional(),
-  gte: z.string().optional(),
-  contains: z.string().optional(),
-  startsWith: z.string().optional(),
-  endsWith: z.string().optional(),
-  search: z.string().optional(),
-  mode: z.lazy(() => QueryModeSchema).optional(),
-  not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
-  sort: z.lazy(() => SortOrderSchema),
-  nulls: z.lazy(() => NullsOrderSchema).optional()
-}).strict();
-
 export const categoryOrderByRelevanceInputSchema: z.ZodType<Prisma.categoryOrderByRelevanceInput> = z.object({
   fields: z.union([ z.lazy(() => categoryOrderByRelevanceFieldEnumSchema),z.lazy(() => categoryOrderByRelevanceFieldEnumSchema).array() ]),
   sort: z.lazy(() => SortOrderSchema),
@@ -1535,23 +1594,17 @@ export const categoryOrderByRelevanceInputSchema: z.ZodType<Prisma.categoryOrder
 
 export const categoryCountOrderByAggregateInputSchema: z.ZodType<Prisma.categoryCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.lazy(() => SortOrderSchema).optional(),
-  alguma: z.lazy(() => SortOrderSchema).optional()
+  name: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const categoryMaxOrderByAggregateInputSchema: z.ZodType<Prisma.categoryMaxOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.lazy(() => SortOrderSchema).optional(),
-  alguma: z.lazy(() => SortOrderSchema).optional()
+  name: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const categoryMinOrderByAggregateInputSchema: z.ZodType<Prisma.categoryMinOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
-  name: z.lazy(() => SortOrderSchema).optional(),
-  teste: z.lazy(() => SortOrderSchema).optional(),
-  alguma: z.lazy(() => SortOrderSchema).optional()
+  name: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const UuidWithAggregatesFilterSchema: z.ZodType<Prisma.UuidWithAggregatesFilter> = z.object({
@@ -1589,7 +1642,28 @@ export const StringWithAggregatesFilterSchema: z.ZodType<Prisma.StringWithAggreg
   _max: z.lazy(() => NestedStringFilterSchema).optional()
 }).strict();
 
-export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
+export const newsOrderByRelevanceInputSchema: z.ZodType<Prisma.newsOrderByRelevanceInput> = z.object({
+  fields: z.union([ z.lazy(() => newsOrderByRelevanceFieldEnumSchema),z.lazy(() => newsOrderByRelevanceFieldEnumSchema).array() ]),
+  sort: z.lazy(() => SortOrderSchema),
+  search: z.string()
+}).strict();
+
+export const newsCountOrderByAggregateInputSchema: z.ZodType<Prisma.newsCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const newsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.newsMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const newsMinOrderByAggregateInputSchema: z.ZodType<Prisma.newsMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  name: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
   notIn: z.string().array().optional().nullable(),
@@ -1602,10 +1676,7 @@ export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNu
   endsWith: z.string().optional(),
   search: z.string().optional(),
   mode: z.lazy(() => QueryModeSchema).optional(),
-  not: z.union([ z.string(),z.lazy(() => NestedStringNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
+  not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
 export const DateTimeFilterSchema: z.ZodType<Prisma.DateTimeFilter> = z.object({
@@ -1629,6 +1700,11 @@ export const Back3nd_user_roleListRelationFilterSchema: z.ZodType<Prisma.Back3nd
   every: z.lazy(() => back3nd_user_roleWhereInputSchema).optional(),
   some: z.lazy(() => back3nd_user_roleWhereInputSchema).optional(),
   none: z.lazy(() => back3nd_user_roleWhereInputSchema).optional()
+}).strict();
+
+export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
+  sort: z.lazy(() => SortOrderSchema),
+  nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 
 export const back3nd_password_resetOrderByRelationAggregateInputSchema: z.ZodType<Prisma.back3nd_password_resetOrderByRelationAggregateInput> = z.object({
@@ -1673,6 +1749,25 @@ export const back3nd_userMinOrderByAggregateInputSchema: z.ZodType<Prisma.back3n
   reset_token: z.lazy(() => SortOrderSchema).optional(),
   created_at: z.lazy(() => SortOrderSchema).optional(),
   updated_at: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  contains: z.string().optional(),
+  startsWith: z.string().optional(),
+  endsWith: z.string().optional(),
+  search: z.string().optional(),
+  mode: z.lazy(() => QueryModeSchema).optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedStringNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
 }).strict();
 
 export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAggregatesFilter> = z.object({
@@ -1986,10 +2081,6 @@ export const StringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.StringFiel
   set: z.string().optional()
 }).strict();
 
-export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
-  set: z.string().optional().nullable()
-}).strict();
-
 export const back3nd_password_resetCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.back3nd_password_resetCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => back3nd_password_resetCreateWithoutUserInputSchema),z.lazy(() => back3nd_password_resetCreateWithoutUserInputSchema).array(),z.lazy(() => back3nd_password_resetUncheckedCreateWithoutUserInputSchema),z.lazy(() => back3nd_password_resetUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => back3nd_password_resetCreateOrConnectWithoutUserInputSchema),z.lazy(() => back3nd_password_resetCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -2016,6 +2107,10 @@ export const back3nd_user_roleUncheckedCreateNestedManyWithoutUserInputSchema: z
   connectOrCreate: z.union([ z.lazy(() => back3nd_user_roleCreateOrConnectWithoutUserInputSchema),z.lazy(() => back3nd_user_roleCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
   createMany: z.lazy(() => back3nd_user_roleCreateManyUserInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => back3nd_user_roleWhereUniqueInputSchema),z.lazy(() => back3nd_user_roleWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
+  set: z.string().optional().nullable()
 }).strict();
 
 export const DateTimeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.DateTimeFieldUpdateOperationsInput> = z.object({
@@ -2369,21 +2464,6 @@ export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.
   not: z.union([ z.string(),z.lazy(() => NestedStringFilterSchema) ]).optional(),
 }).strict();
 
-export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNullableFilter> = z.object({
-  equals: z.string().optional().nullable(),
-  in: z.string().array().optional().nullable(),
-  notIn: z.string().array().optional().nullable(),
-  lt: z.string().optional(),
-  lte: z.string().optional(),
-  gt: z.string().optional(),
-  gte: z.string().optional(),
-  contains: z.string().optional(),
-  startsWith: z.string().optional(),
-  endsWith: z.string().optional(),
-  search: z.string().optional(),
-  not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
 export const NestedUuidWithAggregatesFilterSchema: z.ZodType<Prisma.NestedUuidWithAggregatesFilter> = z.object({
   equals: z.string().optional(),
   in: z.string().array().optional(),
@@ -2428,6 +2508,32 @@ export const NestedStringWithAggregatesFilterSchema: z.ZodType<Prisma.NestedStri
   _max: z.lazy(() => NestedStringFilterSchema).optional()
 }).strict();
 
+export const NestedStringNullableFilterSchema: z.ZodType<Prisma.NestedStringNullableFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  contains: z.string().optional(),
+  startsWith: z.string().optional(),
+  endsWith: z.string().optional(),
+  search: z.string().optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
+export const NestedDateTimeFilterSchema: z.ZodType<Prisma.NestedDateTimeFilter> = z.object({
+  equals: z.coerce.date().optional(),
+  in: z.coerce.date().array().optional(),
+  notIn: z.coerce.date().array().optional(),
+  lt: z.coerce.date().optional(),
+  lte: z.coerce.date().optional(),
+  gt: z.coerce.date().optional(),
+  gte: z.coerce.date().optional(),
+  not: z.union([ z.coerce.date(),z.lazy(() => NestedDateTimeFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedStringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedStringNullableWithAggregatesFilter> = z.object({
   equals: z.string().optional().nullable(),
   in: z.string().array().optional().nullable(),
@@ -2455,17 +2561,6 @@ export const NestedIntNullableFilterSchema: z.ZodType<Prisma.NestedIntNullableFi
   gt: z.number().optional(),
   gte: z.number().optional(),
   not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const NestedDateTimeFilterSchema: z.ZodType<Prisma.NestedDateTimeFilter> = z.object({
-  equals: z.coerce.date().optional(),
-  in: z.coerce.date().array().optional(),
-  notIn: z.coerce.date().array().optional(),
-  lt: z.coerce.date().optional(),
-  lte: z.coerce.date().optional(),
-  gt: z.coerce.date().optional(),
-  gte: z.coerce.date().optional(),
-  not: z.union([ z.coerce.date(),z.lazy(() => NestedDateTimeFilterSchema) ]).optional(),
 }).strict();
 
 export const NestedDateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.NestedDateTimeWithAggregatesFilter> = z.object({
@@ -3409,6 +3504,63 @@ export const categoryFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.categoryFindU
   where: categoryWhereUniqueInputSchema,
 }).strict() ;
 
+export const newsFindFirstArgsSchema: z.ZodType<Prisma.newsFindFirstArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereInputSchema.optional(),
+  orderBy: z.union([ newsOrderByWithRelationInputSchema.array(),newsOrderByWithRelationInputSchema ]).optional(),
+  cursor: newsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ NewsScalarFieldEnumSchema,NewsScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const newsFindFirstOrThrowArgsSchema: z.ZodType<Prisma.newsFindFirstOrThrowArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereInputSchema.optional(),
+  orderBy: z.union([ newsOrderByWithRelationInputSchema.array(),newsOrderByWithRelationInputSchema ]).optional(),
+  cursor: newsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ NewsScalarFieldEnumSchema,NewsScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const newsFindManyArgsSchema: z.ZodType<Prisma.newsFindManyArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereInputSchema.optional(),
+  orderBy: z.union([ newsOrderByWithRelationInputSchema.array(),newsOrderByWithRelationInputSchema ]).optional(),
+  cursor: newsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ NewsScalarFieldEnumSchema,NewsScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const newsAggregateArgsSchema: z.ZodType<Prisma.newsAggregateArgs> = z.object({
+  where: newsWhereInputSchema.optional(),
+  orderBy: z.union([ newsOrderByWithRelationInputSchema.array(),newsOrderByWithRelationInputSchema ]).optional(),
+  cursor: newsWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const newsGroupByArgsSchema: z.ZodType<Prisma.newsGroupByArgs> = z.object({
+  where: newsWhereInputSchema.optional(),
+  orderBy: z.union([ newsOrderByWithAggregationInputSchema.array(),newsOrderByWithAggregationInputSchema ]).optional(),
+  by: NewsScalarFieldEnumSchema.array(),
+  having: newsScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const newsFindUniqueArgsSchema: z.ZodType<Prisma.newsFindUniqueArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereUniqueInputSchema,
+}).strict() ;
+
+export const newsFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.newsFindUniqueOrThrowArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereUniqueInputSchema,
+}).strict() ;
+
 export const back3nd_userFindFirstArgsSchema: z.ZodType<Prisma.back3nd_userFindFirstArgs> = z.object({
   select: back3nd_userSelectSchema.optional(),
   include: back3nd_userIncludeSchema.optional(),
@@ -3883,6 +4035,48 @@ export const categoryUpdateManyArgsSchema: z.ZodType<Prisma.categoryUpdateManyAr
 
 export const categoryDeleteManyArgsSchema: z.ZodType<Prisma.categoryDeleteManyArgs> = z.object({
   where: categoryWhereInputSchema.optional(),
+}).strict() ;
+
+export const newsCreateArgsSchema: z.ZodType<Prisma.newsCreateArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  data: z.union([ newsCreateInputSchema,newsUncheckedCreateInputSchema ]),
+}).strict() ;
+
+export const newsUpsertArgsSchema: z.ZodType<Prisma.newsUpsertArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereUniqueInputSchema,
+  create: z.union([ newsCreateInputSchema,newsUncheckedCreateInputSchema ]),
+  update: z.union([ newsUpdateInputSchema,newsUncheckedUpdateInputSchema ]),
+}).strict() ;
+
+export const newsCreateManyArgsSchema: z.ZodType<Prisma.newsCreateManyArgs> = z.object({
+  data: z.union([ newsCreateManyInputSchema,newsCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const newsCreateManyAndReturnArgsSchema: z.ZodType<Prisma.newsCreateManyAndReturnArgs> = z.object({
+  data: z.union([ newsCreateManyInputSchema,newsCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const newsDeleteArgsSchema: z.ZodType<Prisma.newsDeleteArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  where: newsWhereUniqueInputSchema,
+}).strict() ;
+
+export const newsUpdateArgsSchema: z.ZodType<Prisma.newsUpdateArgs> = z.object({
+  select: newsSelectSchema.optional(),
+  data: z.union([ newsUpdateInputSchema,newsUncheckedUpdateInputSchema ]),
+  where: newsWhereUniqueInputSchema,
+}).strict() ;
+
+export const newsUpdateManyArgsSchema: z.ZodType<Prisma.newsUpdateManyArgs> = z.object({
+  data: z.union([ newsUpdateManyMutationInputSchema,newsUncheckedUpdateManyInputSchema ]),
+  where: newsWhereInputSchema.optional(),
+}).strict() ;
+
+export const newsDeleteManyArgsSchema: z.ZodType<Prisma.newsDeleteManyArgs> = z.object({
+  where: newsWhereInputSchema.optional(),
 }).strict() ;
 
 export const back3nd_userCreateArgsSchema: z.ZodType<Prisma.back3nd_userCreateArgs> = z.object({
