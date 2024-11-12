@@ -20,7 +20,6 @@ export function checkPermissions(tableName: string, permissionType: keyof { can_
     const role = await prisma.back3nd_role.findUnique({
       where: { id: userRole.role_id },
     })
-
     if (!role) {
       return c.json({ error: 'Role not found' }, 403)
     }

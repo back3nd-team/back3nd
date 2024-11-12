@@ -10,7 +10,6 @@ export async function getItems(c: Context) {
   const collectionName = c.req.param('collection')
 
   const result = await getItemsForCollection(collectionName)
-
   if (result.error) {
     return c.json({ error: result.error }, result.statusCode as StatusCode)
   }

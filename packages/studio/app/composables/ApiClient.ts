@@ -172,19 +172,19 @@ class ApiClient {
   }
 
   public async getCollection(collectionId: string): Promise<any> {
-    return this.request<any>(`/collections/${collectionId}`, {
+    return this.request<any>(`collections/${collectionId}`, {
       method: 'GET',
     })
   }
 
   public async getPermissions(collectionId: string): Promise<any> {
-    return this.request<any>(`/collections/${collectionId}/permissions`, {
+    return this.request<any>(`collections/${collectionId}/permissions`, {
       method: 'GET',
     })
   }
 
   public async createPermission(role_id: string, table_id: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean): Promise<any> {
-    return this.request<any>(`/collections/${table_id}/permissions`, {
+    return this.request<any>(`collections/${table_id}/permissions`, {
       method: 'POST',
       body: JSON.stringify({
         role_id,
@@ -198,7 +198,7 @@ class ApiClient {
   }
 
   public async updatePermission(role_id: string, table_id: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean): Promise<any> {
-    return this.request<any>(`/collections/${table_id}/permissions`, {
+    return this.request<any>(`collections/${table_id}/permissions`, {
       method: 'PUT',
       body: JSON.stringify({
         table_id,
@@ -212,7 +212,7 @@ class ApiClient {
   }
 
   public async deletePermission(role_id: string, table_id: string): Promise<void> {
-    await this.request(`/collections/${table_id}/permissions`, {
+    await this.request(`collections/${table_id}/permissions`, {
       method: 'DELETE',
       body: JSON.stringify({
         role_id,
@@ -222,33 +222,33 @@ class ApiClient {
   }
 
   public async createCollection(collection: CreateCollectionData): Promise<void> {
-    return await this.request('/collections', {
+    return await this.request('collections', {
       method: 'POST',
       body: JSON.stringify(collection),
     })
   }
 
   public async updateCollection(collectionId: string, collection: { name: string, email: string, role: string }): Promise<void> {
-    await this.request(`/collections/${collectionId}`, {
+    await this.request(`collections/${collectionId}`, {
       method: 'PUT',
       body: JSON.stringify(collection),
     })
   }
 
   public async deleteCollection(collectionId: string): Promise<void> {
-    await this.request(`/collections/${collectionId}`, {
+    await this.request(`collections/${collectionId}`, {
       method: 'DELETE',
     })
   }
 
   public async listEntityFields(entityId: string): Promise<any[]> {
-    return this.request<any[]>(`/fields/${entityId}`, {
+    return this.request<any[]>(`fields/${entityId}`, {
       method: 'GET',
     })
   }
 
   public async createEntityField(entityId: string, fieldData: any): Promise<void> {
-    await this.request(`/fields/${entityId}`, {
+    await this.request(`fields/${entityId}`, {
       method: 'POST',
       body: JSON.stringify(fieldData),
     })
