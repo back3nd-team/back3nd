@@ -1,3 +1,8 @@
 # deps
 node_modules/
 .env
+prisma/schema/*
+!prisma/schema/schema.prisma
+prisma/migrations/*
+!prisma/migrations/20241112100330_init
+prisma/schema/zod*

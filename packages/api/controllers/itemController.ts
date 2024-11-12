@@ -1,6 +1,6 @@
 import type { Context } from 'hono'
 import type { StatusCode } from 'hono/utils/http-status'
-import { createItemInCollection, deleteItemFromCollection, getFieldsForCollection, getItemsForCollection, listCollectionsForUser, updateItemInCollection } from '../services/itemService'
+import { createItemInCollection, deleteItemFromCollection, getFieldsForCollection, getItemByIdFromCollection, getItemsForCollection, getItemsForCollectionWithFilters, listCollectionsForUser, updateItemInCollection } from '../services/itemService'
 
 /**
  * Controller to handle requests to /items/:collection
@@ -10,7 +10,6 @@ export async function getItems(c: Context) {
   const collectionName = c.req.param('collection')
 
   const result = await getItemsForCollection(collectionName)
-
   if (result.error) {
     return c.json({ error: result.error }, result.statusCode as StatusCode)
   }
@@ -109,4 +108,39 @@ export async function deleteItem(c: Context, itemId: string) {
   }
 
   return c.json({ message: 'Item deleted successfully' }, 200)
+}
+
+/**
+ * Controller to handle requests to get an item by ID from a collection
+ * @param c Context object
+ * @param itemId The ID of the item to fetch
+ */
+export async function getItemById(c: Context, itemId: string) {
+  const collectionName = c.req.param('collection')
+
+  const result = await getItemByIdFromCollection(collectionName, itemId)
+  if (result.error) {
+    return c.json({ error: result.error }, result.statusCode as StatusCode)
+  }
+
+  return c.json(result.data, 200)
+}
+
+/**
+ * Controller to handle requests to /items/:collection with filters
+ * @param c Context object
+ * @param orderBy Field to order by
+ * @param ascending Order direction
+ * @param limit Limit of items
+ * @param filter Filter object
+ */
+export async function getItemsWithFilters(c: Context, orderBy?: string, ascending: boolean = true, limit?: number, filter?: any) {
+  const collectionName = c.req.param('collection')
+
+  const result = await getItemsForCollectionWithFilters(collectionName, orderBy, ascending, limit, filter)
+  if (result.error) {
+    return c.json({ error: result.error }, result.statusCode as StatusCode)
+  }
+
+  return c.json(result, 200)
 }
