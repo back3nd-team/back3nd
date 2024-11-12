@@ -27,6 +27,59 @@ export async function getItemsForCollection(collectionName: string) {
 }
 
 /**
+ * Service to get items from a specific collection with filters.
+ * @param collectionName The name of the collection
+ * @param orderBy Field to order by
+ * @param ascending Order direction
+ * @param limit Limit of items
+ * @param filter Filter object
+ * @param count Column to count distinct items
+ * @returns Data from the collection or an error object
+ */
+export async function getItemsForCollectionWithFilters(collectionName: string, orderBy?: string, ascending: boolean = true, limit?: number, filter?: Record<string, { _eq?: string }>) {
+  if (!isValidCollectionName(collectionName)) {
+    return { error: 'Invalid collection name', statusCode: 400 }
+  }
+
+  try {
+    let query = `SELECT * FROM ${collectionName}`
+    const filterConditions: string[] = []
+
+    if (filter) {
+      for (const [key, value] of Object.entries(filter)) {
+        if (value._eq) {
+          filterConditions.push(`${key} = '${value._eq}'`)
+        }
+      }
+    }
+
+    if (filterConditions.length > 0) {
+      query += ` WHERE ${filterConditions.join(' AND ')}`
+    }
+
+    if (orderBy) {
+      query += ` ORDER BY ${orderBy} ${ascending ? 'ASC' : 'DESC'}`
+    }
+    if (limit) {
+      query += ` LIMIT ${limit}`
+    }
+
+    const data: any[] = await prisma.$queryRawUnsafe(query)
+    if (!data || data.length === 0) {
+      return { data: [] }
+    }
+
+    let countResult: number | null = null
+    countResult = data.length
+
+    return { data, count: countResult }
+  }
+  catch (e: any) {
+    return { error: `Database error${e.message}`, statusCode: 500 }
+  }
+}
+
+/**
  * Service to get fields from a specific collection.
  * @param collectionName The name of the collection
  * @returns Fields from the collection or an error object
@@ -269,6 +322,30 @@ export async function deleteItemFromCollection(collectionName: string, itemId: s
   try {
     await prisma.$queryRawUnsafe(`DELETE FROM ${collectionName} WHERE id = '${itemId}'`)
     return { message: 'Item deleted successfully' }
+  }
+  catch {
+    return { error: 'Database error', statusCode: 500 }
+  }
+}
+
+/**
+ * Service to get an item by ID from a specific collection.
+ * @param collectionName The name of the collection
+ * @param itemId The ID of the item to fetch
+ * @returns The item data or an error object
+ */
+export async function getItemByIdFromCollection(collectionName: string, itemId: string) {
+  if (!isValidCollectionName(collectionName)) {
+    return { error: 'Invalid collection name', statusCode: 400 }
+  }
+
+  try {
+    const item: any[] = await prisma.$queryRawUnsafe(`SELECT * FROM ${collectionName} WHERE id = '${itemId}'`)
+    if (!item || item.length === 0) {
+      return { error: 'Item not found', statusCode: 404 }
+    }
+
+    return { data: item[0] }
   }
   catch {
     return { error: 'Database error', statusCode: 500 }
