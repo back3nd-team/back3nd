@@ -62,7 +62,7 @@ class ApiClient {
   }
 
   public async login(email: string, password: string): Promise<void> {
-    const urlSanity = `${this.baseURL}/auth/login`
+    const urlSanity = `${this.baseURL.replace(/\/$/, '')}/auth/login`
     console.log('URL COMPLETA', urlSanity, this.baseURL)
     const response = await fetch(urlSanity, {
       method: 'POST',
@@ -84,7 +84,7 @@ class ApiClient {
 
     const authStore = useAuthStore(pinia)
     authStore.setToken(data.token)
-    await authStore.fetchUserData() // Busca os dados do usuário após o login
+    await authStore.fetchUserData()
   }
 
   public async logout(): Promise<void> {
