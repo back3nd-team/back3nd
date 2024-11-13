@@ -11,6 +11,7 @@ import itemRoutes from './routes/itemRoutes'
 import prismaFileRoutes from './routes/prismaFIleRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
+import webhookRoutes from './routes/webhookRoutes'
 import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a função
 
 const app = new OpenAPIHono({ strict: false })
@@ -42,6 +43,7 @@ app.route('/api/items', itemRoutes)
 app.route('/api/hash', hashRoutes)
 app.route('/api/fields', entityFieldsRoutes)
 app.route('/api/prisma/files', prismaFileRoutes)
+app.route('/api/webhook', webhookRoutes)
 
 app.get('/api/me', (c: Context) => {
   const user = c.get('user')
