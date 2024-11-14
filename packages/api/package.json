@@ -9,16 +9,17 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.4.1",
     "@hono/zod-openapi": "^0.16.4",
-    "@prisma/client": "^5.21.1",
-    "hono": "^4.6.9",
+    "@prisma/client": "^5.22.0",
+    "hono": "^4.6.10",
+    "mime-types": "^2.1.35",
     "zod": "^3.23.8",
     "zod-prisma-types": "^3.1.8"
-
   },
   "devDependencies": {
+    "@prisma/generator-helper": "^5.22.0",
+    "@prisma/internals": "^5.22.0",
     "@types/bun": "latest",
-    "@prisma/generator-helper": "^5.21.1",
-    "@prisma/internals": "^5.21.1",
+    "@types/mime-types": "^2.1.4",
     "typescript": "latest"
   }
 }
