@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
 import docsRoute from './routes/docsRoutes'
 import entityFieldsRoutes from './routes/entityFieldsRoutes'
+import { fileRoutes } from './routes/fileRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import prismaFileRoutes from './routes/prismaFIleRoutes'
@@ -44,6 +45,7 @@ app.route('/api/hash', hashRoutes)
 app.route('/api/fields', entityFieldsRoutes)
 app.route('/api/prisma/files', prismaFileRoutes)
 app.route('/api/webhook', webhookRoutes)
+app.route('/api/files', fileRoutes)
 
 app.get('/api/me', (c: Context) => {
   const user = c.get('user')
