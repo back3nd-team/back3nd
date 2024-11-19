@@ -181,66 +181,67 @@ export async function syncEntityFieldsWithPostgres(entityName: string) {
 }
 
 async function syncEntityWithPostgres(entityName: string) {
-  try {
-    const existingEntity = await prisma.back3nd_entity.findUnique({
-      where: { name: entityName },
-      select: { id: true },
-    })
+  return null
+  // try {
+  //   const existingEntity = await prisma.back3nd_entity.findUnique({
+  //     where: { name: entityName },
+  //     select: { id: true },
+  //   })
 
-    if (existingEntity) {
-      console.warn(`Entity ${entityName} already exists with ID: ${existingEntity.id}`)
+  //   if (existingEntity) {
+  //     console.warn(`Entity ${entityName} already exists with ID: ${existingEntity.id}`)
 
-      await prisma.back3nd_entity_fields.delete({
-        where: {
-          entity_id: existingEntity.id,
-        },
-      })
-    }
+  //     await prisma.back3nd_entity_fields.delete({
+  //       where: {
+  //         entity_id: existingEntity.id,
+  //       },
+  //     })
+  //   }
 
-    // Verificar campos no information_schema
-    const result = await prisma.$queryRaw<
-      { column_name: string, data_type: string, character_maximum_length: number | null }[]
-    >`SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = ${entityName}`
+  //   // Verificar campos no information_schema
+  //   const result = await prisma.$queryRaw<
+  //     { column_name: string, data_type: string, character_maximum_length: number | null }[]
+  //   >`SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = ${entityName}`
 
-    const pgColumns = result.map(col => ({
-      columnName: col.column_name,
-      columnType: col.data_type,
-      size: col.character_maximum_length,
-    }))
+  //   const pgColumns = result.map(col => ({
+  //     columnName: col.column_name,
+  //     columnType: col.data_type,
+  //     size: col.character_maximum_length,
+  //   }))
 
-    const uniqueConstraints = await prisma.$queryRaw<
-      { column_name: string }[]
-    >`
-      SELECT kcu.column_name
-      FROM information_schema.table_constraints tc
-      JOIN information_schema.key_column_usage kcu
-      ON tc.constraint_name = kcu.constraint_name
-      WHERE tc.table_name = ${entityName}
-      AND tc.constraint_type = 'UNIQUE'
-    `
+  //   const uniqueConstraints = await prisma.$queryRaw<
+  //     { column_name: string }[]
+  //   >`
+  //     SELECT kcu.column_name
+  //     FROM information_schema.table_constraints tc
+  //     JOIN information_schema.key_column_usage kcu
+  //     ON tc.constraint_name = kcu.constraint_name
+  //     WHERE tc.table_name = ${entityName}
+  //     AND tc.constraint_type = 'UNIQUE'
+  //   `
 
-    const uniqueColumns = uniqueConstraints.map(uc => uc.column_name)
+  //   const uniqueColumns = uniqueConstraints.map(uc => uc.column_name)
 
-    // Recriar campos em back3nd_entity_fields
-    for (const field of pgColumns) {
-      const mappedColumnType = mapFieldTypeToPostgreSQL(field.columnType, field.size)
-      const isUnique = uniqueColumns.includes(field.columnName)
+  //   // Recriar campos em back3nd_entity_fields
+  //   for (const field of pgColumns) {
+  //     const mappedColumnType = mapFieldTypeToPostgreSQL(field.columnType, field.size)
+  //     const isUnique = uniqueColumns.includes(field.columnName)
 
-      await prisma.back3nd_entity_fields.create({
-        data: {
-          columnName: field.columnName,
-          columnType: mappedColumnType,
-          entity: { connect: { name: entityName } },
-          isUnique,
-        },
-      })
-    }
+  //     // await prisma.back3nd_entity_fields.create({
+  //     //   data: {
+  //     //     columnName: field.columnName,
+  //     //     columnType: mappedColumnType,
+  //     //     // entity: { connect: { name: entityName } },
+  //     //     isUnique,
+  //     //   },
+  //     // })
+  //   }
 
-    console.warn(`Entity ${entityName} synchronized successfully`)
-  }
-  catch (error) {
-    console.error(`Error syncing entity ${entityName}:`, error)
-  }
+  //   console.warn(`Entity ${entityName} synchronized successfully`)
+  // }
+  // catch (error) {
+  //   console.error(`Error syncing entity ${entityName}:`, error)
+  // }
 }
 
 export async function getCollectionDetails(collectionId: string) {
