@@ -4,12 +4,12 @@ import EditPermissionForm from '@/components/EditPermissionForm.vue'
 import { usePermissionList } from '@/composables/useCases/usePermissionList'
 
 const route = useRoute()
-const ENTITY_ID = route.params.entity as string
+const COLLECTION_NAME = route.params.collection as string
 definePageMeta({
   title: 'Permissions',
   breadcrumb: [
     { label: 'Admin', to: '/admin' },
-    { label: 'Collections', to: '/admin/collections' },
+    { label: 'Collections', to: '/admin/collections/' },
     { label: 'Permissions' },
   ],
 })
@@ -64,7 +64,7 @@ function items(row: any) {
 
 function processPermissions() {
   processedPermissions.value = collections.value.map((permission: any) => ({
-    tableName: permission.table.name,
+    tableName: permission.collection,
     roleName: permission.role.name,
     can_create: permission.can_create,
     can_read: permission.can_read,
@@ -94,7 +94,7 @@ function clearPermission() {
 
 function handlePermissionCreated() {
   isOpen.value = false
-  getPermissionCollection(ENTITY_ID)
+  getPermissionCollection(COLLECTION_NAME)
     .then(() => {
       processPermissions()
     })
@@ -110,7 +110,7 @@ async function deletePermission() {
       if (role_id && table_id) {
         await useApiClient.deletePermission(role_id, table_id)
         isDeleteModalOpen.value = false
-        getPermissionCollection(ENTITY_ID).then(() => {
+        getPermissionCollection(COLLECTION_NAME).then(() => {
           processPermissions()
         })
       }
@@ -131,14 +131,14 @@ function updatePermission() {
 
 function handlePermissionUpdated() {
   isEditOpen.value = false
-  getPermissionCollection(ENTITY_ID)
+  getPermissionCollection(COLLECTION_NAME)
     .then(() => {
       processPermissions()
     })
 }
 
 onMounted(() => {
-  getPermissionCollection(ENTITY_ID).then(() => {
+  getPermissionCollection(COLLECTION_NAME).then(() => {
     processPermissions()
   })
 })
@@ -231,7 +231,7 @@ onMounted(() => {
         </template>
 
         <div>
-          <CreatePermissionForm ref="permissionFormRef" :entity-i-d="ENTITY_ID" @permission-created="handlePermissionCreated" />
+          <CreatePermissionForm ref="permissionFormRef" :collection-name="COLLECTION_NAME" @permission-created="handlePermissionCreated" />
         </div>
 
         <template #footer>
@@ -265,7 +265,7 @@ onMounted(() => {
           <EditPermissionForm
             v-if="permissionToEdit"
             ref="editPermissionFormRef"
-            :table-id="ENTITY_ID"
+            :collection-name="COLLECTION_NAME"
             :role-id="findRoleId(permissionToEdit.tableName, permissionToEdit.roleName)"
             @permission-updated="handlePermissionUpdated"
           />

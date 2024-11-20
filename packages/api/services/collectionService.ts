@@ -143,30 +143,19 @@ export async function deleteCollection(collectionName: string) {
 }
 
 export async function getPermissions(collectionName: string) {
-  let permissions = await prisma.back3nd_permission.findMany({
+  const collectionCheck = await getTable(collectionName)
+  if (!collectionCheck) {
+    return { message: 'Collection not exists on database' }
+  }
+  const permissions = await prisma.back3nd_permission.findMany({
     where: {
       collection: collectionName,
     },
+    include: { role: true },
   })
 
   if (permissions.length === 0) {
-    const defaultRoles = await prisma.back3nd_role.findMany({
-      select: { id: true },
-    })
-    const roleIds = defaultRoles.map(role => role.id)
-    try {
-      await createEntityWithPermission(roleIds, collectionName)
-    }
-    catch (error: any) {
-      if (error.code !== 'P2002') {
-        throw error
-      }
-    }
-    permissions = await prisma.back3nd_permission.findMany({
-      where: {
-        collection: collectionName,
-      },
-    })
+    return { message: 'No permission roles defined for this collection' }
   }
 
   return permissions

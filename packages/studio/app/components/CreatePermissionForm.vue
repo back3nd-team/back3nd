@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useCollectionList } from '~/composables/useCases/useCollectionList'
+import { table } from '#ui/ui.config'
 import { useCreatePermission } from '~/composables/useCases/useCreatePermission'
 
 const props = defineProps<{
-  entityID: string
+  collectionName: string
 }>()
 
 const emit = defineEmits(['permissionCreated'])
@@ -15,12 +15,10 @@ const canRead = ref(false)
 const canUpdate = ref(false)
 const canDelete = ref(false)
 const tableName = ref('')
-const tableId = ref('')
 const alertMessage = ref(`Configure the permissions for the selected role and for ${tableName.value}`)
 const alertType = ref<'info' | 'error'>('info')
 const isSubmitting = ref(false)
 const distinctRoles = ref()
-const collections = ref<any[]>([])
 const errors = ref<Record<string, string>>({
   selectedRole: '',
 })
@@ -33,7 +31,7 @@ async function submitPermission() {
 
   const permissionData = {
     role_id: selectedRole.value,
-    table_id: tableId.value,
+    collection: tableName.value,
     can_create: canCreate.value,
     can_read: canRead.value,
     can_update: canUpdate.value,
@@ -45,7 +43,7 @@ async function submitPermission() {
   try {
     const response: any = await useCreatePermission(
       permissionData.role_id,
-      permissionData.table_id,
+      permissionData.collection,
       permissionData.can_create,
       permissionData.can_read,
       permissionData.can_update,
@@ -95,16 +93,22 @@ defineExpose({
   clearForm,
 })
 
+function getDistinctRoles(data: any[], roles: any[]) {
+  const existingRoleIds = new Set(data.map((item: any) => item.role_id))
+  return roles.filter((role: any) => !existingRoleIds.has(role.id))
+}
+
 async function fetchCollection() {
-  const { data } = await useApiClient.getCollection(props.entityID)
-  collections.value = data.back3nd_permission
-  tableName.value = data.name
-  tableId.value = data.id
-  roles.value = await useApiClient.listRoles()
-  const existingRoleIds = new Set(collections.value.map((c: any) => c.role_id))
-  distinctRoles.value = roles.value
-    .filter((role: any) => !existingRoleIds.has(role.id))
-    .map((role: any) => ({ id: role.id, name: role.name }))
+  const data = await useApiClient.getPermissions(props.collectionName)
+  if (!Array.isArray(data)) {
+    tableName.value = props.collectionName
+    distinctRoles.value = await useApiClient.listRoles()
+  }
+  else {
+    tableName.value = data[0]?.collection
+    roles.value = await useApiClient.listRoles()
+    distinctRoles.value = getDistinctRoles(data, roles.value)
+  }
 }
 
 onMounted(async () => {
@@ -126,7 +130,7 @@ onMounted(async () => {
           v-model="tableName"
           :options="[tableName]"
           readonly
-          placeholder="Select a role"
+          placeholder="Select Collection"
           size="xl"
         />
       </UFormGroup>

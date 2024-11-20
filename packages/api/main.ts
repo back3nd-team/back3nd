@@ -1,6 +1,8 @@
 import type { Context } from 'hono'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { cors } from 'hono/cors'
+import { HTTPException } from 'hono/http-exception'
+import { timeout } from 'hono/timeout'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
@@ -15,6 +17,14 @@ import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a f
 
 const app = new OpenAPIHono({ strict: false })
 
+function customTimeoutException(context) {
+  return new HTTPException(408, {
+    message: `Request timeout after waiting ${context.req.headers.get(
+      'Duration',
+    )} seconds. Please try again later.`,
+  })
+}
+
 async function initializeDocs() {
   const openAPISpec = await generateOpenAPISpec()
   app.doc('/api/doc', openAPISpec)
@@ -28,12 +38,12 @@ initializeDocs().catch((err) => {
 /**
  * @todo Add CORS configuration to allow only localhost:3737
  */
-app.use('*', cors({
+app.use('*', timeout(3000, customTimeoutException), cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
-app.use('*', authMiddleware)
+app.use('*', authMiddleware, timeout(3000, customTimeoutException))
 app.route('/api/auth', authRoutes)
 app.route('/api/users', userRoutes)
 app.route('/api/roles', roleRoutes)
