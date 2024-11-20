@@ -91,19 +91,18 @@ async function createEntityWithPermission(roles: string[], entityName: string) {
         const existingPermission = await prisma.back3nd_permission.findFirst({
           where: {
             role_id: role,
-            table: entityName,
+            collection: entityName,
           },
           select: { id: true },
         })
-        console.log('Existing', existingPermission, entityName, role)
         if (existingPermission) {
-          console.warn(`Permission already exists for role ${role} on table ${entityName}`)
+          console.warn(`Permission already exists for role ${role} on collection ${entityName}`)
         }
         else {
           await prisma.back3nd_permission.create({
             data: {
               role_id: role,
-              table: entityName,
+              collection: entityName,
               can_create: true,
               can_read: true,
               can_update: false,
@@ -113,7 +112,6 @@ async function createEntityWithPermission(roles: string[], entityName: string) {
         }
       }
     }
-    console.warn('Created entity with permission:', { entityName, roles })
     return true
   }
   catch (error) {
@@ -147,7 +145,7 @@ export async function deleteCollection(collectionName: string) {
 export async function getPermissions(collectionName: string) {
   let permissions = await prisma.back3nd_permission.findMany({
     where: {
-      table: collectionName,
+      collection: collectionName,
     },
   })
 
@@ -166,7 +164,7 @@ export async function getPermissions(collectionName: string) {
     }
     permissions = await prisma.back3nd_permission.findMany({
       where: {
-        table: collectionName,
+        collection: collectionName,
       },
     })
   }
@@ -174,12 +172,24 @@ export async function getPermissions(collectionName: string) {
   return permissions
 }
 
-export async function createPermission(data: any) {
+export async function createPermission(data: any, collection: string) {
   try {
+    const existingPermission = await prisma.back3nd_permission.findFirst({
+      where: {
+        role_id: data.role_id,
+        collection,
+      },
+    })
+
+    if (existingPermission) {
+      console.warn(`Permission already exists for role ${data.role_id} on collection ${collection}`)
+      return existingPermission
+    }
+
     const permission = await prisma.back3nd_permission.create({
       data: {
         role_id: data.role_id,
-        table: data.tableName,
+        collection,
         can_create: data.can_create,
         can_read: data.can_read,
         can_update: data.can_update,
@@ -192,12 +202,13 @@ export async function createPermission(data: any) {
     throw new Error(`Failed to create permission: ${error.message}`)
   }
 }
-export async function updatePermission(role_id: string, table: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean) {
+
+export async function updatePermission(role_id: string, collection: string, can_create: boolean, can_read: boolean, can_update: boolean, can_delete: boolean) {
   try {
     const updatedPermission = await prisma.back3nd_permission.updateMany({
       where: {
         role_id,
-        table,
+        collection,
       },
       data: {
         can_create,
@@ -212,12 +223,13 @@ export async function updatePermission(role_id: string, table: string, can_creat
     throw new Error(`Failed to update permission: ${error.message}`)
   }
 }
-export async function deletePermission(role_id: string, table: string) {
+
+export async function deletePermission(role_id: string, collection: string) {
   try {
     const response = await prisma.back3nd_permission.deleteMany({
       where: {
         role_id,
-        table,
+        collection,
       },
     })
     if (response.count === 0) {

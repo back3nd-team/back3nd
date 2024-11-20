@@ -38,8 +38,9 @@ export class CollectionController {
 
   static async createPermission(ctx: Context) {
     try {
+      const collection = ctx.req.param('collection')
       const data = await ctx.req.json()
-      const permissions = await createPermission(data)
+      const permissions = await createPermission(data, collection)
       return ctx.json(permissions)
     }
     catch (error: any) {
@@ -49,8 +50,9 @@ export class CollectionController {
 
   static async updatePermission(ctx: Context) {
     try {
-      const { role_id, table_id, can_create, can_read, can_update, can_delete } = await ctx.req.json()
-      const permissions = await updatePermission(role_id, table_id, can_create, can_read, can_update, can_delete)
+      const collection = ctx.req.param('collection')
+      const { role_id, can_create, can_read, can_update, can_delete } = await ctx.req.json()
+      const permissions = await updatePermission(role_id, collection, can_create, can_read, can_update, can_delete)
       return ctx.json(permissions)
     }
     catch (error: any) {
@@ -60,8 +62,9 @@ export class CollectionController {
 
   static async deletePermission(ctx: Context) {
     try {
-      const { role_id, table_id } = await ctx.req.json()
-      await deletePermission(role_id, table_id)
+      const collection = ctx.req.param('collection')
+      const { role_id } = await ctx.req.json()
+      await deletePermission(role_id, collection)
       return ctx.json({ message: 'Permission deleted successfully' })
     }
     catch (error: any) {

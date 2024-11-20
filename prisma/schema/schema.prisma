@@ -26,42 +26,39 @@ model back3nd_user {
 }
 
 model back3nd_role {
-  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String              @unique
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String               @unique
   description String?
-  created_at  DateTime            @default(now())
-  updated_at  DateTime            @updatedAt
-  permissions back3nd_permission?
+  created_at  DateTime             @default(now())
+  updated_at  DateTime             @updatedAt
+  permissions back3nd_permission[]
   users       back3nd_user_role[]
 }
 
 model back3nd_user_role {
   id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id    String       @db.Uuid
-  role_id    String       @unique @db.Uuid // Marca como único para one-to-one
+  role_id    String       @db.Uuid
   created_at DateTime     @default(now())
   role       back3nd_role @relation(fields: [role_id], references: [id], onDelete: Cascade)
   user       back3nd_user @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_id, role_id]) // Garante unicidade da combinação user_id e role_id
+  @@unique([user_id, role_id])
 }
-
 
 model back3nd_permission {
   id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  role_id    String       @unique @db.Uuid // Não é único, pode se repetir para diferentes tabelas
-  table      String
+  role_id    String       @db.Uuid
   can_create Boolean      @default(false)
   can_read   Boolean      @default(false)
   can_update Boolean      @default(false)
   can_delete Boolean      @default(false)
   created_at DateTime     @default(now())
+  collection String
   role       back3nd_role @relation(fields: [role_id], references: [id], onDelete: Cascade)
 
-  @@unique([role_id, table]) // Combinação única de role_id e table
+  @@unique([role_id, collection])
 }
-
-
 
 model back3nd_password_reset {
   id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
