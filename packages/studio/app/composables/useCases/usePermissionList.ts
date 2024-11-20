@@ -14,9 +14,9 @@ export function usePermissionList() {
     )
   })
 
-  async function getPermissionCollection(collectionId: string) {
+  async function getPermissionCollection(collectionName: string) {
     try {
-      collections.value = await useGetPermissions(collectionId)
+      collections.value = await useGetPermissions(collectionName)
       return collections.value
     }
     catch (error) {

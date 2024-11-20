@@ -1,5 +1,6 @@
 import type { Context, Next } from 'hono'
 import { PrismaClient } from '@prisma/client'
+import { getTable } from '../utils/informationSchemaUtils'
 
 const prisma = new PrismaClient()
 
@@ -24,20 +25,16 @@ export function checkPermissions(tableName: string, permissionType: keyof { can_
       return c.json({ error: 'Role not found' }, 403)
     }
 
-    const table = await prisma.back3nd_entity.findUnique({
-      where: { name: tableName },
-    })
+    const table = await getTable(tableName)
 
     if (!table) {
       return c.json({ error: 'Table not found' }, 404)
     }
 
-    const permission = await prisma.back3nd_permission.findUnique({
+    const permission = await prisma.back3nd_permission.findFirst({
       where: {
-        role_id_table_id: {
-          role_id: role.id,
-          table_id: table.id,
-        },
+        role_id: role.id,
+        collection: tableName,
       },
     })
 

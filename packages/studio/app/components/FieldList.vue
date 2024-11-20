@@ -15,8 +15,9 @@ const router = useRouter()
 const columns = ref([
   { label: 'Column Name', key: 'columnName' },
   { label: 'Type', key: 'columnType' },
-  { label: 'Default Value', key: 'defaultValue' },
-  { label: 'Actions', key: 'actions' },
+  { label: 'isPrimaryKey', key: 'isPrimaryKey' },
+  { label: 'isUnique', key: 'isUnique' },
+  { label: 'Size', key: 'size' },
 ])
 
 const selectedColumns = ref([...columns.value])

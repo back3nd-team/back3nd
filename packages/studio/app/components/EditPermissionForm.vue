@@ -3,7 +3,7 @@ import { useGetPermissions } from '~/composables/useCases/useGetPermissions'
 import { useUpdatePermission } from '~/composables/useCases/useUpdatePermission'
 
 const props = defineProps<{
-  tableId: string
+  collectionName: string
   roleId: string | null
 }>()
 
@@ -25,7 +25,7 @@ const errors = ref<Record<string, string>>({
 
 async function fetchPermissionDetails() {
   try {
-    const data = await useGetPermissions(props.tableId)
+    const data = await useGetPermissions(props.collectionName)
 
     const permission = data.find((p: any) => p.role_id === props.roleId)
     if (props.roleId) {
@@ -39,7 +39,7 @@ async function fetchPermissionDetails() {
       canRead.value = permission.can_read
       canUpdate.value = permission.can_update
       canDelete.value = permission.can_delete
-      tableName.value = permission.table.name
+      tableName.value = permission.collection
       alertMessage.value = `Configure the permissions for the selected role and for ${tableName.value}`
     }
     else {
@@ -60,7 +60,7 @@ async function updatePermission() {
 
   const permissionData = {
     role_id: selectedRole.value,
-    table_id: props.tableId,
+    collection: props.collectionName,
     can_create: canCreate.value,
     can_read: canRead.value,
     can_update: canUpdate.value,
@@ -71,7 +71,7 @@ async function updatePermission() {
   try {
     const response: any = await useUpdatePermission(
       permissionData.role_id,
-      permissionData.table_id,
+      permissionData.collection,
       permissionData.can_create,
       permissionData.can_read,
       permissionData.can_update,

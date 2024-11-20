@@ -1,21 +1,29 @@
 import type { Context } from 'hono'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { cors } from 'hono/cors'
+import { HTTPException } from 'hono/http-exception'
+import { timeout } from 'hono/timeout'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
 import docsRoute from './routes/docsRoutes'
-import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import { fileRoutes } from './routes/fileRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
 import prismaFileRoutes from './routes/prismaFIleRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
-import webhookRoutes from './routes/webhookRoutes'
 import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a função
 
 const app = new OpenAPIHono({ strict: false })
+
+function customTimeoutException(context) {
+  return new HTTPException(408, {
+    message: `Request timeout after waiting ${context.req.headers.get(
+      'Duration',
+    )} seconds. Please try again later.`,
+  })
+}
 
 async function initializeDocs() {
   const openAPISpec = await generateOpenAPISpec()
@@ -30,21 +38,19 @@ initializeDocs().catch((err) => {
 /**
  * @todo Add CORS configuration to allow only localhost:3737
  */
-app.use('*', cors({
+app.use('*', timeout(3000, customTimeoutException), cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
-app.use('*', authMiddleware)
+app.use('*', authMiddleware, timeout(3000, customTimeoutException))
 app.route('/api/auth', authRoutes)
 app.route('/api/users', userRoutes)
 app.route('/api/roles', roleRoutes)
 app.route('/api/collections', collectionRoutes)
 app.route('/api/items', itemRoutes)
 app.route('/api/hash', hashRoutes)
-app.route('/api/fields', entityFieldsRoutes)
 app.route('/api/prisma/files', prismaFileRoutes)
-app.route('/api/webhook', webhookRoutes)
 app.route('/api/files', fileRoutes)
 
 app.get('/api/me', (c: Context) => {

@@ -47,43 +47,17 @@ model back3nd_user_role {
 }
 
 model back3nd_permission {
-  id         String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  role_id    String         @db.Uuid
-  table_id   String         @db.Uuid
-  can_create Boolean        @default(false)
-  can_read   Boolean        @default(false)
-  can_update Boolean        @default(false)
-  can_delete Boolean        @default(false)
-  created_at DateTime       @default(now())
-  role       back3nd_role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  table      back3nd_entity @relation(fields: [table_id], references: [id], onDelete: Cascade)
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role_id    String       @db.Uuid
+  can_create Boolean      @default(false)
+  can_read   Boolean      @default(false)
+  can_update Boolean      @default(false)
+  can_delete Boolean      @default(false)
+  created_at DateTime     @default(now())
+  collection String
+  role       back3nd_role @relation(fields: [role_id], references: [id], onDelete: Cascade)
 
-  @@unique([role_id, table_id])
-}
-
-model back3nd_entity {
-  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                  String                  @unique
-  created_at            DateTime                @default(now())
-  updated_at            DateTime                @updatedAt
-  back3nd_entity_fields back3nd_entity_fields[]
-  back3nd_permission    back3nd_permission[]
-}
-
-model back3nd_entity_fields {
-  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  columnName     String
-  columnType     String
-  size           Int?
-  placeholder    String?
-  defaultValue   String?
-  isUnique       Boolean
-  entity_id      String         @db.Uuid
-  created_at     DateTime       @default(now())
-  back3nd_entity back3nd_entity @relation(fields: [entity_id], references: [id])
-
-  @@unique([entity_id, columnName])
-  @@index([entity_id])
+  @@unique([role_id, collection])
 }
 
 model back3nd_password_reset {

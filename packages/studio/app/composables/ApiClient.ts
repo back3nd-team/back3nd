@@ -171,14 +171,14 @@ class ApiClient {
     })
   }
 
-  public async getCollection(collectionId: string): Promise<any> {
-    return this.request<any>(`collections/${collectionId}`, {
+  public async getCollection(collectionName: string): Promise<any> {
+    return this.request<any>(`collections/${collectionName}`, {
       method: 'GET',
     })
   }
 
-  public async getPermissions(collectionId: string): Promise<any> {
-    return this.request<any>(`collections/${collectionId}/permissions`, {
+  public async getPermissions(collectionName: string): Promise<any> {
+    return this.request<any>(`collections/${collectionName}/permissions`, {
       method: 'GET',
     })
   }
@@ -238,19 +238,6 @@ class ApiClient {
   public async deleteCollection(collectionId: string): Promise<void> {
     await this.request(`collections/${collectionId}`, {
       method: 'DELETE',
-    })
-  }
-
-  public async listEntityFields(entityId: string): Promise<any[]> {
-    return this.request<any[]>(`fields/${entityId}`, {
-      method: 'GET',
-    })
-  }
-
-  public async createEntityField(entityId: string, fieldData: any): Promise<void> {
-    await this.request(`fields/${entityId}`, {
-      method: 'POST',
-      body: JSON.stringify(fieldData),
     })
   }
 
