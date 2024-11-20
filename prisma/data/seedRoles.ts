@@ -76,13 +76,6 @@ export async function seedRoles() {
   }
 
   // Ensure that the 'test_table' entity exists in the database
-  // const testTable = await prisma.back3nd_entity.upsert({
-  //   where: { name: 'test_table' },
-  //   update: {},
-  //   create: {
-  //     name: 'test_table',
-  //   },
-  // })
 
   // // Assign permissions for the Admin role on test_table
   // await assignPermissionsToRole('admin', testTable.id, {

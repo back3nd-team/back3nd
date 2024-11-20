@@ -31,17 +31,12 @@ export async function createCollectionInDB(collectionName: string, primaryKeyFie
 
 export async function createEntityWithPermission(roles: string[], entityName: string): Promise<boolean> {
   try {
-    const newEntity = await prisma.back3nd_entity.create({
-      data: {
-        name: entityName,
-      },
-    })
     for (const role of roles) {
       if (role && typeof role === 'string') {
         await prisma.back3nd_permission.create({
           data: {
             role_id: role,
-            table_id: newEntity.id,
+            collection: entityName,
             can_create: true,
             can_read: true,
             can_update: false,
