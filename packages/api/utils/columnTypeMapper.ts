@@ -1,58 +1,3 @@
-// Map of UI types to PostgreSQL column types
-const columnTypeMap: Record<string, string> = {
-  'string': 'VARCHAR',
-  'character varying': 'VARCHAR',
-  'uuid': 'UUID',
-  'integer': 'INTEGER',
-  'big integer': 'BIGINT',
-  'float': 'REAL',
-  'double': 'DOUBLE PRECISION',
-  'decimal': 'DECIMAL',
-  'text': 'TEXT',
-  'boolean': 'BOOLEAN',
-  'date': 'DATE',
-  'timestamp': 'TIMESTAMP',
-  'timestamp without time zone': 'TIMESTAMP',
-  'time': 'TIME',
-  'json': 'JSON',
-  'jsonb': 'JSONB',
-  'point': 'POINT',
-  'line': 'LINE',
-  'polygon': 'POLYGON',
-  'bytea': 'BYTEA',
-}
-
-export function mapFieldTypeToPostgreSQL(fieldType: string, size?: number | null): string {
-  const normalizedFieldType = fieldType.trim().toLowerCase()
-  let postgresType = columnTypeMap[normalizedFieldType] || 'VARCHAR'
-
-  if (!postgresType) {
-    throw new Error(`Unsupported field type: ${fieldType}`)
-  }
-
-  const typesWithoutSize = ['text', 'boolean', 'uuid', 'json', 'jsonb', 'date', 'timestamp', 'time']
-
-  if (size && !typesWithoutSize.includes(normalizedFieldType)) {
-    postgresType += `(${size})`
-  }
-
-  return postgresType
-}
-
-export function getDefaultValueClause(fieldType: string, defaultValue?: string | null): string {
-  if (!defaultValue) {
-    return ''
-  }
-
-  const normalizedFieldType = fieldType.trim().toLowerCase()
-
-  if (normalizedFieldType === 'timestamp') {
-    return `DEFAULT current_timestamp`
-  }
-
-  return `DEFAULT ${defaultValue}`
-}
-
 export function mapFieldTypeToSwagger(fieldType: string): { type: string, format?: string, description?: string } {
   const normalizedFieldType = fieldType.trim().toLowerCase()
   const swaggerTypeMap: Record<string, { type: string, format?: string, description?: string }> = {
@@ -65,16 +10,22 @@ export function mapFieldTypeToSwagger(fieldType: string): { type: string, format
     'decimal': { type: 'number' },
     'text': { type: 'string' },
     'boolean': { type: 'boolean' },
+    // Date types as strings with specific formats
     'date': { type: 'string', format: 'date', description: 'Date in the format YYYY-MM-DD' },
     'timestamp': { type: 'string', format: 'date-time', description: 'Date and time in the format YYYY-MM-DDTHH:MM:SS' },
-    'time': { type: 'string', format: 'time' },
+    'timestamp without time zone': { type: 'string', format: 'date-time', description: 'Date and time in the format YYYY-MM-DDTHH:MM:SS' },
+    'time': { type: 'string', format: 'time', description: 'Time in the format HH:MM:SS' },
+    // JSON types as objects
     'json': { type: 'object' },
     'jsonb': { type: 'object' },
+    // Geometry types as strings (fallback for simplicity)
     'point': { type: 'string' },
     'line': { type: 'string' },
     'polygon': { type: 'string' },
-    'bytea': { type: 'string', format: 'byte' },
+    // Binary data
+    'bytea': { type: 'string', format: 'byte', description: 'Binary data encoded in Base64' },
   }
 
+  // Default to string for unsupported types
   return swaggerTypeMap[normalizedFieldType] || { type: 'string' }
 }

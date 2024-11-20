@@ -1,27 +1,43 @@
 import { mapFieldTypeToSwagger } from '../utils/columnTypeMapper'
 import { getColumns, getTables } from '../utils/informationSchemaUtils'
 
+interface Column {
+  columnName: string
+  columnType: string
+  size: number | null
+  isUnique: boolean
+  isPrimaryKey: boolean
+  isNullable?: string // Adicionando a propriedade isNullable
+}
 export async function generateOpenAPISpec() {
   const tables = await getTables()
+  const filteredTables = tables.filter((table: any) =>
+    !table.startsWith('back3nd_') && table !== '_prisma_migrations',
+  )
   const paths: Record<string, any> = {}
   const schemas: Record<string, any> = {}
 
-  for (const tableName of tables) {
-    const columns = await getColumns(tableName)
+  for (const tableName of filteredTables) {
+    const columns: Column[] = await getColumns(tableName)
+
     schemas[tableName] = {
       type: 'object',
-      properties: columns.reduce((acc: Record<string, any>, column) => {
-        const swaggerType = mapFieldTypeToSwagger(column.columnType)
+      properties: columns.reduce((acc: Record<string, any>, column: Column) => {
+        const swaggerField = mapFieldTypeToSwagger(column.columnType)
         acc[column.columnName] = {
-          type: swaggerType.type,
-          format: swaggerType.format,
-          description: swaggerType.description,
+          ...swaggerField,
+          description: `Unique: ${column.isUnique}, Primary Key: ${column.isPrimaryKey}`,
+          nullable: column.isNullable === 'YES',
+          ...(column.size && swaggerField.type === 'string' ? { maxLength: column.size } : {}),
         }
         return acc
       }, {}),
+      required: columns
+        .filter(column => column.isNullable !== 'YES')
+        .map(column => column.columnName),
     }
 
-    const pathName = `/items/${tableName.toLowerCase()}`
+    const pathName = `/items/${tableName}`
     paths[pathName] = {
       get: {
         summary: `Retrieve all ${tableName} items`,

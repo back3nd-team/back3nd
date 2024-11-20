@@ -5,7 +5,6 @@ import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
 import docsRoute from './routes/docsRoutes'
-import entityFieldsRoutes from './routes/entityFieldsRoutes'
 import { fileRoutes } from './routes/fileRoutes'
 import hashRoutes from './routes/hashRoutes'
 import itemRoutes from './routes/itemRoutes'
@@ -41,7 +40,6 @@ app.route('/api/roles', roleRoutes)
 app.route('/api/collections', collectionRoutes)
 app.route('/api/items', itemRoutes)
 app.route('/api/hash', hashRoutes)
-app.route('/api/fields', entityFieldsRoutes)
 app.route('/api/prisma/files', prismaFileRoutes)
 app.route('/api/files', fileRoutes)
 
