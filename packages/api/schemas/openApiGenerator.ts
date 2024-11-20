@@ -1,53 +1,39 @@
-import type { OpenAPIHono } from '@hono/zod-openapi'
-import { PrismaClient } from '@prisma/client'
 import { mapFieldTypeToSwagger } from '../utils/columnTypeMapper'
-
-const prisma = new PrismaClient()
+import { getColumns, getTables } from '../utils/informationSchemaUtils'
 
 export async function generateOpenAPISpec() {
-  const entities = await prisma.back3nd_entity.findMany()
-
-  const entityFields = await prisma.back3nd_entity_fields.findMany()
-
+  const tables = await getTables()
   const paths: Record<string, any> = {}
   const schemas: Record<string, any> = {}
 
-  entities.forEach((entity) => {
-    const entityName = entity.name
-    const entityFieldsForModel = entityFields.filter(
-      field => field.entity_id === entity.id,
-    )
-
-    schemas[entityName] = {
+  for (const tableName of tables) {
+    const columns = await getColumns(tableName)
+    schemas[tableName] = {
       type: 'object',
-      properties: entityFieldsForModel.reduce((acc: Record<string, any>, field) => {
-        const swaggerType = mapFieldTypeToSwagger(field.columnType)
-        acc[field.columnName] = {
+      properties: columns.reduce((acc: Record<string, any>, column) => {
+        const swaggerType = mapFieldTypeToSwagger(column.columnType)
+        acc[column.columnName] = {
           type: swaggerType.type,
           format: swaggerType.format,
-          description:
-            swaggerType.description
-            || (field.isUnique ? 'This field is unique' : undefined),
-          unique: field.isUnique || undefined,
+          description: swaggerType.description,
         }
         return acc
       }, {}),
     }
 
-    const pathName = `/items/${entityName.toLowerCase()}`
-
+    const pathName = `/items/${tableName.toLowerCase()}`
     paths[pathName] = {
       get: {
-        summary: `Retrieve all ${entityName} items`,
+        summary: `Retrieve all ${tableName} items`,
         security: [{ BearerAuth: [] }],
         responses: {
           200: {
-            description: `List of ${entityName} items`,
+            description: `List of ${tableName} items`,
             content: {
               'application/json': {
                 schema: {
                   type: 'array',
-                  items: { $ref: `#/components/schemas/${entityName}` },
+                  items: { $ref: `#/components/schemas/${tableName}` },
                 },
               },
             },
@@ -56,22 +42,22 @@ export async function generateOpenAPISpec() {
         },
       },
       post: {
-        summary: `Create a new ${entityName} item`,
+        summary: `Create a new ${tableName} item`,
         security: [{ BearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
             'application/json': {
-              schema: { $ref: `#/components/schemas/${entityName}` },
+              schema: { $ref: `#/components/schemas/${tableName}` },
             },
           },
         },
         responses: {
           201: {
-            description: `${entityName} item created`,
+            description: `${tableName} item created`,
             content: {
               'application/json': {
-                schema: { $ref: `#/components/schemas/${entityName}` },
+                schema: { $ref: `#/components/schemas/${tableName}` },
               },
             },
           },
@@ -82,7 +68,7 @@ export async function generateOpenAPISpec() {
 
     paths[`${pathName}/{id}`] = {
       put: {
-        summary: `Update an existing ${entityName} item`,
+        summary: `Update an existing ${tableName} item`,
         security: [{ BearerAuth: [] }],
         parameters: [
           {
@@ -98,16 +84,16 @@ export async function generateOpenAPISpec() {
           required: true,
           content: {
             'application/json': {
-              schema: { $ref: `#/components/schemas/${entityName}` },
+              schema: { $ref: `#/components/schemas/${tableName}` },
             },
           },
         },
         responses: {
           200: {
-            description: `${entityName} item updated`,
+            description: `${tableName} item updated`,
             content: {
               'application/json': {
-                schema: { $ref: `#/components/schemas/${entityName}` },
+                schema: { $ref: `#/components/schemas/${tableName}` },
               },
             },
           },
@@ -115,7 +101,7 @@ export async function generateOpenAPISpec() {
         },
       },
       delete: {
-        summary: `Delete an existing ${entityName} item`,
+        summary: `Delete an existing ${tableName} item`,
         security: [{ BearerAuth: [] }],
         parameters: [
           {
@@ -129,13 +115,13 @@ export async function generateOpenAPISpec() {
         ],
         responses: {
           204: {
-            description: `${entityName} item deleted`,
+            description: `${tableName} item deleted`,
           },
           401: { $ref: '#/components/responses/UnauthorizedError' },
         },
       },
     }
-  })
+  }
 
   const openAPISpec = {
     openapi: '3.0.0',

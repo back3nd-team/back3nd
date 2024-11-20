@@ -1,4 +1,3 @@
-import type { back3nd_entity } from '@prisma/client'
 import type { Context } from 'hono'
 import { createCollection, createPermission, deleteCollection, deletePermission, getCollectionDetails, getPermissions, listCollections, updateCollection, updatePermission } from '../services/collectionService'
 
@@ -15,14 +14,12 @@ export class CollectionController {
   }
 
   static async create(c: Context) {
-    const data: back3nd_entity = await c.req.json()
+    const data = await c.req.json()
     const result = await createCollection(data)
     return c.json(result)
   }
 
   static async update(c: Context) {
-    // const collectionName = c.req.param('collection')
-    // const data = await c.req.json()
     const result = await updateCollection()
     return c.json(result)
   }
