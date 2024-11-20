@@ -1,6 +1,6 @@
 import type { Context } from 'hono'
 import type { StatusCode } from 'hono/utils/http-status'
-import { createItemInCollection, deleteItemFromCollection, getFieldsForCollection, getItemByIdFromCollection, getItemsForCollection, getItemsForCollectionWithFilters, listCollectionsForUser, updateItemInCollection } from '../services/itemService'
+import { createItemInCollection, deleteItemFromCollection, getFieldsForCollection, getItemByIdFromCollection, getItemsForCollection, getItemsForCollectionWithFilters, updateItemInCollection } from '../services/itemService'
 
 /**
  * Controller to handle requests to /items/:collection
@@ -31,33 +31,7 @@ export async function getCollectionFields(c: Context) {
 
   return c.json(result.data, 200)
 }
-/**
- * Controller to handle requests to list collections that a user has access to
- * @param c Context object
- */
-export async function listUserCollections(c: Context) {
-  const user = c.get('user')
-  if (!user) {
-    return c.json({ error: 'User not authenticated' }, 401)
-  }
 
-  try {
-    const result = await listCollectionsForUser(user.id)
-    if (result.error) {
-      return c.json({ error: result.error }, result.statusCode as StatusCode)
-    }
-
-    if (!result.data || !result.data.length) {
-      return c.json({ error: 'No collections found for user' }, 404)
-    }
-
-    return c.json({ collections: result.data })
-  }
-  catch (error: any) {
-    console.error(`Error fetching collections: ${error.message}`)
-    return c.json({ error: 'Failed to fetch collections', message: error.message }, 500)
-  }
-}
 /**
  * Controller to handle requests to create an item in a collection
  * @param c Context object
