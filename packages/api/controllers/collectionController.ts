@@ -31,8 +31,8 @@ export class CollectionController {
   }
 
   static async getPermissions(ctx: Context) {
-    const collectionId = ctx.req.param('collection')
-    const permissions = await getPermissions(collectionId)
+    const collection = ctx.req.param('collection')
+    const permissions = await getPermissions(collection)
     return ctx.json(permissions)
   }
 

@@ -74,7 +74,7 @@ function processPermissions() {
 }
 
 function findRoleId(tableName: string, roleName: string): string | null {
-  const permission = collections.value.find((p: any) => p.table.name === tableName && p.role.name === roleName)
+  const permission = collections.value.find((p: any) => p.collection === tableName && p.role.name === roleName)
   return permission ? permission.role_id : null
 }
 
@@ -105,7 +105,7 @@ async function deletePermission() {
     try {
       const { tableName, roleName } = permissionToDelete.value
       const role_id = findRoleId(tableName, roleName)
-      const table_id = collections.value.find((p: any) => p.table.name === tableName)?.table_id
+      const table_id = collections.value.find((p: any) => p.collection === tableName)?.collection
 
       if (role_id && table_id) {
         await useApiClient.deletePermission(role_id, table_id)

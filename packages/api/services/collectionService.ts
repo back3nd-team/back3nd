@@ -166,7 +166,7 @@ export async function createPermission(data: any, collection: string) {
     const existingPermission = await prisma.back3nd_permission.findFirst({
       where: {
         role_id: data.role_id,
-        collection,
+        collection
       },
     })
 
@@ -178,7 +178,7 @@ export async function createPermission(data: any, collection: string) {
     const permission = await prisma.back3nd_permission.create({
       data: {
         role_id: data.role_id,
-        collection,
+        collection: collection,
         can_create: data.can_create,
         can_read: data.can_read,
         can_update: data.can_update,
