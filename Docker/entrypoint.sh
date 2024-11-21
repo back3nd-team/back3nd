@@ -15,8 +15,5 @@ echo "NUXT_PUBLIC_API_BASE is set to: $(printenv NUXT_PUBLIC_API_BASE)"
 # Start the Nuxt studio on port 3000
 NUXT_PUBLIC_API_BASE=$(printenv NUXT_PUBLIC_API_BASE) node packages/studio/.output/server/index.mjs &
 
-# Install dependencies in the Nuxt output directory
-cd /app/packages/studio/.output/server && bun install && cd /app
-
 # Start Nginx
 nginx -g 'daemon off;'
