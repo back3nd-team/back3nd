@@ -19,7 +19,7 @@
     "@nuxt/ui": "latest",
     "@pinia/nuxt": "^0.7.0",
     "@prisma/client": "^5.22.0",
-    "@vueuse/nuxt": "^11.2.0",
+    "@vueuse/nuxt": "^11.3.0",
     "nuxt": "^3.14.1592",
     "nuxt-og-image": "^3.0.8",
     "pinia-plugin-persistedstate": "^4.1.3",
