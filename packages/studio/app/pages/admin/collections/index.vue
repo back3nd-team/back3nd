@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCollectionList } from '@/composables/useCases/useCollectionList'
-
+import { useApiClient } from '@/composables/ApiClient'
 const router = useRouter()
 
 definePageMeta({
@@ -12,6 +12,7 @@ definePageMeta({
 })
 
 const { collections, q, filteredCollections, getCollections } = useCollectionList()
+
 const columns = ref([
   { label: 'Table Name', key: 'name' },
   { label: 'Roles', key: 'roles' },
@@ -20,6 +21,16 @@ const columns = ref([
 const selectedColumns = ref([...columns.value])
 const isSubmitting = ref(true)
 const isOpen = ref(false)
+
+async function handleDelete(row: any) {
+  try {
+    await useApiClient.deleteCollection(row.name)
+    await getCollections()
+  } catch (error) {
+    console.error('Error deleting collection:', error)
+  }
+}
+
 function items(row: any) {
   return [
     [{
@@ -34,6 +45,7 @@ function items(row: any) {
     [{
       label: 'Delete',
       icon: 'i-heroicons-trash-20-solid',
+      click: () => handleDelete(row),
     }],
   ]
 }
