@@ -63,14 +63,24 @@ function items(row: any) {
 }
 
 function processPermissions() {
-  processedPermissions.value = collections.value.map((permission: any) => ({
-    tableName: permission.collection,
-    roleName: permission.role.name,
-    can_create: permission.can_create,
-    can_read: permission.can_read,
-    can_update: permission.can_update,
-    can_delete: permission.can_delete,
-  }))
+  try {
+    if (Array.isArray(collections.value)) {
+      processedPermissions.value = collections.value.map((permission: any) => ({
+        tableName: permission.collection,
+        roleName: permission.role.name,
+        can_create: permission.can_create,
+        can_read: permission.can_read,
+        can_update: permission.can_update,
+        can_delete: permission.can_delete,
+      }))
+    } else {
+      console.warn('collections.value is not an array');
+      processedPermissions.value = [];
+    }
+  }
+  catch (error) {
+    console.error('Error processing permissions:', error)
+  }
 }
 
 function findRoleId(tableName: string, roleName: string): string | null {
