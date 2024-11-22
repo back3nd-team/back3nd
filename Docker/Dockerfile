@@ -30,7 +30,7 @@ EXPOSE 3737
 # Preparing the Studio environment (nuxt)
 WORKDIR /app/packages/studio
 RUN npm install 
-RUN npm nuxt build
+RUN npm run build
 EXPOSE 3000
 
 # Install Nginx
