@@ -211,12 +211,12 @@ class ApiClient {
     })
   }
 
-  public async deletePermission(role_id: string, table_id: string): Promise<void> {
-    await this.request(`collections/${table_id}/permissions`, {
+  public async deletePermission(role_id: string, collection: string): Promise<void> {
+    await this.request(`collections/${collection}/permissions`, {
       method: 'DELETE',
       body: JSON.stringify({
         role_id,
-        table_id,
+        collection,
       }),
     })
   }
