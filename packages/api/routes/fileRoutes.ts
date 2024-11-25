@@ -1,3 +1,4 @@
+import { OpenAPIHono } from '@hono/zod-openapi'
 /**
  * Initializes the Hono router and defines the file-related routes.
  *
@@ -8,15 +9,15 @@
  *
  * @module fileRoutes
  */
-import { Hono } from 'hono'
 import { fileService } from '../services/fileService'
 
 // Initialize Hono router
-const fileRoutes = new Hono()
+const fileRoutes = new OpenAPIHono()
 
 fileRoutes.post('/upload', fileService.uploadFile)
 fileRoutes.get('/list', fileService.listFiles)
 fileRoutes.get('/', fileService.listDates)
+fileRoutes.get('/details', fileService.getFileByKey)
 fileRoutes.get('/download', fileService.downloadFile)
 fileRoutes.delete('/delete', fileService.deleteFile)
 

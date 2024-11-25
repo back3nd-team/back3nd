@@ -1,5 +1,6 @@
 import type { Context } from 'hono'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
@@ -43,7 +44,7 @@ app.use('*', timeout(3000, customTimeoutException), cors({
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
-app.use('*', authMiddleware, timeout(3000, customTimeoutException))
+app.use('*', authMiddleware, contextStorage(), timeout(3000, customTimeoutException))
 app.route('/api/auth', authRoutes)
 app.route('/api/users', userRoutes)
 app.route('/api/roles', roleRoutes)
@@ -55,7 +56,20 @@ app.route('/api/files', fileRoutes)
 
 app.get('/api/me', (c: Context) => {
   const user = c.get('user')
-  return c.json({ message: `Hello, ${user.name}`, user })
+  if (user) {
+    c.set('user', {
+      sub: user.sub,
+      name: user.name,
+      email: user.email,
+      roles: user.roles,
+      iss: user.iss,
+      aud: user.aud,
+      exp: user.exp,
+    })
+    return c.json({ message: `Hello, ${user.name}`, user })
+  }
+
+  return c.json({ error: 'User not found' }, 404)
 })
 
 app.notFound((c: Context) => {
