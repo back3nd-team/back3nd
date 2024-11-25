@@ -13,7 +13,7 @@ bun packages/api/dist/main.js &
 echo "NUXT_PUBLIC_API_BASE is set to: $(printenv NUXT_PUBLIC_API_BASE)"
 
 # Start the Nuxt studio on port 3000
-NUXT_PUBLIC_API_BASE=$(printenv NUXT_PUBLIC_API_BASE) node packages/studio/.output/server/index.mjs &
+NUXT_PUBLIC_API_BASE=$(printenv NUXT_PUBLIC_API_BASE) bun packages/studio/.output/server/index.mjs &
 
 # Start Nginx
 nginx -g 'daemon off;'
