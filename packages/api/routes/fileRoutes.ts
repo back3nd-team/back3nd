@@ -17,6 +17,7 @@ const fileRoutes = new Hono()
 fileRoutes.post('/upload', fileService.uploadFile)
 fileRoutes.get('/list', fileService.listFiles)
 fileRoutes.get('/', fileService.listDates)
+fileRoutes.get('/details', fileService.getFileByKey)
 fileRoutes.get('/download', fileService.downloadFile)
 fileRoutes.delete('/delete', fileService.deleteFile)
 
