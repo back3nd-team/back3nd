@@ -193,11 +193,11 @@ export async function getFileByPath(c) {
   }
 
   try {
-    // Fetch all versions of the file with the given key
+    // Fetch all versions of the file with the given path
     const response = await s3Client.send(
       new ListObjectVersionsCommand({
         Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
-        Prefix: path, // Specify the key to search for all versions
+        Prefix: path, // Specify the path to search for all versions
       }),
     )
 
@@ -229,17 +229,17 @@ export async function getFileByPath(c) {
  * Otherwise, the latest version (`isLatest: true`) will be downloaded.
  *
  *
- * @query {string} key - The full path to the file in the S3 bucket. Expected format: `<year>/<month>/<type>/<filename>`.
+ * @query {string} path - The full path to the file in the S3 bucket. Expected format: `<year>/<month>/<type>/<filename>`.
  *                      Example: `2024/11/pdf/my-file.pdf`.
  * @query {string} [versionId] - (Optional) The unique identifier of the file version to download.
  *                               If not provided, the latest version will be fetched.
  *                               Example: `26a5faaf-24e1-4e34-98fa-6d1b5fdbc970`.
  */
 export async function downloadFile(c) {
-  const { key, versionId } = c.req.query()
+  const { path, versionId } = c.req.query()
 
-  if (!key) {
-    return c.json({ error: 'File key is required' }, 400)
+  if (!path) {
+    return c.json({ error: 'File path is required' }, 400)
   }
 
   try {
@@ -250,7 +250,7 @@ export async function downloadFile(c) {
       const versionResponse = await s3Client.send(
         new ListObjectVersionsCommand({
           Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
-          Prefix: key,
+          Prefix: path,
         }),
       )
 
@@ -267,7 +267,7 @@ export async function downloadFile(c) {
     const fileResponse = await s3Client.send(
       new GetObjectCommand({
         Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
-        Key: key,
+        Key: path,
         VersionId: versionToDownload,
       }),
     )
@@ -284,7 +284,7 @@ export async function downloadFile(c) {
     return new Response(readableStream, {
       headers: {
         'Content-Type': fileResponse.ContentType || 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${key.split('/').pop()}"`,
+        'Content-Disposition': `attachment; filename="${path.split('/').pop()}"`,
       },
     })
   }
@@ -298,17 +298,17 @@ export async function downloadFile(c) {
  * If `versionId` is provided, the specified version of the file will be deleted.
  * Otherwise, the latest version (`isLatest: true`) will be deleted.
  *
- * @query {string} key - The full path to the file in the S3 bucket. Expected format: `<year>/<month>/<type>/<filename>`.
+ * @query {string} path - The full path to the file in the S3 bucket. Expected format: `<year>/<month>/<type>/<filename>`.
  *                      Example: `2024/11/pdf/my-file.pdf`.
  * @query {string} [versionId] - (Optional) The unique identifier of the file version to delete.
  *                               If not provided, the latest version will be deleted.
  *                               Example: `26a5faaf-24e1-4e34-98fa-6d1b5fdbc970`.
  */
 export async function deleteFile(c) {
-  const { key, versionId } = c.req.query()
+  const { path, versionId } = c.req.query()
 
-  if (!key) {
-    return c.json({ error: 'File key is required' }, 400)
+  if (!path) {
+    return c.json({ error: 'File path is required' }, 400)
   }
 
   try {
@@ -319,7 +319,7 @@ export async function deleteFile(c) {
       const versionResponse = await s3Client.send(
         new ListObjectVersionsCommand({
           Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
-          Prefix: key,
+          Prefix: path,
         }),
       )
 
@@ -336,14 +336,14 @@ export async function deleteFile(c) {
     await s3Client.send(
       new DeleteObjectCommand({
         Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
-        Key: key,
+        Key: path,
         VersionId: versionToDelete,
       }),
     )
 
     return c.json({
       message: `File successfully deleted`,
-      file: key,
+      file: path,
       versionId: versionToDelete,
     })
   }
@@ -356,7 +356,7 @@ export async function deleteFile(c) {
 /**
  * Fetches and displays a specific version of a file from the S3 bucket.
  *
- * @query {string} key - The full path to the file in the S3 bucket.
+ * @query {string} path - The full path to the file in the S3 bucket.
  * @query {string} versionId - The unique identifier of the file version to fetch.
  */
 export async function getFileVersion(c) {
