@@ -60,7 +60,7 @@ export async function uploadFile(c) {
       )
     }
 
-    await s3Client.send(
+    const putObjectResponse = await s3Client.send(
       new PutObjectCommand({
         Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
         Key: objectKey,
@@ -71,9 +71,13 @@ export async function uploadFile(c) {
         },
       }),
     )
+
+    const versionId = putObjectResponse.VersionId
+
     return c.json({
       message: `File uploaded successfully to S3 ${getEnvVariable('STORAGE_BUCKET_NAME')}`,
       path: objectKey,
+      versionId,
     })
   }
   catch (error: any) {
@@ -181,11 +185,11 @@ export async function listDates(c) {
   }
 }
 
-export async function getFileByKey(c) {
-  const { key } = c.req.query()
+export async function getFileByPath(c) {
+  const { path } = c.req.query()
 
-  if (!key) {
-    return c.json({ error: 'File key is required' }, 400)
+  if (!path) {
+    return c.json({ error: 'File path is required' }, 400)
   }
 
   try {
@@ -193,7 +197,7 @@ export async function getFileByKey(c) {
     const response = await s3Client.send(
       new ListObjectVersionsCommand({
         Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
-        Prefix: key, // Specify the key to search for all versions
+        Prefix: path, // Specify the key to search for all versions
       }),
     )
 
@@ -209,7 +213,7 @@ export async function getFileByKey(c) {
     }
 
     return c.json({
-      file: key,
+      file: path,
       versions,
     })
   }
@@ -349,11 +353,56 @@ export async function deleteFile(c) {
   }
 }
 
+/**
+ * Fetches and displays a specific version of a file from the S3 bucket.
+ *
+ * @query {string} key - The full path to the file in the S3 bucket.
+ * @query {string} versionId - The unique identifier of the file version to fetch.
+ */
+export async function getFileVersion(c) {
+  const { path, versionId } = c.req.query()
+
+  if (!path || !versionId) {
+    return c.json({ error: 'File path and versionId are required' }, 400)
+  }
+
+  try {
+    const fileResponse = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
+        Key: path,
+        VersionId: versionId,
+      }),
+    )
+
+    const fileStream = fileResponse.Body
+
+    if (!fileStream) {
+      return c.json({ error: 'Failed to fetch file content from S3' }, 404)
+    }
+
+    const readableStream = fileStream.transformToWebStream()
+
+    // Return the file as a downloadable response
+    return new Response(readableStream, {
+      headers: {
+        'Content-Type': fileResponse.ContentType || 'application/octet-stream',
+        'Content-Disposition': `inline; filename="${path.split('/').pop()}"`,
+      },
+    })
+  }
+  catch (error: any) {
+    console.error(`Error fetching file version from S3: ${error.message}`)
+    return c.json({ error: 'Failed to fetch file version from S3' }, 500)
+  }
+}
+
 export const fileService = {
   uploadFile,
   listFiles,
   listDates,
   downloadFile,
   deleteFile,
-  getFileByKey,
+  getFileByPath,
+  getFileVersion,
 }
