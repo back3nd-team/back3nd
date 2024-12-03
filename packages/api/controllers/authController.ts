@@ -1,83 +1,148 @@
 import type { Context } from 'hono'
 import { PrismaClient } from '@prisma/client'
-import { z } from 'zod'
-import { AuthService } from '../services/authService'
-
+import bcrypt from 'bcryptjs' // Switched to bcryptjs
+import { sign } from 'hono/jwt'
+import { string, z } from 'zod'
+import { authClient } from '../../../auth-client'
+// Import the Better Auth instance
 const prisma = new PrismaClient()
+
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 })
+
 export class AuthController {
+  /**
+   * Register a new user
+   */
   static async register(c: Context) {
-    const result = registerSchema.safeParse(await c.req.json())
-    if (!result.success) {
-      return c.json({ message: 'Invalid input', errors: result.error.errors }, 400)
-    }
-
-    const { email, password } = result.data
-
     try {
-      const hashedPassword = await AuthService.hashPassword(password)
-      const newUser = await prisma.back3nd_user.create({
-        data: { email, password: hashedPassword, name: 'User' },
+      // Validate the input
+      const result = registerSchema.safeParse(await c.req.json())
+      if (!result.success) {
+        return c.json({ message: 'Invalid input', errors: result.error.errors }, 400)
+      }
+
+      const { email, password } = result.data
+
+      // Check if the user already exists
+      const existingUser = await prisma.back3nd_user.findUnique({
+        where: { email },
       })
 
-      return c.json({ message: 'User registered successfully', user: newUser })
+      if (existingUser) {
+        return c.json({ message: 'A user with this email already exists.' }, 409)
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10)
+
+      // Create the user in the database
+      const user = await prisma.back3nd_user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name: 'User',
+        },
+      })
+
+      // Link the user to Better Auth
+      const session = await authClient.signUp.email({
+        email: user.email,
+        password,
+        name: 'User',
+      })
+
+      return c.json(
+        {
+          message: 'User registered successfully',
+          user: { id: user.id, email: user.email },
+          session,
+        },
+        201,
+      )
     }
     catch (error: any) {
-      return c.json({ message: 'Error creating user', error: error.message }, 500)
+      console.error('Registration error:', error)
+      return c.json({ message: 'Registration failed', error: error.message }, 500)
     }
   }
 
+  /**
+   * Login an existing user
+   */
   static async login(c: Context) {
-    const result = registerSchema.safeParse(await c.req.json())
-    if (!result.success) {
-      return c.json({ message: 'Invalid input', errors: result.error.errors }, 400)
-    }
-    const { email, password } = result.data
-
     try {
+      // Validate the input
+      const result = registerSchema.safeParse(await c.req.json())
+      if (!result.success) {
+        return c.json({ message: 'Invalid input', errors: result.error.errors }, 400)
+      }
+
+      const { email, password } = result.data
+
+      // Fetch the user from the database
       const user = await prisma.back3nd_user.findUnique({
         where: { email },
-        include: { roles: true },
       })
 
-      if (!user)
-        return c.json({ message: 'Invalid email' }, 404)
-
-      const validPassword = await AuthService.verifyPassword(password, user.password)
-      if (!validPassword)
-        return c.json({ message: 'Invalid password' }, 401)
-
-      delete (user as { password?: string }).password
-      delete (user as { reset_token?: string }).reset_token
-      const tokenPayload = {
-        sub: user.id,
-        name: user.name,
-        email: user.email,
-        roles: user.roles.map(role => ({
-          id: role.id,
-          role_id: role.role_id,
-        })),
-        iss: 'back3nd',
-        aud: 'back3nd-studio',
+      if (!user) {
+        return c.json({ message: 'Invalid email or password.' }, 401) // Unauthorized
       }
-      const token = await AuthService.generateToken(tokenPayload)
-      return c.json({ token })
+
+      // Verify the password
+      const isPasswordValid = await bcrypt.compare(password, user.password)
+      if (!isPasswordValid) {
+        return c.json({ message: 'Invalid email or password.' }, 401) // Unauthorized
+      }
+
+      // Generate a session using Better Auth
+      const session = await authClient.signIn.email({
+        email: user.email,
+        password,
+      })
+      // console.log(session, 'session here')
+      return c.json(
+        {
+          message: 'Login successful',
+          user: { id: user.id, email: user.email },
+          session,
+        },
+        200,
+      )
     }
     catch (error: any) {
-      return c.json({ message: 'Error logging in', error: error.message }, 500)
+      // console.error('Login error:', error)
+      return c.json({ message: 'Login failed', error: error.message }, 500)
     }
   }
 
+  public static secret = process.env.JWT_SECRET // Replace with your actual secret key
+
+  /**
+   * Generate a new token with an updated expiration time
+   */
   static async renewToken(c: Context) {
-    const user = c.get('user')
+    try {
+      // Retrieve the current session from the context
+      const session = c.get('session')
 
-    const newToken = await AuthService.generateToken({
-      sub: user.sub,
-    }, 2220)
+      if (!session || !session.sub) {
+        return c.json({ message: 'Session not found or invalid' }, 401) // Unauthorized
+      }
 
-    return c.json({ token: newToken })
+      // Generate a new token
+      const expiresInSeconds = 43200 // Default expiration time (12 hours)
+      const payload = { sub: session.sub, email: session.email, name: session.name } // Example payload structure
+      const exp = Math.floor(Date.now() / 1000) + expiresInSeconds
+      const newToken = await sign({ ...payload, exp }, AuthController.secret!, 'HS256')
+
+      return c.json({ message: 'Token renewed successfully', token: newToken })
+    }
+    catch (error: any) {
+      // console.error('Token renewal error:', error)
+      return c.json({ message: 'Failed to renew token', error: error.message }, 500)
+    }
   }
 }

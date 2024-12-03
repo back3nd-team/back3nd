@@ -1,31 +1,35 @@
-import type { Context } from 'hono'
-import { AuthService } from '../services/authService'
+import type { MiddlewareHandler } from 'hono'
+import { auth } from '../../../auth' // Import the Better Auth instance
 
-export async function authMiddleware(c: Context, next: () => Promise<void>) {
-  if (c.req.path.startsWith('/api/auth') || c.req.path.startsWith('/api/docs') || c.req.path.startsWith('/api/doc')) {
-    return await next()
-  }
-
-  const authHeader = c.req.header('Authorization')
-
-  if (!authHeader) {
-    return c.json({ message: 'Missing Authorization Header' }, 401)
-  }
-
-  const tokenParts = authHeader.split(' ')
-
-  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
-    return c.json({ message: 'Invalid Authorization Header format' }, 401)
-  }
-
-  const token = tokenParts[1]
-
+/**
+ * Authentication Middleware
+ * This middleware retrieves the session using Better Auth
+ * and attaches the user and session data to the context.
+ */
+export const authMiddleware: MiddlewareHandler = async (c, next) => {
   try {
-    const payload = await AuthService.verifyToken(token)
-    c.set('user', payload)
+    // Retrieve the session using request headers
+    const session = await auth.api.getSession({ headers: c.req.raw.headers })
+
+    if (!session) {
+      // No session found, set user and session as null
+      c.set('user', null)
+      c.set('session', null)
+    }
+    else {
+      // Session exists, set user and session in the context
+      c.set('user', session.user)
+      c.set('session', session.session)
+    }
+
+    // Proceed to the next middleware or route handler
     await next()
   }
-  catch (e: any) {
-    return c.json({ message: 'Invalid token', error: e.message }, 401)
+  catch (error: any) {
+    console.error('Auth Middleware Error:', error)
+    return c.json(
+      { message: 'Unauthorized', error: error.message || 'Session retrieval failed' },
+      401,
+    ) // Return 401 Unauthorized on failure
   }
 }

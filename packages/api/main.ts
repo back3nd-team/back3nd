@@ -1,9 +1,11 @@
 import type { Context } from 'hono'
 import { OpenAPIHono } from '@hono/zod-openapi'
+import { Hono } from 'hono'
 import { contextStorage } from 'hono/context-storage'
 import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
+import { auth } from '../../auth'
 import { authMiddleware } from './middleware/authMiddleware'
 import authRoutes from './routes/authRoutes'
 import collectionRoutes from './routes/collectionRoutes'
@@ -14,9 +16,15 @@ import itemRoutes from './routes/itemRoutes'
 import prismaFileRoutes from './routes/prismaFIleRoutes'
 import roleRoutes from './routes/roleRoutes'
 import userRoutes from './routes/userRoutes'
-import { generateOpenAPISpec } from './schemas/openApiGenerator' // Importar a função
+import { generateOpenAPISpec } from './schemas/openApiGenerator'
 
-const app = new OpenAPIHono({ strict: false })
+// ---- hono app ----
+const app = new Hono<{
+  Variables: {
+    user: auth.$Infer.Session.user | null
+    session: auth.$Infer.Session.session | null
+  }
+}>()
 
 function customTimeoutException(context) {
   return new HTTPException(408, {
@@ -26,25 +34,30 @@ function customTimeoutException(context) {
   })
 }
 
-async function initializeDocs() {
-  const openAPISpec = await generateOpenAPISpec()
-  app.doc('/api/doc', openAPISpec)
-  app.route('/api/docs', docsRoute)
-}
+// async function initializeDocs() {
+//   const openAPISpec = await generateOpenAPISpec()
+//   app.doc('/api/doc', openAPISpec)
+//   app.route('/api/docs', docsRoute)
+// }
 
-initializeDocs().catch((err) => {
-  console.error('Failed to initialize docs:', err)
-})
+// initializeDocs().catch((err) => {
+//   console.error('Failed to initialize docs:', err)
+// })
 
 /**
  * @todo Add CORS configuration to allow only localhost:3737
  */
+
+app.on(['POST', 'GET'], '/api/auth/**', (c) => {
+  return auth.handler(c.req.raw)
+})
+
 app.use('*', timeout(3000, customTimeoutException), cors({
   origin: '*',
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
-app.use('*', authMiddleware, contextStorage(), timeout(3000, customTimeoutException))
+app.use('*', authMiddleware, contextStorage(), timeout(300000, customTimeoutException))
 app.route('/api/auth', authRoutes)
 app.route('/api/users', userRoutes)
 app.route('/api/roles', roleRoutes)
