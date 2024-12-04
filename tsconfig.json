@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
     "baseUrl": ".",
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "paths": {
-      "@prisma/client": ["../../node_modules/@prisma/client"],
       "@zodTypes": ["./prisma/schema/zod"]
     },
-    "strict": true
-  }
-
+    "resolveJsonModule": true,
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
