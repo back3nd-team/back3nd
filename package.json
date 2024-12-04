@@ -1,33 +1,23 @@
 {
   "name": "back3nd",
+  "module": "server.ts",
   "type": "module",
-  "version": "1.0.0",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "api": "bun run --hot packages/api/main.ts",
-    "studio": "cd packages/studio && nuxt dev",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prisma:generate": "bunx prisma generate --schema=./prisma/schema",
-    "prisma:migrate:dev": "bunx prisma migrate dev --schema=./prisma/schema  --name",
-    "prisma:migrate:prod": "bunx prisma migrate deploy --schema=./prisma/schema",
-    "prisma:studio": "bunx prisma studio --schema=./prisma/schema",
-    "prisma:push": "bunx prisma db push --schema=./prisma/schema",
-    "prisma:reset": "bunx prisma migrate reset --force --schema=./prisma/schema",
-    "prisma:seed": "bun run prisma/seed.ts"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "zod-prisma-types": "^3.1.8"
+    "start": "bun server.ts",
+    "generate-migrations": "bunx @better-auth/cli generate",
+    "apply-migrations": "bunx @better-auth/cli migrate"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.9.2",
-    "@iconify-json/eos-icons": "^1.2.1",
     "@types/bun": "latest",
-    "prisma": "^5.22.0",
-    "zod": "^3.23.8"
+    "@types/pg": "^8.11.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "better-auth": "^1.0.10",
+    "hono": "^4.6.12",
+    "pg": "^8.13.1"
   }
 }
