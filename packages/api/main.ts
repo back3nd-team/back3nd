@@ -26,6 +26,7 @@ const app = new Hono<{
   }
 }>()
 
+
 function customTimeoutException(context) {
   return new HTTPException(408, {
     message: `Request timeout after waiting ${context.req.headers.get(
