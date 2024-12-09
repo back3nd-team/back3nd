@@ -3,21 +3,23 @@
   "module": "server.ts",
   "type": "module",
   "scripts": {
-    "start": "bun server.ts",
+    "api": "bun src/main.ts",
     "generate-migrations": "bunx @better-auth/cli generate",
     "apply-migrations": "bunx @better-auth/cli migrate"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/pg": "^8.11.10"
+    "@types/pg": "^8.11.10",
+    "@antfu/eslint-config": "^3.11.2",
+    "eslint": "^9.16.0"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "better-auth": "^1.0.10",
-    "hono": "^4.6.12",
+    "better-auth": "^1.0.14",
+    "hono": "^4.6.13",
     "pg": "^8.13.1"
   }
 }

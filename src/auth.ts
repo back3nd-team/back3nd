@@ -1,13 +1,12 @@
-import { betterAuth } from 'better-auth';
+import { betterAuth } from 'better-auth'
 import { Pool } from 'pg';
 
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
+const authConfig = {
+  basePath: '/api/auth',
+  database: new Pool({ connectionString: process.env.DATABASE_URL }),
   multiTenancy: {
     enabled: true,
-    getTenantId: (request) => {
+    getTenantId: (request:any) => {
       const tenantId = request.headers.get('x-tenant-id');
       if (!tenantId) throw new Error('Missing x-tenant-id header');
       return tenantId;
@@ -16,4 +15,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-});
+}
+export const auth = betterAuth(authConfig)
+export { authConfig }
