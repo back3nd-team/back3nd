@@ -1,7 +1,6 @@
 import { sign, verify as verifyJWT } from 'hono/jwt'
-import { auth } from '../auth'
 
-export class AuthService {
+export class PostgrestService {
   static secret = Bun.env.BETTER_AUTH_SECRET as string
 
   /**

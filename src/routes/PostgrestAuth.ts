@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { AuthService } from '../services/AuthService'
+import { PostgrestService } from '../services/PostgrestService'
 
 interface User {
   id: string
@@ -18,7 +18,7 @@ const app = new Hono<{
   }
 }>()
 
-app.post('/convert-token', async (ctx) => {
+app.post('/token', async (ctx) => {
   const user = ctx.get('user') as User
   if (!user) {
     return ctx.json({ error: 'User not authenticated' }, 401)
@@ -33,8 +33,8 @@ app.post('/convert-token', async (ctx) => {
     aud: 'back3nd-studio',
   }
 
-  // Gera o JWT usando a AuthService
-  const token = await AuthService.generateToken(tokenPayload)
+  // Gera o JWT usando a PostgrestService
+  const token = await PostgrestService.generateToken(tokenPayload)
 
   return ctx.json({ token })
 })

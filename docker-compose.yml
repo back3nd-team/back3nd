@@ -21,7 +21,6 @@ services:
     environment:
       - PGRST_DB_URI=postgresql://back3ndboss:complexFakePass123@postgres_db:5432/softagondb
       - PGRST_DB_SCHEMA=public
-      - PGRST_DB_ANON_ROLE=back3ndboss
       - PGRST_JWT_SECRET=${BETTER_AUTH_SECRET}
     restart: always
   

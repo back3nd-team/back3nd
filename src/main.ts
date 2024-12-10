@@ -2,14 +2,15 @@ import { Hono } from 'hono'
 import { auth } from './auth'
 import authMiddleware from './middleware/AuthMiddleware'
 import { protectedRoute } from './protectedRoute'
-import authRoute from './routes/AuthRoute'
+import PostgrestAuth from './routes/PostgrestAuth'
 
-const app = new Hono()
-app.route('*', authMiddleware)
+const app = new Hono({ strict: false })
 
-app.all('/api/auth/*', c => auth.handler(c.req.raw))
-app.route('/api', protectedRoute())
-app.route('/api/token', authRoute)
+app.use('*', authMiddleware)
+
+app.all('/auth/*', c => auth.handler(c.req.raw))
+app.route('/files', protectedRoute())
+app.route('/postgrest', PostgrestAuth)
 app.get('/', c => c.text('Back3nd API running!'))
 
 export default {

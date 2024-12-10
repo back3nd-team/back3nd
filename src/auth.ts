@@ -3,7 +3,7 @@ import { bearer, jwt, openAPI } from 'better-auth/plugins'
 import { Pool } from 'pg'
 
 const authConfig = {
-  basePath: '/api/auth',
+  basePath: '/auth',
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
   }),

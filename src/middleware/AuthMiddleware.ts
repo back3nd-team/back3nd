@@ -1,29 +1,20 @@
-import { Hono } from 'hono'
+import { createMiddleware } from 'hono/factory'
 import { auth } from '../auth'
 
-const app = new Hono<{
+// Middleware para autenticação
+const authMiddleware = createMiddleware<{
   Variables: {
     user: typeof auth.$Infer.Session.user | null
     session: typeof auth.$Infer.Session.session | null
   }
-}>()
+}>(async (c, next) => {
+  const headers = new Headers(c.req.raw.headers)
+  const session = await auth.api.getSession({ headers })
 
-app.use('*', async (c, next) => {
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-  if (!session) {
-    c.set('user', null)
-    c.set('session', null)
-  }
-  else {
-    c.set('user', session.user)
-    c.set('session', session.session)
-  }
+  c.set('user', session?.user || null)
+  c.set('session', session?.session || null)
 
   await next()
 })
 
-app.on(['POST', 'GET'], '/api/auth/**', (c) => {
-  return auth.handler(c.req.raw)
-})
-
-export default app
+export default authMiddleware
