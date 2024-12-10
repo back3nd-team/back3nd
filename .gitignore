@@ -7,3 +7,4 @@ prisma/migrations/*
 !prisma/migrations/20241112100330_init
 prisma/schema/zod*
 uploads/*
+docker-compose.yml

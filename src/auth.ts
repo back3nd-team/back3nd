@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { bearer, jwt } from 'better-auth/plugins'
+import { bearer, jwt, openAPI } from 'better-auth/plugins'
 import { Pool } from 'pg'
 
 const authConfig = {
@@ -20,12 +20,11 @@ const authConfig = {
     enabled: true,
   },
   plugins: [
+    openAPI(),
     jwt({
       jwks: {
-        disablePrivateKeyEncryption: true,
         keyPairConfig: {
-          alg: 'EdDSA',
-          crv: 'Ed25519',
+          alg: 'ES256',
         },
       },
     }),
