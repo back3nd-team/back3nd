@@ -13,21 +13,18 @@ services:
       retries: 5
     ports:
       - 5432:5432
-  # api:
-  #  # image: ghcr.io/back3nd-team/back3nd:pre-alpha
-  #   image:  back3nd:alpha
-  #   container_name: back3nd
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - postgres_db  
-  #   ports:
-  #     - "3737:3737"
-  #     - "3000:3000"
-  #     - "8087:80"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}?schema=public
+  postgrest:
+    container_name: postgrest
+    image: postgrest/postgrest:latest
+    ports:
+      - "3030:3000"
+    environment:
+      - PGRST_DB_URI=${DATABASE_URL}
+      - PGRST_DB_SCHEMA=public
+      - PGRST_DB_ANON_ROLE=back3ndboss
+      
+    restart: always
+  
 
 volumes:
   postgresql_data:
