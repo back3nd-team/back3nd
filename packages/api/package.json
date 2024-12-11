@@ -1,0 +1,18 @@
+{
+  "name": "back3nd-api",
+  "type": "module",
+  "module": "server.ts",
+  "scripts": {
+    "api": "bun src/main.ts",
+    "generate-migrations": "bunx @better-auth/cli generate",
+    "apply-migrations": "bunx @better-auth/cli migrate"
+  },
+  "dependencies": {
+    "better-auth": "^1.0.15",
+    "hono": "^4.6.13",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.16.0"
+  }
+}

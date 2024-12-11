@@ -1,8 +1,9 @@
 import { betterAuth } from 'better-auth'
-import { bearer, jwt, openAPI } from 'better-auth/plugins'
+import { admin, bearer, jwt, openAPI, organization } from 'better-auth/plugins'
 import { Pool } from 'pg'
 
 const authConfig = {
+  roles: ['admin', 'user', 'professor', 'gestorEscolar', 'gestorMunicipal'],
   basePath: '/auth',
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -29,6 +30,8 @@ const authConfig = {
       },
     }),
     bearer(),
+    admin(),
+    organization(),
   ],
 }
 

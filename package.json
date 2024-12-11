@@ -1,25 +1,16 @@
 {
-  "name": "back3nd",
-  "type": "module",
-  "module": "server.ts",
+  "name": "Back3nd Beta",
+  "version": "0.1.0",
+  "workspaces": ["packages/*"],
   "scripts": {
-    "api": "bun src/main.ts",
-    "generate-migrations": "bunx @better-auth/cli generate",
-    "apply-migrations": "bunx @better-auth/cli migrate"
+    "api": "bun packages/api/src/main.ts"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
   },
-  "dependencies": {
-    "@hono/node-server": "^1.13.7",
-    "better-auth": "^1.0.14",
-    "hono": "^4.6.13",
-    "pg": "^8.13.1"
-  },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
-    "@types/bun": "latest",
-    "@types/pg": "^8.11.10",
-    "eslint": "^9.16.0"
+    "@types/bun": "^1.1.14",
+    "@types/pg": "^8.11.10"
   }
 }
