@@ -14,6 +14,6 @@ app.route('/postgrest', PostgrestAuth)
 app.get('/', c => c.text('Back3nd API running!'))
 
 export default {
-  port: 3000,
+  port: 3737,
   fetch: app.fetch,
 }

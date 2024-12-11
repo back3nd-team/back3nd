@@ -1,9 +1,11 @@
 {
-  "name": "Back3nd Beta",
+  "name": "back3nd",
   "version": "0.1.0",
+  "description": "A monorepo for the back3nd project",
   "workspaces": ["packages/*"],
   "scripts": {
-    "api": "bun packages/api/src/main.ts"
+    "api": "bun packages/api/src/main.ts",
+    "admin": "cd packages/admin && bun dev"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
@@ -11,6 +13,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
     "@types/bun": "^1.1.14",
+    "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10"
   }
 }
