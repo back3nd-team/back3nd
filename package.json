@@ -10,6 +10,9 @@
   "peerDependencies": {
     "typescript": "^5.7.2"
   },
+  "dependencies": {
+    "better-auth": "^1.0.15"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^3.11.2",
     "@types/bun": "^1.1.14",

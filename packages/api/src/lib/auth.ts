@@ -4,10 +4,18 @@ import { Pool } from 'pg'
 
 const authConfig = {
   roles: ['admin', 'user', 'professor', 'gestorEscolar', 'gestorMunicipal'],
+  trustedOrigins: [
+    '*',
+  ],
   basePath: '/auth',
   database: new Pool({
     connectionString: process.env.DATABASE_URL,
   }),
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+    },
+  },
   multiTenancy: {
     enabled: true,
     getTenantId: (request: Request) => {

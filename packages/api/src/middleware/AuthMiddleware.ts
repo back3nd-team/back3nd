@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory'
-import { auth } from '../auth'
+import { auth } from '../lib/auth'
 
 // Middleware para autenticação
 const authMiddleware = createMiddleware<{
