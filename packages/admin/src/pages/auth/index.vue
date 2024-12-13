@@ -34,6 +34,7 @@ async function login() {
   else {
     try {
       const user = await authService.login(email.value, password.value)
+      console.log('Usuario logueado', user)
       authStore.login(user)
       errors.value = { email: '', password: '' }
       await router.push({ path: '/' })

@@ -118,6 +118,4 @@ export class AuthService {
       throw new Error(`Password reset failed: ${(error as Error).message}`)
     }
   }
-
-  
 }

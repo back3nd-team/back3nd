@@ -56,8 +56,8 @@ const items = ref([
             <v-list>
               <v-list-item
                v-if="authStore.user"
-                :prepend-avatar="user.avatar"
-                subtitle="Logged in as"
+                :prepend-avatar="user?.image"
+                :subtitle="user.email"
                 :title="user.name"
               ></v-list-item>
             </v-list>
