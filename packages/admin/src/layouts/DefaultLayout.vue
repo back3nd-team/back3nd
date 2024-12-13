@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/AuthStore'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/AuthStore'
 
 const drawer = ref(false)
 const menu = ref(false) // Dropdown menu state
@@ -13,8 +13,8 @@ const user = computed(() => authStore?.user)
 
 function logout() {
   console.warn('User logged out')
-  authStore.logout()  
-  router.replace('/auth/')  
+  authStore.logout()
+  router.replace('/auth/')
 }
 
 // Checks if the link is external
@@ -27,16 +27,21 @@ function navigateTo(route: string) {
   if (isExternalLink(route)) {
     console.warn(`Opening external link: ${route}`)
     window.open(route, '_blank') // Opens in a new window
-  } else {
+  }
+  else {
     console.warn(`Navigating to internal route: ${route}`)
     router.push(route) // Navigates internally
   }
 }
 
-const items = ref([
+const itemsGroup1 = ref([
   { title: 'Organizations', icon: 'mdi-home', route: '/' },
   { title: 'Auth Specs', icon: 'mdi-information', route: 'http://localhost:3737/auth/reference' },
-  { title: 'Postgrest', icon: 'mdi-phone', route: '/postgrest' },
+])
+
+const itemsGroup2 = ref([
+  { title: 'Collections', icon: 'mdi-phone', route: '/postgrest' },
+  { title: 'Swagger API', icon: 'mdi-phone', route: '/postgrest/swagger' },
 ])
 </script>
 
@@ -49,20 +54,20 @@ const items = ref([
         <v-spacer />
 
         <v-menu v-model="menu" location="end">
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-btn icon="mdi-tooltip-account" variant="text" v-bind="props" />
           </template>
           <v-card min-width="250">
             <v-list>
               <v-list-item
-               v-if="authStore.user"
+                v-if="authStore.user"
                 :prepend-avatar="user?.image"
                 :subtitle="user.email"
                 :title="user.name"
-              ></v-list-item>
+              />
             </v-list>
 
-            <v-divider></v-divider>
+            <v-divider />
 
             <v-list>
               <v-list-item @click="logout">
@@ -78,14 +83,23 @@ const items = ref([
 
       <v-navigation-drawer v-model="drawer" temporary>
         <v-list>
+          <v-list-subheader>Better Auth</v-list-subheader>
           <v-list-item
-            v-for="item in items"
+            v-for="item in itemsGroup1"
             :key="item.title"
             @click="navigateTo(item.route)"
           >
-            <template #prepend>
-              <v-icon>{{ item.icon }}</v-icon>
-            </template>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+
+          <v-divider />
+
+          <v-list-subheader>PostgRest</v-list-subheader>
+          <v-list-item
+            v-for="item in itemsGroup2"
+            :key="item.title"
+            @click="navigateTo(item.route)"
+          >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
         </v-list>

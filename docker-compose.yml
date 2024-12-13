@@ -23,9 +23,6 @@ services:
       - PGRST_DB_SCHEMA=public,information_schema
       - PGRST_JWT_SECRET=${BETTER_AUTH_SECRET}
       - PGRST_OPENAPI_MODE=ignore-privileges
-      
     restart: always
-  
-
 volumes:
   postgresql_data:
