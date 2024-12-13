@@ -7,7 +7,6 @@ const postgrestService = new PostgrestService()
 interface Table {
   name: string
   schema: string
-  rows: number
 }
 
 interface Column {
@@ -18,9 +17,8 @@ interface Column {
 
 const expanded = ref<string[]>([])
 const tableHeaders = [
-  { title: 'Table Name', value: 'name' },
-  { title: 'Schema', value: 'schema' },
-  { title: 'Rows', value: 'rows' },
+  { title: 'Table Name', value: 'name', sortable: true },
+  { title: 'Schema', value: 'schema', sortable: true },
   { title: '', value: 'actions', sortable: false },
 ]
 
@@ -41,7 +39,6 @@ onMounted(async () => {
         return {
           name: tableName,
           schema: 'public', // Adjust as necessary
-          rows: 0, // Update with the actual row count, if available
         }
       })
       .filter(table => table.name)
