@@ -1,0 +1,24 @@
+/**
+ * src/styles/settings.scss
+ *
+ * Configures SASS variables and Vuetify overwrites
+ */
+
+// https://vuetifyjs.com/features/sass-variables/`
+// @use 'vuetify/settings' with (
+//   $color-pack: false
+// );
+ .v-input {
+  
+    // Styles the messages displayed below the field
+    .v-messages {
+      padding-bottom: 17px;  
+      font-size: 12px; // Font size
+      color: #ef4444; // Error message color (red)
+    }
+  
+    // Additional to center or visually adjust
+    .v-messages__message {
+      text-align: left; // Align text of messages
+    }
+  }
