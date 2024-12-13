@@ -1,10 +1,24 @@
-# deps
-node_modules/
+.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 .env
-prisma/schema/*
-!prisma/schema/schema.prisma
-prisma/migrations/*
-!prisma/migrations/20241112100330_init
-prisma/schema/zod*
-uploads/*
 docker-compose.yml
