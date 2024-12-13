@@ -2,22 +2,28 @@
   "name": "back3nd",
   "version": "0.1.0",
   "description": "A monorepo for the back3nd project",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "api": "bun packages/api/src/main.ts",
-    "admin": "cd packages/admin && bun dev"
+    "admin": "cd packages/admin && bun dev",
+    "lint": "eslint packages/**",
+    "lint:fix": "eslint packages/** --fix"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "better-auth": "^1.0.18"
+    "better-auth": "^1.0.19"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.0",
     "@types/bun": "^1.1.14",
     "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10",
-    "cross-spawn": "^7.0.6"
+    "cross-spawn": "^7.0.6",
+    "eslint": "^9.16.0",
+    "eslint-plugin-format": "^0.1.3"
   }
 }

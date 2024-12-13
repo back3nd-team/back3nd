@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { PostgrestService } from '@/services/PostgrestService';
+import { PostgrestService } from '@/services/PostgrestService'
+import { onMounted, ref } from 'vue'
 
 const postgrestService = new PostgrestService()
-
 
 interface Table {
   name: string
@@ -18,36 +17,50 @@ interface Column {
 }
 
 const expanded = ref<string[]>([])
-
 const tableHeaders = [
-  { text: 'Table Name', value: 'name' },
-  { text: 'Schema', value: 'schema' },
-  { text: 'Rows', value: 'rows' },
-  { text: '', value: 'actions', sortable: false },
+  { title: 'Table Name', value: 'name' },
+  { title: 'Schema', value: 'schema' },
+  { title: 'Rows', value: 'rows' },
+  { title: '', value: 'actions', sortable: false },
 ]
 
-const tables = ref<Table[]>([
-  { name: 'users', schema: 'public', rows: 1000 },
-  { name: 'orders', schema: 'public', rows: 500 },
-  { name: 'products', schema: 'inventory', rows: 300 },
-])
+const tables = ref<Table[]>([])
+const columnsByTable = ref<Record<string, Column[]>>({})
 
-const columnsByTable = ref<Record<string, Column[]>>({
-  users: [
-    { name: 'id', type: 'UUID', nullable: false },
-    { name: 'email', type: 'VARCHAR(255)', nullable: false },
-    { name: 'created_at', type: 'TIMESTAMP', nullable: false },
-  ],
-  orders: [
-    { name: 'order_id', type: 'INTEGER', nullable: false },
-    { name: 'user_id', type: 'UUID', nullable: false },
-    { name: 'status', type: 'VARCHAR(50)', nullable: true },
-  ],
-  products: [
-    { name: 'product_id', type: 'INTEGER', nullable: false },
-    { name: 'name', type: 'VARCHAR(255)', nullable: false },
-    { name: 'price', type: 'DECIMAL(10, 2)', nullable: false },
-  ],
+onMounted(async () => {
+  try {
+    const openApiSpecs = await postgrestService.fetchOpenAPISchema()
+    const paths = openApiSpecs.paths || {}
+    const definitions = openApiSpecs.definitions || {}
+
+    // Extracting tables
+    tables.value = Object.keys(paths)
+      .filter(path => path.startsWith('/') && path.trim() !== '')
+      .map((path) => {
+        const tableName = path.substring(1) // Remove the initial slash
+        return {
+          name: tableName,
+          schema: 'public', // Adjust as necessary
+          rows: 0, // Update with the actual row count, if available
+        }
+      })
+      .filter(table => table.name)
+
+    // Extracting columns by table
+    columnsByTable.value = Object.entries(definitions).reduce((acc, [key, def]: any) => {
+      const tableName = key.toLowerCase()
+      const columns = Object.entries(def.properties || {}).map(([columnName, columnDef]: any) => ({
+        name: columnName,
+        type: columnDef.format || columnDef.type || 'unknown',
+        nullable: columnDef.nullable || false,
+      }))
+      acc[tableName] = columns
+      return acc
+    }, {} as Record<string, Column[]>)
+  }
+  catch (error) {
+    console.error('Erro ao buscar a especificação OpenAPI:', error)
+  }
 })
 </script>
 
@@ -59,16 +72,16 @@ const columnsByTable = ref<Record<string, Column[]>>({
     item-value="name"
     show-expand
   >
-    <template v-slot:top>
+    <template #top>
       <v-toolbar flat>
         <v-toolbar-title>PostgreSQL Tables</v-toolbar-title>
       </v-toolbar>
     </template>
 
-    <template v-slot:expanded-row="{ item }">
+    <template #expanded-row="{ item }">
       <tr>
         <td :colspan="4">
-          <v-simple-table>
+          <v-table>
             <thead>
               <tr>
                 <th>Column Name</th>
@@ -83,7 +96,7 @@ const columnsByTable = ref<Record<string, Column[]>>({
                 <td>{{ column.nullable ? 'Yes' : 'No' }}</td>
               </tr>
             </tbody>
-          </v-simple-table>
+          </v-table>
         </td>
       </tr>
     </template>

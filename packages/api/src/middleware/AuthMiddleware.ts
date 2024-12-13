@@ -1,7 +1,6 @@
 import { createMiddleware } from 'hono/factory'
 import { auth } from '../lib/auth'
 
-// Middleware para autenticação
 const authMiddleware = createMiddleware<{
   Variables: {
     user: typeof auth.$Infer.Session.user | null
@@ -10,7 +9,6 @@ const authMiddleware = createMiddleware<{
 }>(async (c, next) => {
   const headers = new Headers(c.req.raw.headers)
   const session = await auth.api.getSession({ headers })
-
   c.set('user', session?.user || null)
   c.set('session', session?.session || null)
 

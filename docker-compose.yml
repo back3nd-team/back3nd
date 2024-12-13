@@ -20,8 +20,10 @@ services:
       - "3030:3000"
     environment:
       - PGRST_DB_URI=postgresql://back3ndboss:complexFakePass123@postgres_db:5432/softagondb
-      - PGRST_DB_SCHEMA=public
+      - PGRST_DB_SCHEMA=public,information_schema
       - PGRST_JWT_SECRET=${BETTER_AUTH_SECRET}
+      - PGRST_OPENAPI_MODE=ignore-privileges
+      
     restart: always
   
 
