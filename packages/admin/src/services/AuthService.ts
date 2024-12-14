@@ -1,14 +1,13 @@
 import { createAuthClient } from 'better-auth/vue'
-
 /**
  * Authentication Service class for managing authentication requests.
  */
 export class AuthService {
-  private authClient
+  public client: ReturnType<typeof createAuthClient>
 
   constructor() {
     const AUTH_API = import.meta.env.VITE_AUTH_API_URL
-    this.authClient = createAuthClient({
+    this.client = createAuthClient({
       baseURL: AUTH_API,
     })
   }
@@ -21,7 +20,7 @@ export class AuthService {
    */
   async login(email: string, password: string): Promise<TUser> {
     try {
-      const { data } = await this.authClient.signIn.email({
+      const { data } = await this.client.signIn.email({
         email,
         password,
       })
@@ -41,7 +40,7 @@ export class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await this.authClient.signOut()
+      await this.client.signOut()
     }
     catch (error) {
       throw new Error(`Logout failed: ${(error as Error).message}`)
@@ -62,7 +61,7 @@ export class AuthService {
     name: string,
     image?: string | null,
   ) {
-    const response = await this.authClient.signUp.email({
+    const response = await this.client.signUp.email({
       email,
       password,
       name,
@@ -83,7 +82,7 @@ export class AuthService {
    */
   async getCurrentUser() {
     try {
-      const session = await this.authClient.getSession()
+      const session = await this.client.getSession()
       return session
     }
     catch (error) {
@@ -97,7 +96,7 @@ export class AuthService {
    */
   async getSession() {
     try {
-      const session = await this.authClient.getSession()
+      const session = await this.client.getSession()
       return session
     }
     catch (error) {
@@ -112,7 +111,7 @@ export class AuthService {
    */
   async resetPassword(email: string): Promise<void> {
     try {
-      await this.authClient.sendVerificationEmail({ email })
+      await this.client.sendVerificationEmail({ email })
     }
     catch (error) {
       throw new Error(`Password reset failed: ${(error as Error).message}`)

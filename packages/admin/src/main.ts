@@ -28,5 +28,4 @@ app.use(Vue3Toastify, {
 })
 app.use(head)
 app.use(pinia)
-app.use(router)
 app.mount('#app')
