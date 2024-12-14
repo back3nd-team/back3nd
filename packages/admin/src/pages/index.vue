@@ -6,11 +6,20 @@ import formatDate from '@/utils/formatDate'
 import { onMounted, ref } from 'vue'
 
 const organizationService = new OrganizationService()
-const organizations = ref([])
+interface Organization {
+  id: string
+  logo: string
+  name: string
+  slug: string
+  createdAt: string
+  metadata: Record<string, any>
+}
+
+const organizations = ref<Organization[]>([])
 const search = ref('')
 const isDrawerOpen = ref(false)
 const expanded = ref<string[]>([])
-const sortBy = ref([{ key: 'createdAt', order: 'desc' }])
+const sortBy = ref([{ key: 'createdAt', order: 'desc' as 'desc' | 'asc' }])
 function toggleDrawer() {
   isDrawerOpen.value = !isDrawerOpen.value
 }
@@ -76,7 +85,6 @@ function closeDrawer() {
             <v-data-table
               v-model:expanded="expanded"
               :sort-by="sortBy"
-
               :headers="headers"
               :items="organizations"
               :search="search"

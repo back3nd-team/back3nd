@@ -23,7 +23,7 @@ export class OrganizationService {
    * @param logo URL of the organization's logo (optional).
    * @returns A promise resolving to the created organization.
    */
-  async createOrganization(name: string, slug: string, logo?: string) {
+  async createOrganization(name: string, slug: string, logo?: string, metadata?: Record<string, unknown>) {
     if (!name || !slug) {
       throw new Error('Name and slug are required')
     }
@@ -32,6 +32,7 @@ export class OrganizationService {
       name,
       slug,
       logo,
+      metadata,
     })
 
     if (error) {

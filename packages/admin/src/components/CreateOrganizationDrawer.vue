@@ -6,8 +6,13 @@ import { z } from 'zod'
 const emit = defineEmits(['organizationCreated', 'organizationError', 'closeDrawer'])
 
 const organizationService = new OrganizationService()
-const organization = ref({ name: '', slug: '', logo: '' })
+const organization = ref({ name: '', slug: '', logo: '', metadata: {} })
 const errors = ref<string[]>([])
+
+const metadataEntries = ref([{ property: '', value: '' }])
+const propertySchema = z.string().regex(/^[a-z_]+$/, {
+  message: 'Properties can only contain lowercase letters and underscores.',
+})
 
 function generateSlug(name: string) {
   return name
@@ -20,6 +25,7 @@ const organizationSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   logo: z.string().url().optional().or(z.literal('')),
+  metadata: z.record(z.string()),
 })
 
 watch(() => organization.value.name, (newName) => {
@@ -43,6 +49,17 @@ function validateOrganization() {
 async function createOrganization() {
   errors.value = []
 
+  organization.value.metadata = metadataEntries.value.reduce((acc: Record<string, string>, entry) => {
+    try {
+      propertySchema.parse(entry.property)
+      acc[entry.property] = entry.value
+    }
+    catch (e: any) {
+      errors.value.push(`Invalid property "${entry.property}": ${e.message}`)
+    }
+    return acc
+  }, {})
+
   if (!validateOrganization())
     return
 
@@ -50,6 +67,7 @@ async function createOrganization() {
     organization.value.name,
     organization.value.slug,
     organization.value.logo,
+    organization.value.metadata,
   )
   if (response.id === undefined) {
     errors.value = ['Failed to create organization']
@@ -62,6 +80,14 @@ async function createOrganization() {
 
 function cancel() {
   emit('closeDrawer')
+}
+
+function addMetadataEntry() {
+  metadataEntries.value.push({ property: '', value: '' })
+}
+
+function removeMetadataEntry(index: number) {
+  metadataEntries.value.splice(index, 1)
 }
 </script>
 
@@ -84,6 +110,43 @@ function cancel() {
     <v-text-field v-model="organization.name" label="Name" />
     <v-text-field v-model="organization.slug" label="Slug" />
     <v-text-field v-model="organization.logo" label="Logo URL" />
+    <h2>Metadata</h2>
+    <v-divider class="my-4" />
+    <v-row v-for="(entry, index) in metadataEntries" :key="index" class="mb-2" dense>
+      <v-col cols="5" class="pe-1">
+        <v-text-field
+          v-model="entry.property"
+          label="Property"
+          density="compact"
+          clearable
+          required
+        />
+      </v-col>
+      <v-col cols="5" class="pe-1">
+        <v-text-field
+          v-model="entry.value"
+          label="Value"
+          density="compact"
+          clearable
+          required
+        />
+      </v-col>
+      <v-col cols="2" class="d-flex align-self-start">
+        <v-btn
+          icon="mdi-plus"
+          color="green"
+          density="compact"
+          @click="addMetadataEntry"
+        />
+        <v-btn
+          icon="mdi-delete"
+          color="red"
+          density="compact"
+          @click="removeMetadataEntry(index)"
+        />
+      </v-col>
+    </v-row>
+
     <v-card-actions class="d-flex justify-end">
       <v-btn
         class="me-2 text-none"

@@ -8,4 +8,9 @@ export default antfu({
     'node_modules',
     '**/dist',
   ],
+  rules: {
+    'vue/valid-v-slot': ['error', {
+      allowModifiers: true,
+    }],
+  },
 })
