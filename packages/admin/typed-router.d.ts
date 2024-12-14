@@ -22,6 +22,7 @@ declare module 'vue-router/auto-routes' {
     '/auth/': RouteRecordInfo<'/auth/', '/auth', Record<never, never>, Record<never, never>>,
     '/auth/sign-up': RouteRecordInfo<'/auth/sign-up', '/auth/sign-up', Record<never, never>, Record<never, never>>,
     '/organization/[orgid]': RouteRecordInfo<'/organization/[orgid]', '/organization/:orgid', { orgid: ParamValue<true> }, { orgid: ParamValue<false> }>,
+    '/organization/users': RouteRecordInfo<'/organization/users', '/organization/users', Record<never, never>, Record<never, never>>,
     '/postgrest/': RouteRecordInfo<'/postgrest/', '/postgrest', Record<never, never>, Record<never, never>>,
     '/postgrest/swagger': RouteRecordInfo<'/postgrest/swagger', '/postgrest/swagger', Record<never, never>, Record<never, never>>,
   }

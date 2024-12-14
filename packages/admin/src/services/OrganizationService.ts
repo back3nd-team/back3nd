@@ -115,15 +115,11 @@ export class OrganizationService {
    * @returns A promise resolving to the organization details.
    */
   async getFullOrganization(organizationId: string) {
-    try {
-      const organization = await this.client.organization.getFullOrganization({
-        organizationId,
-      })
-      return organization
-    }
-    catch (error) {
-      throw new Error(`Failed to retrieve organization details: ${(error as Error).message}`)
-    }
+    const data = await this.client.organization.getFullOrganization({
+      organizationId,
+    })
+
+    return data
   }
 
   /**
@@ -144,6 +140,20 @@ export class OrganizationService {
     }
     catch (error) {
       throw new Error(`Failed to invite member: ${(error as Error).message}`)
+    }
+  }
+
+  async listOrganizationRoles(organizationId: string) {
+    try {
+      const roles = await this.client.organization.getRoles({
+        organizationId,
+      })
+
+      return roles
+    }
+    catch (error: any) {
+      console.error('Failed to fetch roles:', error)
+      throw new Error(`Error fetching roles: ${error.message}`)
     }
   }
 }

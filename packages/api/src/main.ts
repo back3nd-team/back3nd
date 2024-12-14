@@ -14,7 +14,7 @@ app.use(
     origin: (origin) => {
       return origin || '*'
     },
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowHeaders: ['Content-Type', 'Authorization', 'OrganizationId'],
     allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
     exposeHeaders: ['Content-Length'],
     maxAge: 600,

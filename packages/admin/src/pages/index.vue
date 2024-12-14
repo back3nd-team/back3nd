@@ -73,53 +73,49 @@ function closeDrawer() {
         </div>
 
         <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field
-              v-model="search"
-              label="Filter organizations"
-              append-inner-icon="mdi-magnify"
-              clearable
-            />
-          </v-col>
-          <v-col class="mx-1">
-            <v-data-table
-              v-model:expanded="expanded"
-              :sort-by="sortBy"
-              :headers="headers"
-              :items="organizations"
-              :search="search"
-              item-value="id"
-              class="elevation-1"
-              density="comfortable"
-              show-expand
-            >
-              <template #item.name="{ item }">
-                <router-link :to="`/organization/${item.id}`">
-                  {{ item.name }}
-                </router-link>
-              </template>
+          <v-text-field
+            v-model="search"
+            label="Filter organizations"
+            append-inner-icon="mdi-magnify"
+            clearable
+          />
+          <v-data-table
+            v-model:expanded="expanded"
+            :sort-by="sortBy"
+            :headers="headers"
+            :items="organizations"
+            :search="search"
+            item-value="id"
+            class="elevation-1"
+            density="comfortable"
+            show-expand
+          >
+            <template #item.name="{ item }">
+              <router-link :to="`/organization/${item.id}`">
+                {{ item.name }}
+              </router-link>
+            </template>
 
-              <template #item.logo="{ item }">
-                <v-avatar>
-                  <img :src="item.logo" alt="Logo">
-                </v-avatar>
-              </template>
-              <template #item.createdAt="{ item }">
-                {{ formatDate(item.createdAt) }}
-              </template>
-              <template #expanded-row="{ item }">
-                <tr>
-                  <td :colspan="6">
-                    <v-card>
-                      <v-card-text>
-                        <pre>{{ item.metadata }}</pre>
-                      </v-card-text>
-                    </v-card>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-col>
+            <template #item.logo="{ item }">
+              <v-avatar>
+                <img :src="item.logo" alt="Logo">
+              </v-avatar>
+            </template>
+            <template #item.createdAt="{ item }">
+              {{ formatDate(item.createdAt) }}
+            </template>
+            <template #expanded-row="{ item }">
+              <tr>
+                <td :colspan="6">
+                  <v-card>
+                    <v-card-text>
+                      <pre>{{ item.metadata }}</pre>
+                    </v-card-text>
+                  </v-card>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
         </v-row>
       </v-container>
 
