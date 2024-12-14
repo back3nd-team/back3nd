@@ -74,6 +74,12 @@ async function addUser() {
 onMounted(() => {
   refreshUsers()
 })
+
+/**
+ *  Salvar a organization na hora de salvar o usuário
+ *
+ *
+ */
 </script>
 
 <template>

@@ -17,6 +17,10 @@ const organization = ref({
 // const organizationService = new OrganizationService()
 onMounted(async () => {
 })
+
+/**
+ * Ao criar uma organization coloque como campo obrigatório o endereço do postgrest
+ */
 </script>
 
 <template>

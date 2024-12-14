@@ -4,11 +4,11 @@ export class PostgrestService {
   static secret = Bun.env.BETTER_AUTH_SECRET as string
 
   /**
-   * Gera um token JWT com um payload especificado e tempo de expiração.
+   * Generates a JWT token with a specified payload and expiration time.
    *
-   * @param {Record<string, unknown>} payload - O payload a ser incluído no token.
-   * @param {number} [expiresInSeconds] - O tempo de expiração em segundos (padrão: 12 horas).
-   * @returns {Promise<string>} O token JWT gerado.
+   * @param {Record<string, unknown>} payload - The payload to be included in the token.
+   * @param {number} [expiresInSeconds] - The expiration time in seconds (default: 12 hours).
+   * @returns {Promise<string>} The generated JWT token.
    */
   static async generateToken(
     payload: Record<string, unknown>,
@@ -19,17 +19,17 @@ export class PostgrestService {
   }
 
   /**
-   * Obtém a sessão do usuário atual requisitando o endpoint `/api/auth/get-session`.
+   * Retrieves the current user's session by requesting the `/api/auth/get-session` endpoint.
    *
-   * @param {any} ctx - O contexto da requisição, contendo os cabeçalhos HTTP.
-   * @returns {Promise<any>} Os dados da sessão do usuário.
+   * @param {any} ctx - The request context, containing the HTTP headers.
+   * @returns {Promise<any>} The user's session data.
    */
   static async getMe(ctx: any): Promise<any> {
     try {
       const response = await fetch('http://localhost:3000/api/auth/get-session', {
         method: 'GET',
         headers: {
-          ...ctx.req.headers, // Passa os cabeçalhos da requisição, incluindo cookies
+          ...ctx.req.headers, // Pass the request headers, including cookies
         },
       })
 
@@ -43,7 +43,7 @@ export class PostgrestService {
         throw new Error('No active session found or user not authenticated')
       }
 
-      return session.user // Retorna os dados do usuário autenticado
+      return session.user // Return the authenticated user's data
     }
     catch (error) {
       console.error('Error fetching session:', error)
@@ -52,10 +52,10 @@ export class PostgrestService {
   }
 
   /**
-   * Verifica a validade de um token JWT.
+   * Verifies the validity of a JWT token.
    *
-   * @param {string} token - O token JWT a ser verificado.
-   * @returns {Promise<Record<string, unknown>>} O payload decodificado se o token for válido.
+   * @param {string} token - The JWT token to be verified.
+   * @returns {Promise<Record<string, unknown>>} The decoded payload if the token is valid.
    */
   static async verifyToken(token: string): Promise<Record<string, unknown>> {
     return await verifyJWT(token, this.secret, 'HS256')
