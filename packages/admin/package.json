@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/swagger-ui-dist": "^3.30.5",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/compiler-sfc": "^3.5.13",
     "eslint-plugin-vue": "^9.32.0",
     "npm-run-all2": "^7.0.1",
     "sass": "^1.83.0",

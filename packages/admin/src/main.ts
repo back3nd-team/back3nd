@@ -10,7 +10,7 @@ import { createHead } from '@unhead/vue'
 import { createPinia } from 'pinia'
 // Composables
 import { createApp } from 'vue'
-import Vue3Toastify from 'vue3-toastify'
+import Vue3Toastify, { toast } from 'vue3-toastify'
 // Components
 import App from './App.vue'
 
@@ -20,6 +20,8 @@ const app = createApp(App)
 const head = createHead()
 const pinia = createPinia()
 registerPlugins(app)
+app.config.globalProperties.toast = toast
+
 app.use(Vue3Toastify, {
   autoClose: 3000,
   transition: 'flip',
