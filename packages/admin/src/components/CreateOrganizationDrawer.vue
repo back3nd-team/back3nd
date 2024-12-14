@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OrganizationService } from '@/services/OrganizationService'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { z } from 'zod'
 
 const emit = defineEmits(['organizationCreated', 'organizationError', 'closeDrawer'])
@@ -9,38 +9,59 @@ const organizationService = new OrganizationService()
 const organization = ref({ name: '', slug: '', logo: '' })
 const errors = ref<string[]>([])
 
+function generateSlug(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
 const organizationSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  slug: z.string().min(1, 'Slug is required'),
-  logo: z.string().url('Logo must be a valid URL').optional().or(z.literal('')),
+  name: z.string().min(1),
+  slug: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  logo: z.string().url().optional().or(z.literal('')),
 })
 
-async function createOrganization() {
+watch(() => organization.value.name, (newName) => {
+  organization.value.slug = generateSlug(newName)
+})
+
+function validateOrganization() {
   try {
-    errors.value = []
     organizationSchema.parse(organization.value)
-    const response = await organizationService.createOrganization(
-      organization.value.name,
-      organization.value.slug,
-      organization.value.logo,
-    )
-    emit('organizationCreated', response) // Sucesso
+    return true
   }
   catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('Validation error:', error.errors)
       errors.value = error.errors.map(err => err.message)
-      emit('organizationError', error.errors) // Erro de validação
+      emit('organizationError', error.errors)
     }
-    else {
-      console.error('Error creating organization:', error)
-      emit('organizationError', error) // Erro
-    }
+    return false
   }
 }
 
+async function createOrganization() {
+  errors.value = []
+
+  if (!validateOrganization())
+    return
+
+  const response = await organizationService.createOrganization(
+    organization.value.name,
+    organization.value.slug,
+    organization.value.logo,
+  )
+  if (response.id === undefined) {
+    errors.value = ['Failed to create organization']
+    emit('organizationError', errors.value)
+    return
+  }
+
+  emit('organizationCreated', response)
+}
+
 function cancel() {
-  emit('closeDrawer') // Fechar drawer
+  emit('closeDrawer')
 }
 </script>
 
@@ -63,7 +84,6 @@ function cancel() {
     <v-text-field v-model="organization.name" label="Name" />
     <v-text-field v-model="organization.slug" label="Slug" />
     <v-text-field v-model="organization.logo" label="Logo URL" />
-
     <v-card-actions class="d-flex justify-end">
       <v-btn
         class="me-2 text-none"

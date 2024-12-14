@@ -2,41 +2,50 @@
 import CreateOrganizationDrawer from '@/components/CreateOrganizationDrawer.vue'
 import FormDrawer from '@/components/FormDrawer.vue'
 import { OrganizationService } from '@/services/OrganizationService'
+import formatDate from '@/utils/formatDate'
 import { onMounted, ref } from 'vue'
 
 const organizationService = new OrganizationService()
 const organizations = ref([])
 const search = ref('')
 const isDrawerOpen = ref(false)
-
+const expanded = ref<string[]>([])
+const sortBy = ref([{ key: 'createdAt', order: 'desc' }])
 function toggleDrawer() {
-  console.log('Toggling drawer')
   isDrawerOpen.value = !isDrawerOpen.value
 }
-onMounted(async () => {
+
+async function refreshOrganizations() {
   try {
     organizations.value = await organizationService.listOrganizations()
   }
   catch (error) {
     console.error('Failed to fetch organizations', error)
   }
-})
+}
 
-const headers = [
-  { title: 'Name', value: 'name' },
-  { title: 'Slug', value: 'slug' },
-  { title: 'Logo', value: 'logo' },
-]
-
-function handleOrganizationCreated(response: any) {
-  console.log('Organization created:', response)
-  organizations.value.push(response) // Adiciona à lista
+function handleOrganizationCreated() {
   isDrawerOpen.value = false
+  toast.success('Organization created successfully!')
+  refreshOrganizations()
 }
 
 function handleOrganizationError(error: any) {
   console.error('Error creating organization:', error)
+  toast.error('Failed to create organization.')
 }
+
+onMounted(() => {
+  refreshOrganizations()
+})
+
+const headers = [
+  { title: 'Logo', value: 'logo' },
+  { title: 'Name', value: 'name', sortable: true },
+  { title: 'Slug', value: 'slug', sortable: true },
+  { title: 'Created At', value: 'createdAt', sortable: true },
+  { title: '', value: 'actions', sortable: false },
+]
 
 function closeDrawer() {
   isDrawerOpen.value = false
@@ -63,32 +72,39 @@ function closeDrawer() {
               clearable
             />
           </v-col>
-          <v-col cols="12" md="6" class="d-flex justify-end">
-            <v-select
-              label="Filter"
-              :items="['All', 'Active', 'Inactive']"
-              class="mr-4"
-              outlined
-            />
-          </v-col>
-          <v-col v-if="organizations.length > 0" class="mx-1">
+          <v-col class="mx-1">
             <v-data-table
+              v-model:expanded="expanded"
+              :sort-by="sortBy"
+
               :headers="headers"
               :items="organizations"
               :search="search"
               item-value="id"
               class="elevation-1"
               density="comfortable"
+              show-expand
             >
               <template #item.logo="{ item }">
                 <v-avatar>
                   <img :src="item.logo" alt="Logo">
                 </v-avatar>
               </template>
+              <template #item.createdAt="{ item }">
+                {{ formatDate(item.createdAt) }}
+              </template>
+              <template #expanded-row="{ item }">
+                <tr>
+                  <td :colspan="6">
+                    <v-card>
+                      <v-card-text>
+                        <pre>{{ item.metadata }}</pre>
+                      </v-card-text>
+                    </v-card>
+                  </td>
+                </tr>
+              </template>
             </v-data-table>
-          </v-col>
-          <v-col v-else>
-            No data found
           </v-col>
         </v-row>
       </v-container>

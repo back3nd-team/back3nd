@@ -8,8 +8,9 @@ const authConfig = {
     '*',
   ],
   basePath: '/auth',
+  baseURL: import.meta.env.BETTER_AUTH_URL,
   database: new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: import.meta.env.BETTER_AUTH_DATABASE,
   }),
   advanced: {
     crossSubDomainCookies: {
@@ -39,9 +40,12 @@ const authConfig = {
     }),
     bearer(),
     admin(),
-    organization(),
+    organization({
+      allowUserToCreateOrganization: async (user: any) => {
+        return user.role === 'admin'
+      },
+    }),
   ],
 }
-
 export const auth = betterAuth(authConfig)
 export { authConfig }

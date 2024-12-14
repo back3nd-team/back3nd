@@ -6,5 +6,5 @@ export interface User {
   image: string | null
   createdAt: Date
   updatedAt: Date
-  roles: { id: string, role_id: string }[]
+  roles: string
 }

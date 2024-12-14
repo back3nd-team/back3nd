@@ -24,17 +24,21 @@ export class OrganizationService {
    * @returns A promise resolving to the created organization.
    */
   async createOrganization(name: string, slug: string, logo?: string) {
-    try {
-      const organization = await this.client.organization.create({
-        name,
-        slug,
-        logo,
-      })
-      return organization
+    if (!name || !slug) {
+      throw new Error('Name and slug are required')
     }
-    catch (error) {
-      throw new Error(`Failed to create organization: ${(error as Error).message}`)
+
+    const { data, error } = await this.client.organization.create({
+      name,
+      slug,
+      logo,
+    })
+
+    if (error) {
+      console.error('API Error:', error)
+      return error
     }
+    return data
   }
 
   /**
@@ -79,8 +83,8 @@ export class OrganizationService {
    */
   async listOrganizations() {
     try {
-      const organizations = await this.client.organization.list()
-      return organizations
+      const { data } = await this.client.organization.list()
+      return data
     }
     catch (error) {
       throw new Error(`Failed to list organizations: ${(error as Error).message}`)
