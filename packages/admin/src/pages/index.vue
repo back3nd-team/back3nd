@@ -93,6 +93,12 @@ function closeDrawer() {
               density="comfortable"
               show-expand
             >
+              <template #item.name="{ item }">
+                <router-link :to="`/organization/${item.id}`">
+                  {{ item.name }}
+                </router-link>
+              </template>
+
               <template #item.logo="{ item }">
                 <v-avatar>
                   <img :src="item.logo" alt="Logo">

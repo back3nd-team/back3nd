@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import formatDate from '@/utils/formatDate'
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const organization = ref({
   id: 'Z4YgtlYDOt1j8EZ8tHfRU',
   name: 'Araripina',
@@ -10,6 +12,8 @@ const organization = ref({
   createdAt: '2024-12-14T14:03:27.134Z',
   metadata: '{"eduprime":"https://algumlocal.com.br"}',
 })
+const orgid = route.params.orgid as string
+console.log(orgid)
 </script>
 
 <template>
