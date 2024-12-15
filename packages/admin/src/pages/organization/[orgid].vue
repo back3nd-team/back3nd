@@ -4,6 +4,7 @@ import formatDate from '@/utils/formatDate'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const organization = ref({
   id: 'Z4YgtlYDOt1j8EZ8tHfRU',
   name: 'Araripina',
@@ -12,10 +13,19 @@ const organization = ref({
   createdAt: '2024-12-14T14:03:27.134Z',
   metadata: '{"eduprime":"https://algumlocal.com.br"}',
 })
-// const orgid = route.params.orgid as string
+const orgid = route.params.orgid as string
 
-// const organizationService = new OrganizationService()
+const organizationService = new OrganizationService()
+const headers = ref([
+  { text: 'Name', value: 'name' },
+  { text: 'Email', value: 'email' },
+  { text: 'Role', value: 'role' },
+  { text: 'Joined At', value: 'createdAt' },
+])
+const members = ref([])
 onMounted(async () => {
+  organization.value = await organizationService.getFullOrganization(orgid)
+  members.value = organization.value.members || []
 })
 
 /**
@@ -50,6 +60,28 @@ onMounted(async () => {
         </v-chip>
       </v-card-text>
     </v-card>
+    <v-data-table
+      :headers="headers"
+      :items="members"
+      item-value="id"
+      class="elevation-1"
+    >
+      <template #top>
+        <v-toolbar flat>
+          <v-toolbar-title>Members List</v-toolbar-title>
+          <v-spacer />
+        </v-toolbar>
+      </template>
+      <template #[`item.role`]="{ item }">
+        <v-chip>{{ item.role }}</v-chip>
+      </template>
+      <template #[`item.email`]="{ item }">
+        <a :href="`mailto:${item.user.email}`">{{ item.user.email }}</a>
+      </template>
+      <template #[`item.name`]="{ item }">
+        {{ item.user.name }}
+      </template>
+    </v-data-table>
   </v-container>
 </template>
 

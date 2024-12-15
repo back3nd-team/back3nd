@@ -34,6 +34,7 @@ export class AdminService {
   }) {
     try {
       const { data } = await this.client.admin.listUsers({ query })
+      console.log('List of users:', data.users)
       return data.users
     }
     catch (error: any) {

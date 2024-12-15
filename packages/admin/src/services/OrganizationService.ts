@@ -115,10 +115,11 @@ export class OrganizationService {
    * @returns A promise resolving to the organization details.
    */
   async getFullOrganization(organizationId: string) {
-    const data = await this.client.organization.getFullOrganization({
-      organizationId,
+    const { data } = await this.client.organization.getFullOrganization({
+      query: {
+        organizationId,
+      },
     })
-
     return data
   }
 

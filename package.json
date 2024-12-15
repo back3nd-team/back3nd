@@ -15,7 +15,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "better-auth": "^1.0.19"
+    "better-auth": "^1.0.21"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.0",
@@ -23,7 +23,7 @@
     "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10",
     "cross-spawn": "^7.0.6",
-    "eslint": "^9.16.0",
+    "eslint": "^9.17.0",
     "eslint-plugin-format": "^0.1.3"
   }
 }

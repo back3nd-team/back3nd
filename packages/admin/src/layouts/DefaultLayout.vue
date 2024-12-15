@@ -35,8 +35,9 @@ function navigateTo(route: string) {
 }
 
 const itemsGroup1 = ref([
-  { title: 'Organizations', icon: 'mdi-home', route: '/' },
-  { title: 'Auth Specs', icon: 'mdi-information', route: 'http://localhost:3737/auth/reference' },
+  { title: 'Organizations', route: '/' },
+  { title: 'Users', route: '/organization/users' },
+  { title: 'Auth Specs', route: 'http://localhost:3737/auth/reference' },
 ])
 
 const itemsGroup2 = ref([
