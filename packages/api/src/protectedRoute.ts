@@ -1,11 +1,11 @@
-import type { User } from '../src/models/User'
+import type { Context } from 'hono'
 import { Hono } from 'hono'
 
 export function protectedRoute() {
   const r = new Hono()
 
-  r.get('/protected', async (ctx) => {
-    const user = ctx.get('user') as User
+  r.get('/protected', async (ctx: Context) => {
+    const user = ctx.get('user') as any
     if (!user) {
       return ctx.json({ error: 'User not authenticated' }, 401)
     }

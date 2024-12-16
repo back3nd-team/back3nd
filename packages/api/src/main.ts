@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { auth } from './lib/auth'
 import authMiddleware from './middleware/AuthMiddleware'
 import { protectedRoute } from './protectedRoute'
+import organizationRoutes from './routes/OrganizationRoutes'
 import PostgrestAuth from './routes/PostgrestAuth'
 
 const app = new Hono({ strict: false })
@@ -24,6 +25,7 @@ app.use(
 app.all('/auth/*', c => auth.handler(c.req.raw))
 app.route('/files', protectedRoute())
 app.route('/postgrest', PostgrestAuth)
+app.route('/organization', organizationRoutes)
 app.get('/', c => c.text('Back3nd API running!'))
 
 export default {

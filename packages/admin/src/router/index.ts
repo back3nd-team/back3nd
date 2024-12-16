@@ -54,14 +54,15 @@ router.beforeEach((to, from, next) => {
     // Allow access to /auth route without redirecting repeatedly
     if (to.path === '/auth' || to.path === '/auth/') {
       next() // Allow navigation to the authentication route
-    } else {
+    }
+    else {
       next('/auth') // Redirect to the authentication page
     }
-  } 
+  }
   // Prevent authenticated users from accessing authentication routes
   else if (to.path.startsWith('/auth')) {
     next('/') // Redirect to the home page
-  } 
+  }
   // Allow navigation to other routes
   else {
     next()

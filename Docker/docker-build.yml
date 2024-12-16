@@ -1,0 +1,33 @@
+services:
+  postgres_db:
+    image: postgres:17.0-alpine
+    container_name: postgres_db
+    env_file:
+      - ../.env
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./prisma/custom:/docker-entrypoint-initdb.d/
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 5432:5432
+  api:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile
+    ports:
+      - '3737:3737'
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
+volumes:
+  postgresql_data:
+
+networks:
+  postgres-network:
+    driver: bridge

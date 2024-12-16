@@ -5,7 +5,8 @@
   "scripts": {
     "api": "bun src/main.ts",
     "generate-migrations": "bunx @better-auth/cli generate",
-    "apply-migrations": "bunx @better-auth/cli migrate"
+    "apply-migrations": "bunx @better-auth/cli migrate",
+    "build": "tsc"
   },
   "dependencies": {
     "hono": "^4.6.14",

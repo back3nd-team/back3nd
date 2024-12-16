@@ -9,7 +9,11 @@ const organizationService = new OrganizationService()
 const organization = ref({ name: '', slug: '', logo: '', metadata: {} })
 const errors = ref<string[]>([])
 
-const metadataEntries = ref([{ property: '', value: '' }])
+const metadataEntries = ref([
+  { property: 'postgrest_url', value: '' },
+  { property: 'jwt_secret_key', value: '' },
+  { property: '', value: '' },
+])
 const propertySchema = z.string().regex(/^[a-z_]+$/, {
   message: 'Properties can only contain lowercase letters and underscores.',
 })
@@ -25,7 +29,13 @@ const organizationSchema = z.object({
   name: z.string().min(1),
   slug: z.string().min(1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   logo: z.string().url().optional().or(z.literal('')),
-  metadata: z.record(z.string()),
+  metadata: z.object({
+    postgrest_url: z.string().url(),
+    jwt_secret_key: z.string().optional(),
+    // ...existing code...
+  }).refine(data => Object.keys(data).length > 0, {
+    message: 'Metadata must have at least one property',
+  }),
 })
 
 watch(() => organization.value.name, (newName) => {
@@ -112,7 +122,31 @@ function removeMetadataEntry(index: number) {
     <v-text-field v-model="organization.logo" label="Logo URL" />
     <h2>Metadata</h2>
     <v-divider class="my-4" />
-    <v-row v-for="(entry, index) in metadataEntries" :key="index" class="mb-2" dense>
+
+    <!-- Campos padrões -->
+    <v-row dense class="mb-2">
+      <v-col cols="6" class="pe-1">
+        <v-text-field
+          v-model="metadataEntries[0].value"
+          label="Postgrest URL"
+          density="compact"
+          clearable
+          required
+        />
+      </v-col>
+      <v-col cols="6" class="pe-1">
+        <v-text-field
+          v-model="metadataEntries[1].value"
+          label="JWT Secret Key"
+          density="compact"
+          clearable
+          required
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Campos dinâmicos -->
+    <v-row v-for="(entry, index) in metadataEntries.slice(2)" id="metadata" :key="index" class="mb-2" dense>
       <v-col cols="5" class="pe-1">
         <v-text-field
           v-model="entry.property"
@@ -142,7 +176,7 @@ function removeMetadataEntry(index: number) {
           icon="mdi-delete"
           color="red"
           density="compact"
-          @click="removeMetadataEntry(index)"
+          @click="removeMetadataEntry(index + 2)"
         />
       </v-col>
     </v-row>

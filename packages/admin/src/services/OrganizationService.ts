@@ -1,15 +1,16 @@
 import { createAuthClient } from 'better-auth/client'
 import { organizationClient } from 'better-auth/client/plugins'
+import extractBaseUrl from '../utils/extractBaseUrl'
 /**
  * Organization Service class for managing organization-related requests.
  */
 export class OrganizationService {
   public client: any // @TODO: Fix type
-
+  public api: string
   constructor() {
-    const AUTH_API = import.meta.env.VITE_AUTH_API_URL
+    this.api = import.meta.env.VITE_AUTH_API_URL
     this.client = createAuthClient({
-      baseURL: AUTH_API,
+      baseURL: this.api,
       plugins: [
         organizationClient(),
       ],
@@ -156,5 +157,22 @@ export class OrganizationService {
       console.error('Failed to fetch roles:', error)
       throw new Error(`Error fetching roles: ${error.message}`)
     }
+  }
+
+  async addMemberToOrg(userId: string, organizationId: string, role: string) {
+    const baseUrl = extractBaseUrl(this.api)
+    const response = await fetch(`${baseUrl}/organization/add-member`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        organizationId,
+        role,
+      }),
+    })
+    return response
   }
 }

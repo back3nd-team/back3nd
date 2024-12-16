@@ -34,7 +34,6 @@ export class AdminService {
   }) {
     try {
       const { data } = await this.client.admin.listUsers({ query })
-      console.log('List of users:', data.users)
       return data.users
     }
     catch (error: any) {
@@ -52,20 +51,20 @@ export class AdminService {
    * @param data Additional data to store in the user.
    * @returns A promise resolving to the created user.
    */
-  async createUser(name: string, email: string, password: string, role: string = 'user', data?: Record<string, any>) {
-    try {
-      const newUser = await this.client.admin.createUser({
-        name,
-        email,
-        password,
-        role,
-        data,
-      })
-      return newUser
+  async createUser(name: string, email: string, password: string, role: string, data?: Record<string, unknown>) {
+    const response = await this.client.admin.createUser({
+      name,
+      email,
+      password,
+      role,
+      data,
+    })
+    if (response?.data) {
+      return response?.data
     }
-    catch (error: any) {
-      console.error('Failed to create user:', error)
-      throw new Error(`Error creating user: ${error.message}`)
+    else {
+      console.error('Failed to create user by Admin:', response.error)
+      throw new Error(`Error creating user by Admin: ${error.message}`)
     }
   }
 

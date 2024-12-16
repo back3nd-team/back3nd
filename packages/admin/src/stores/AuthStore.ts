@@ -6,11 +6,13 @@ export const useAuthStore = defineStore('auth', () => {
   const user = useLocalStorage<string | null>('auth/user', null)
 
   const isAuthenticated = computed(() => {
-    if (!user.value) return false
+    if (!user.value)
+      return false
     try {
       JSON.parse(user.value)
       return true
-    } catch {
+    }
+    catch {
       return false
     }
   })
@@ -24,10 +26,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const parsedUser = computed(() => {
-    if (!user.value) return null
+    if (!user.value)
+      return null
     try {
       return JSON.parse(user.value)
-    } catch (e) {
+    }
+    catch (e) {
       console.error('Failed to parse user data from localStorage', e)
       return null
     }
@@ -40,4 +44,3 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
   }
 })
-

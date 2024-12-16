@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppLayout: typeof import('./src/components/AppLayout.vue')['default']
     CreateOrganizationDrawer: typeof import('./src/components/CreateOrganizationDrawer.vue')['default']
+    CreateUserDrawer: typeof import('./src/components/CreateUserDrawer.vue')['default']
     FormDrawer: typeof import('./src/components/FormDrawer.vue')['default']
     PieChart: typeof import('./src/components/PieChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

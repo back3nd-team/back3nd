@@ -1,4 +1,4 @@
-interface TUser {
+export interface TUser {
   id: string
   name: string
   email: string
@@ -7,4 +7,21 @@ interface TUser {
   updatedAt: Date
   emailVerified: boolean
   image?: string | null // Optional
+}
+
+export interface TOrganization {
+  id: string
+  name: string
+  slug: string
+  logo?: string
+  createdAt: string
+  metadata?: any
+  members?: Array<{
+    id: string
+    role: string
+    user: {
+      email: string
+      name: string
+    }
+  }>
 }

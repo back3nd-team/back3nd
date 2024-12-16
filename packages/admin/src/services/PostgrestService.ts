@@ -1,5 +1,6 @@
 import { PostgrestClient } from '@supabase/postgrest-js'
 import { fetch as crossFetch } from 'cross-fetch'
+import extractBaseUrl from '../utils/extractBaseUrl'
 import { AuthService } from './AuthService'
 
 export class PostgrestService {
@@ -48,22 +49,12 @@ export class PostgrestService {
   }
 
   /**
-   * Extracts the base part of the URL.
-   * @param url The full URL.
-   * @returns The base part of the URL.
-   */
-  private extractBaseUrl(url: string): string {
-    const parsedUrl = new URL(url)
-    return `${parsedUrl.protocol}//${parsedUrl.host}`
-  }
-
-  /**
    * Fetches the token from the authentication service.
    * @returns A promise resolving to the token string.
    */
   async fetchToken(): Promise<string> {
     const apiHono = import.meta.env.VITE_AUTH_API_URL
-    const baseUrl = this.extractBaseUrl(apiHono)
+    const baseUrl = extractBaseUrl(apiHono)
 
     const response = await fetch(`${baseUrl}/postgrest/token`, {
       method: 'POST',
