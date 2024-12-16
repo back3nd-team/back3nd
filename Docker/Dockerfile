@@ -24,12 +24,14 @@ RUN bun install
 # Preparing the API (Hono) environment
 WORKDIR /app/packages/api
 RUN bun install 
+RUN bun tsc
 EXPOSE 3737
 
 # Preparing the Studio environment (nuxt)
-WORKDIR /app/packages/studio
-RUN npm install 
-RUN npm run build
+WORKDIR /app/packages/admin
+RUN bun install 
+RUN bun run build
+RUN bun add -g serve
 EXPOSE 3000
 
 # Install Nginx

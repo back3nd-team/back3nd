@@ -1,22 +1,19 @@
 #!/bin/sh
 
 # Execute Better Auth migrations
-bunx @better-auth/cli migrate
+bunx @better-auth/cli migrate --config packages/api/src/lib/auth.ts
 
 # Generate Better Auth client
-bunx @better-auth/cli generate
+bunx @better-auth/cli generate --config packages/api/src/lib/auth.ts
 
 # Check table existence, sync schema, and seed database
-#bun run  prisma/data/checkSyncAndSeed.ts
+bun run packages/api/src/scripts/seed.ts
 
 # Start the Hono API on port 3737
 bun packages/api/dist/main.js &
 
-# Print the environment variable NUXT_APP_API_URL
-echo "NUXT_PUBLIC_API_BASE is set to: $(printenv NUXT_PUBLIC_API_BASE)"
-
-# Start the Nuxt studio on port 3000
-NUXT_PUBLIC_API_BASE=$(printenv NUXT_PUBLIC_API_BASE) node packages/studio/.output/server/index.mjs &
+# Start the admin on port 3000
+serve -s /app/packages/admin/dist &
 
 # Start Nginx
 nginx -g 'daemon off;'

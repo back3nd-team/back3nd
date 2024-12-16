@@ -3,7 +3,7 @@ import { admin, bearer, jwt, openAPI, organization } from 'better-auth/plugins'
 import { Pool } from 'pg'
 
 const authConfig = {
-  roles: ['admin', 'user', 'professor', 'gestorEscolar', 'gestorMunicipal'],
+  roles: ['admin', 'user', 'owner'],
   trustedOrigins: [
     '*',
   ],
