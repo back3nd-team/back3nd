@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineModel, defineProps } from 'vue'
+import { defineProps } from 'vue'
 
 defineProps({
   title: {

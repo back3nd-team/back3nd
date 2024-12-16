@@ -34,15 +34,29 @@ function navigateTo(route: string) {
   }
 }
 
-const itemsGroup1 = ref([
-  { title: 'Organizations', route: '/' },
-  { title: 'Users', route: '/organization/users' },
-  { title: 'Auth Specs', route: 'http://localhost:3737/auth/reference' },
-])
-
-const itemsGroup2 = ref([
-  { title: 'Collections', icon: 'mdi-phone', route: '/postgrest' },
-  { title: 'Swagger API', icon: 'mdi-phone', route: '/postgrest/swagger' },
+// Menu structure with dynamic groups
+const menuGroups = ref([
+  {
+    title: 'Better Auth',
+    items: [
+      { title: 'Organizations', route: '/' },
+      { title: 'Users', route: '/organization/users' },
+      { title: 'Auth Specs', route: 'http://localhost:3737/auth/reference' },
+    ],
+  },
+  {
+    title: 'PostgRest',
+    items: [
+      { title: 'Collections', route: '/postgrest' },
+      { title: 'Swagger API', route: '/postgrest/swagger' },
+    ],
+  },
+  {
+    title: 'Files',
+    items: [
+      { title: 'Files', route: '/files' },
+    ],
+  },
 ])
 </script>
 
@@ -84,25 +98,17 @@ const itemsGroup2 = ref([
 
       <v-navigation-drawer v-model="drawer" temporary>
         <v-list>
-          <v-list-subheader>Better Auth</v-list-subheader>
-          <v-list-item
-            v-for="item in itemsGroup1"
-            :key="item.title"
-            @click="navigateTo(item.route)"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-
-          <v-divider />
-
-          <v-list-subheader>PostgRest</v-list-subheader>
-          <v-list-item
-            v-for="item in itemsGroup2"
-            :key="item.title"
-            @click="navigateTo(item.route)"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
+          <template v-for="group in menuGroups" :key="group.title">
+            <v-list-subheader>{{ group.title }}</v-list-subheader>
+            <v-list-item
+              v-for="item in group.items"
+              :key="item.title"
+              @click="navigateTo(item.route)"
+            >
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+            <v-divider />
+          </template>
         </v-list>
       </v-navigation-drawer>
 
