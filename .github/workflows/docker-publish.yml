@@ -1,9 +1,13 @@
 name: Build, Tag, and Publish Docker Image with Versioning
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   build:
@@ -49,14 +53,16 @@ jobs:
           echo "Pushing Docker image with version: ${{ env.VERSION }}"
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }}
 
-      # Step 6: Commit New Version File
-      - name: Commit New Version
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add VERSION
-          git commit -m "chore: bump version to ${{ env.VERSION }}"
-          git push origin main
+      # Step 6: Create a Tag Without `v`
+      - name: Create Git Tag
+        uses: anothrNick/github-tag-action@1.57.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_prefix: "" # Remove o prefixo 'v'
+          release_branches: "main"
+          custom_tag: ${{ env.VERSION }} # Usa a versão diretamente sem prefixo
+          message: "Release for version ${{ env.VERSION }}"
 
       # Step 7: Create GitHub Release
       - name: Create GitHub Release
