@@ -1,4 +1,4 @@
-name: Build, Tag, and Publish Docker Image with Release
+name: Build, Tag, and Publish Docker Image with Versioning
 
 on:
   push:
@@ -22,34 +22,41 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN2025 }}
 
-      # Step 3: Get Commit Hash
-      - name: Get Commit Hash
-        id: get_commit
+      # Step 3: Get Current Version
+      - name: Get Current Version
+        id: get_version
         run: |
-          echo "Fetching the latest commit hash..."
-          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          VERSION_FILE="VERSION"
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "0.1.0-alpha" > $VERSION_FILE
+          else
+            VERSION=$(cat $VERSION_FILE | sed 's/-alpha//')
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+            PATCH=$((PATCH + 1))
+            echo "${MAJOR}.${MINOR}.${PATCH}-alpha" > $VERSION_FILE
+          fi
+          echo "VERSION=$(cat $VERSION_FILE)" >> $GITHUB_ENV
 
       # Step 4: Build Docker Image
       - name: Build Docker image
         run: |
-          echo "Building Docker image with tag: ${COMMIT_HASH}"
-          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:${COMMIT_HASH} .
+          echo "Building Docker image with version: ${{ env.VERSION }}"
+          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }} .
 
       # Step 5: Push Docker Image
       - name: Push Docker image
         run: |
-          echo "Pushing Docker image to GHCR with tag: ${COMMIT_HASH}"
-          docker push ghcr.io/${{ github.repository_owner }}/back3nd:${COMMIT_HASH}
+          echo "Pushing Docker image with version: ${{ env.VERSION }}"
+          docker push ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }}
 
-      # Step 6: Create a Git Tag
-      - name: Create Git Tag
-        uses: anothrNick/github-tag-action@1.57.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_prefix: "v" # Prefix for the tag (e.g., v1.0.0)
-          message: "Release for commit ${{ env.COMMIT_HASH }}"
-          commitish: "${{ env.COMMIT_HASH }}" # Commit hash for the tag
+      # Step 6: Commit New Version File
+      - name: Commit New Version
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add VERSION
+          git commit -m "chore: bump version to ${{ env.VERSION }}"
+          git push origin main
 
       # Step 7: Create GitHub Release
       - name: Create GitHub Release
@@ -57,10 +64,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.COMMIT_HASH }}
-          release_name: "Release v${{ env.COMMIT_HASH }}"
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
           body: |
             ## Changes
-            - Docker image built and pushed with commit hash: `${{ env.COMMIT_HASH }}`
+            - Docker image built and pushed with version: `${{ env.VERSION }}`
           draft: false
-          prerelease: false
+          prerelease: true
