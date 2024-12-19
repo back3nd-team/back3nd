@@ -18,6 +18,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Debug Context
+        run: |
+          echo "Actor: ${{ github.actor }}"
+          echo "Repository Owner: ${{ github.repository_owner }}"
+          echo "Event: ${{ toJson(github.event) }}"
+          echo "Environment Variables:"
+          printenv
+
       - name: Get Current Version
         id: version
         run: |
@@ -49,15 +57,29 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug Docker Login
+        run: |
+          docker info
+          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+
       - name: Build and Tag Docker Image
         run: |
           docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION .
           docker tag ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION ghcr.io/${{ github.repository_owner }}/back3nd:latest
 
+      - name: Debug Docker Images
+        run: |
+          docker images
+
       - name: Push Docker Image
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:latest
+
+      - name: Debug Docker Push
+        run: |
+          docker image inspect ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION || echo "Image not found"
+          docker image inspect ghcr.io/${{ github.repository_owner }}/back3nd:latest || echo "Image not found"
 
       - name: Commit New Version
         run: |
