@@ -7,13 +7,9 @@ on:
       - main
 
 jobs:
-  build:
-    if: github.event.pull_request.merged == true
+  # Job 1: Testar contexto e permissões
+  test-context:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write   
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -26,6 +22,21 @@ jobs:
           echo "Environment Variables:"
           printenv
 
+      - name: Verificar permissões do GITHUB_TOKEN
+        run: |
+          echo "Testando permissões do GITHUB_TOKEN..."
+          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository_owner }}/back3nd/permissions
+
+  # Job 2: Preparar versão
+  prepare-version:
+    needs: test-context
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
       - name: Get Current Version
         id: version
         run: |
@@ -37,18 +48,24 @@ jobs:
       - name: Increment Patch Version
         id: increment
         run: |
-          # Extract version numbers
           VERSION=$(cat VERSION)
           MAJOR=$(echo $VERSION | cut -d. -f1)
           MINOR=$(echo $VERSION | cut -d. -f2)
           PATCH=$(echo $VERSION | cut -d. -f3)
-
-          # Increment PATCH
           PATCH=$((PATCH + 1))
           NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
-
-          # Save new version for use in subsequent steps
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+  # Job 3: Build e publicação da imagem
+  build-and-publish:
+    needs: prepare-version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
@@ -76,10 +93,13 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:latest
 
-      - name: Debug Docker Push
-        run: |
-          docker image inspect ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION || echo "Image not found"
-          docker image inspect ghcr.io/${{ github.repository_owner }}/back3nd:latest || echo "Image not found"
+  # Job 4: Commit nova versão
+  commit-version:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
       - name: Commit New Version
         run: |
