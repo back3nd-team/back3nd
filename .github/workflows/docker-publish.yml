@@ -9,11 +9,12 @@ on:
     branches:
       - main
 
-
 jobs:
   # Job 1: Testar contexto e permissões
   test-context:
     runs-on: ubuntu-latest
+    outputs:
+      token_valid: ${{ steps.check-token.outputs.valid }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -26,12 +27,20 @@ jobs:
           echo "Environment Variables:"
           printenv
 
-      - name: Verificar permissões do TOKEN
+      - name: Verificar permissões do TOKEN no GHCR
+        id: check-token
         run: |
-          echo "Testando permissões do TOKEN..."
-          curl -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/${{ github.repository_owner }}/back3nd/permissions
+          echo "Testando permissões do TOKEN no GHCR..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+            https://ghcr.io/v2/)
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "::set-output name=valid::true"
+          else
+            echo "::set-output name=valid::false"
+            echo "TOKEN não possui permissões necessárias!"
+            exit 1
+          fi
 
   # Job 2: Preparar versão
   prepare-version:
@@ -65,7 +74,7 @@ jobs:
 
   # Job 3: Build e publicação da imagem
   build-and-publish:
-    needs: prepare-version
+    needs: [test-context, prepare-version]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -104,7 +113,7 @@ jobs:
 
   # Job 4: Commit nova versão
   commit-version:
-    needs: prepare-version
+    needs: [prepare-version, build-and-publish]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
