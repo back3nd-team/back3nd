@@ -42,14 +42,16 @@ jobs:
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:${COMMIT_HASH}
 
       # Step 6: Create a Git Tag
-      - name: Create a Tag
-        run: |
-          TAG_NAME="v${COMMIT_HASH}"
-          echo "Creating tag ${TAG_NAME}"
-          git tag -a ${TAG_NAME} -m "Release for commit ${COMMIT_HASH}"
-          git push origin ${TAG_NAME}
+      - name: Create Git Tag
+        uses: anothrNick/github-tag-action@1.57.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_prefix: "v" # Prefix for the tag (e.g., v1.0.0)
+          message: "Release for commit ${{ env.COMMIT_HASH }}"
+          commitish: "${{ env.COMMIT_HASH }}" # Commit hash for the tag
 
-      # Step 7: Create a GitHub Release
+      # Step 7: Create GitHub Release
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
