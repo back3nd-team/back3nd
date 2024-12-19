@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "Testando permissões do TOKEN no GHCR..."
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.TOKEN2025 }}" \
             https://ghcr.io/v2/)
           if [ "$RESPONSE" -eq 200 ]; then
             echo "::set-output name=valid::true"
@@ -88,12 +88,12 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.TOKEN }}
+          password: ${{ secrets.TOKEN2025 }}
 
       - name: Debug Docker Login
         run: |
           docker info
-          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.TOKEN }}"
+          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.TOKEN2025 }}"
 
       - name: Build and Tag Docker Image
         run: |
