@@ -33,6 +33,8 @@ jobs:
   prepare-version:
     needs: test-context
     runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.increment.outputs.new_version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -54,7 +56,8 @@ jobs:
           PATCH=$(echo $VERSION | cut -d. -f3)
           PATCH=$((PATCH + 1))
           NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
+          echo "::set-output name=new_version::$NEW_VERSION"
 
   # Job 3: Build e publicação da imagem
   build-and-publish:
@@ -81,6 +84,7 @@ jobs:
 
       - name: Build and Tag Docker Image
         run: |
+          NEW_VERSION=${{ needs.prepare-version.outputs.new_version }}
           docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION .
           docker tag ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION ghcr.io/${{ github.repository_owner }}/back3nd:latest
 
@@ -90,6 +94,7 @@ jobs:
 
       - name: Push Docker Image
         run: |
+          NEW_VERSION=${{ needs.prepare-version.outputs.new_version }}
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:latest
 
@@ -103,6 +108,7 @@ jobs:
 
       - name: Commit New Version
         run: |
+          NEW_VERSION=${{ needs.prepare-version.outputs.new_version }}
           echo "$NEW_VERSION" > VERSION
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
