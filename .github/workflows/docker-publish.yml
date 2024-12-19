@@ -1,64 +1,64 @@
-name: Build and Publish Docker Image
+name: Build, Tag, and Publish Docker Image with Release
+
 on:
   push:
     branches:
       - main
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/back3nd
-
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
+      # Step 1: Check out the repository
+      - name: Check out repository
         uses: actions/checkout@v3
 
       # Step 2: Log in to GitHub Container Registry
-      - name: Log in to the Container registry
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN2025 }}
 
-      # Step 3: Get Current Tags from GHCR
-      - name: Get Current Version
-        id: get_version
-        run: |
-          echo "Fetching current tags from GHCR..."
-          RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.TOKEN2025 }}" \
-            https://${{ env.REGISTRY }}/v2/${{ env.IMAGE_NAME }}/tags/list)
-          if [ -z "$RESPONSE" ] || [ "$RESPONSE" == "null" ]; then
-            echo "No tags found in GHCR."
-            echo "CURRENT_TAGS=none" >> $GITHUB_ENV
-          else
-            IMAGE_TAGS=$(echo "$RESPONSE" | jq -r '.tags | join(",")')
-            if [ -z "$IMAGE_TAGS" ]; then
-              echo "No tags found in GHCR."
-              echo "CURRENT_TAGS=none" >> $GITHUB_ENV
-            else
-              echo "CURRENT_TAGS=$IMAGE_TAGS" >> $GITHUB_ENV
-              echo "Current tags: $IMAGE_TAGS"
-            fi
-          fi
-
-      # Step 4: Get Commit Hash
+      # Step 3: Get Commit Hash
       - name: Get Commit Hash
         id: get_commit
-        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: |
+          echo "Fetching the latest commit hash..."
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # Step 5: Build Docker Image
+      # Step 4: Build Docker Image
       - name: Build Docker image
         run: |
-          docker build . \
-            --file Docker/Dockerfile \
-            --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${COMMIT_HASH}
+          echo "Building Docker image with tag: ${COMMIT_HASH}"
+          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:${COMMIT_HASH} .
 
-      # Step 6: Push Docker Image
+      # Step 5: Push Docker Image
       - name: Push Docker image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${COMMIT_HASH}
+          echo "Pushing Docker image to GHCR with tag: ${COMMIT_HASH}"
+          docker push ghcr.io/${{ github.repository_owner }}/back3nd:${COMMIT_HASH}
+
+      # Step 6: Create a Git Tag
+      - name: Create a Tag
+        run: |
+          TAG_NAME="v${COMMIT_HASH}"
+          echo "Creating tag ${TAG_NAME}"
+          git tag -a ${TAG_NAME} -m "Release for commit ${COMMIT_HASH}"
+          git push origin ${TAG_NAME}
+
+      # Step 7: Create a GitHub Release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.COMMIT_HASH }}
+          release_name: "Release v${{ env.COMMIT_HASH }}"
+          body: |
+            ## Changes
+            - Docker image built and pushed with commit hash: `${{ env.COMMIT_HASH }}`
+          draft: false
+          prerelease: false
