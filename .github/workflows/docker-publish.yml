@@ -1,123 +1,75 @@
-name: Build, Version, and Publish Docker Image
+name: Build, Tag, and Publish Docker Image with Versioning
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - main
   push:
     branches:
       - main
 
 jobs:
-  # Job 1: Testar contexto e permissões
-  test-context:
+  build:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Debug Context
-        run: |
-          echo "Actor: ${{ github.actor }}"
-          echo "Repository Owner: ${{ github.repository_owner }}"
-          echo "Event: ${{ toJson(github.event) }}"
-          echo "Environment Variables:"
-          printenv
-
-      - name: Verificar permissões do TOKEN
-        run: |
-          echo "Testando permissões do TOKEN..."
-          curl -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/${{ github.repository_owner }}/back3nd/permissions
-
-  # Job 2: Preparar versão
-  prepare-version:
-    needs: test-context
-    runs-on: ubuntu-latest
-    outputs:
-      new_version: ${{ steps.increment.outputs.new_version }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Get Current Version
-        id: version
-        run: |
-          if [ ! -f VERSION ]; then
-            echo "v0.1.0" > VERSION
-          fi
-          echo "Current version: $(cat VERSION)"
-
-      - name: Increment Patch Version
-        id: increment
-        run: |
-          VERSION=$(cat VERSION)
-          MAJOR=$(echo $VERSION | cut -d. -f1)
-          MINOR=$(echo $VERSION | cut -d. -f2)
-          PATCH=$(echo $VERSION | cut -d. -f3)
-          PATCH=$((PATCH + 1))
-          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-          echo "::set-output name=new_version::$NEW_VERSION"
-
-  # Job 3: Build e publicação da imagem
-  build-and-publish:
-    needs: prepare-version
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
+      # Step 2: Log in to GitHub Container Registry
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.TOKEN }}
+          password: ${{ secrets.TOKEN2025 }}
 
-      - name: Debug Docker Login
+      # Step 3: Get Current Version
+      - name: Get Current Version
+        id: get_version
         run: |
-          docker info
-          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.TOKEN }}"
+          VERSION_FILE="VERSION"
+          if [ ! -f "$VERSION_FILE" ]; then
+            echo "0.1.0-alpha" > $VERSION_FILE
+          else
+            VERSION=$(cat $VERSION_FILE | sed 's/-alpha//')
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+            PATCH=$((PATCH + 1))
+            echo "${MAJOR}.${MINOR}.${PATCH}-alpha" > $VERSION_FILE
+          fi
+          echo "VERSION=$(cat $VERSION_FILE)" >> $GITHUB_ENV
 
-      - name: Build and Tag Docker Image
+      # Step 4: Build Docker Image
+      - name: Build Docker image
         run: |
-          NEW_VERSION=${{ needs.prepare-version.outputs.new_version }}
-          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION .
-          docker tag ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION ghcr.io/${{ github.repository_owner }}/back3nd:latest
+          echo "Building Docker image with version: ${{ env.VERSION }}"
+          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }} .
 
-      - name: Debug Docker Images
+      # Step 5: Push Docker Image
+      - name: Push Docker image
         run: |
-          docker images
+          echo "Pushing Docker image with version: ${{ env.VERSION }}"
+          docker push ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }}
 
-      - name: Push Docker Image
-        run: |
-          NEW_VERSION=${{ needs.prepare-version.outputs.new_version }}
-          docker push ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION
-          docker push ghcr.io/${{ github.repository_owner }}/back3nd:latest
+      # Step 6: Create a Tag Without `v`
+      - name: Create Git Tag
+        uses: anothrNick/github-tag-action@1.57.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_prefix: "" # Remove o prefixo 'v'
+          release_branches: "main"
+          custom_tag: ${{ env.VERSION }} # Usa a versão diretamente sem prefixo
+          message: "Release for version ${{ env.VERSION }}"
 
-  # Job 4: Commit nova versão
-  commit-version:
-    needs: prepare-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Debug NEW_VERSION
-        run: |
-          echo "NEW_VERSION=${{ needs.prepare-version.outputs.new_version }}"
-
-      - name: Commit New Version
-        run: |
-          echo "${{ needs.prepare-version.outputs.new_version }}" > VERSION
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add VERSION
-          git commit -m "chore: bump version to ${{ needs.prepare-version.outputs.new_version }}"
-          git push origin main
+      # Step 7: Create GitHub Release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: "Release ${{ env.VERSION }}"
+          body: |
+            ## Changes
+            - Docker image built and pushed with version: `${{ env.VERSION }}`
+          draft: false
+          prerelease: true
