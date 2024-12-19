@@ -35,7 +35,7 @@ RUN bun add -g serve
 EXPOSE 3000
 
 # Install Nginx
-RUN apt-get update && apt-get install -y nginx
+RUN apt-get update && apt-get install -y nginx net-tools
 
 # Copy the Nginx configuration file
 COPY Docker/nginx.conf /etc/nginx/nginx.conf
