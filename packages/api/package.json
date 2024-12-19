@@ -1,26 +1,21 @@
 {
-  "name": "api",
-  "version": "1.0.0",
-  "private": true,
+  "name": "back3nd-api",
+  "type": "module",
+  "module": "server.ts",
   "scripts": {
-    "start": "bun run --hot main.ts",
-    "build": "tsc"
+    "api": "bun src/main.ts",
+    "generate-migrations": "bunx @better-auth/cli generate",
+    "apply-migrations": "bunx @better-auth/cli migrate",
+    "clean": "rm -rf dist",
+    "build": "bun run clean && tsc"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.699.0",
-    "@hono/swagger-ui": "^0.4.1",
-    "@hono/zod-openapi": "^0.16.4",
-    "@prisma/client": "^5.22.0",
-    "hono": "^4.6.12",
-    "mime-types": "^2.1.35",
-    "zod": "^3.23.8",
-    "zod-prisma-types": "^3.1.8"
+    "@aws-sdk/client-s3": "^3.713.0",
+    "@hono/zod-openapi": "^0.18.3",
+    "hono": "^4.6.14",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
-    "@prisma/generator-helper": "^5.22.0",
-    "@prisma/internals": "^5.22.0",
-    "@types/bun": "latest",
-    "@types/mime-types": "^2.1.4",
-    "typescript": "latest"
+    "eslint": "^9.17.0"
   }
 }

@@ -1,27 +1,66 @@
-name: Build and Publish Docker Image
+name: Build, Version, and Publish Docker Image
+
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
+
 jobs:
   build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Get Current Version
+        id: version
+        run: |
+          if [ ! -f VERSION ]; then
+            echo "v0.1.0" > VERSION
+          fi
+          echo "Current version: $(cat VERSION)"
+
+      - name: Increment Patch Version
+        id: increment
+        run: |
+          # Extract version numbers
+          VERSION=$(cat VERSION)
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+
+          # Increment PATCH
+          PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+
+          # Save new version for use in subsequent steps
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build and Tag Docker Image
         run: |
-          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:alpha .
+          docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION .
+          docker tag ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION ghcr.io/${{ github.repository_owner }}/back3nd:latest
 
-      - name: Push Docker image
+      - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/back3nd:alpha
+          docker push ghcr.io/${{ github.repository_owner }}/back3nd:$NEW_VERSION
+          docker push ghcr.io/${{ github.repository_owner }}/back3nd:latest
+
+      - name: Commit New Version
+        run: |
+          echo "$NEW_VERSION" > VERSION
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push origin main
