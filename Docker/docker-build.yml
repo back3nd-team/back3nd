@@ -30,9 +30,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN2025 }}
 
-      # Step 3: Create Git Tag
+      # Step 3: Delete Existing Release (if any)
+      - name: Delete Existing Release
+        id: delete_release
+        run: |
+          TAG=${{ github.event.pull_request.head.sha }}
+          RELEASE_ID=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository_owner }}/back3nd/releases/tags/$TAG | jq -r '.id')
+          if [ "$RELEASE_ID" != "null" ]; then
+            echo "Deleting existing release with ID $RELEASE_ID..."
+            curl -X DELETE \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              https://api.github.com/repos/${{ github.repository_owner }}/back3nd/releases/$RELEASE_ID
+          else
+            echo "No existing release found for tag $TAG."
+          fi
+
+      # Step 4: Create Git Tag
       - name: Create Git Tag
-        id: github_tag # ID do passo para capturar a saída corretamente
+        id: github_tag
         uses: anothrNick/github-tag-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,36 +59,20 @@ jobs:
           prerelease: false # Criar uma tag regular, não pré-release
           verbose: true # Ativar logs detalhados
 
-      # Step 4: Build Docker Image
+      # Step 5: Build Docker Image
       - name: Build Docker image
         run: |
           echo "Building Docker image with version: ${{ steps.github_tag.outputs.new_tag }}"
           docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:${{ steps.github_tag.outputs.new_tag }} .
 
-      # Step 5: Push Docker Image
+      # Step 6: Push Docker Image
       - name: Push Docker image
         run: |
           echo "Pushing Docker image with version: ${{ steps.github_tag.outputs.new_tag }}"
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:${{ steps.github_tag.outputs.new_tag }}
 
-      # Step 6: Check if Release Already Exists
-      - name: Check if Release Exists
-        id: check_release
-        run: |
-          TAG=${{ steps.github_tag.outputs.new_tag }}
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository_owner }}/back3nd/releases/tags/$TAG)
-          if [ "$RESPONSE" -eq 200 ]; then
-            echo "Release for tag $TAG already exists."
-            echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
-          fi
-
       # Step 7: Create GitHub Release
       - name: Create GitHub Release
-        if: env.RELEASE_EXISTS == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
