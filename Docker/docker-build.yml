@@ -37,6 +37,8 @@ jobs:
 
           CURRENT_VERSION=$(cat $VERSION_FILE)
 
+          # Verifica se a tag já existe no repositório remoto
+          git fetch --tags
           TAG_EXISTS=$(git tag -l "${CURRENT_VERSION}")
           if [ -n "$TAG_EXISTS" ]; then
             echo "Tag ${CURRENT_VERSION} already exists. Using the same version."
@@ -64,10 +66,16 @@ jobs:
       # Step 6: Create Git Tag
       - name: Create Git Tag
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git tag -a ${{ env.VERSION }} -m "Release for version ${{ env.VERSION }}"
-          git push origin ${{ env.VERSION }}
+          git fetch --tags
+          TAG_EXISTS=$(git tag -l "${{ env.VERSION }}")
+          if [ -n "$TAG_EXISTS" ]; then
+            echo "Tag ${{ env.VERSION }} already exists. Skipping tag creation."
+          else
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            git tag -a ${{ env.VERSION }} -m "Release for version ${{ env.VERSION }}"
+            git push origin ${{ env.VERSION }}
+          fi
 
       # Step 7: Create GitHub Release
       - name: Create GitHub Release
@@ -81,4 +89,4 @@ jobs:
             ## Changes
             - Docker image built and pushed with version: `${{ env.VERSION }}`
           draft: false
-          prerelease: true
+          prerelease: false
