@@ -5,6 +5,10 @@ on:
     types: [closed]
     branches:
       - main
+  push:
+    branches:
+      - main
+
 
 jobs:
   # Job 1: Testar contexto e permissões
@@ -22,10 +26,10 @@ jobs:
           echo "Environment Variables:"
           printenv
 
-      - name: Verificar permissões do GITHUB_TOKEN
+      - name: Verificar permissões do TOKEN
         run: |
-          echo "Testando permissões do GITHUB_TOKEN..."
-          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          echo "Testando permissões do TOKEN..."
+          curl -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/${{ github.repository_owner }}/back3nd/permissions
 
@@ -75,12 +79,12 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.TOKEN }}
 
       - name: Debug Docker Login
         run: |
           docker info
-          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.GITHUB_TOKEN }}"
+          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.TOKEN }}"
 
       - name: Build and Tag Docker Image
         run: |
