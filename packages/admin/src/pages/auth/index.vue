@@ -9,8 +9,8 @@ const authStore = useAuthStore()
 const authService = new AuthService()
 
 // Reactive states
-const email = ref('john@example.com')
-const password = ref('softagon-2025')
+const email = ref('')
+const password = ref('')
 const showPassword = ref(false)
 
 // Validation schema with Zod
