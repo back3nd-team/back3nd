@@ -6,7 +6,7 @@ import { AuthService } from './AuthService'
 export class PostgrestService {
   private client: PostgrestClient | undefined
   private authService: AuthService
-  private postgrestUrl = import.meta.env.VITE_POSTGRES_API_URL
+  private postgrestUrl = process.env.VITE_POSTGRES_API_URL
 
   constructor() {
     this.authService = new AuthService()
