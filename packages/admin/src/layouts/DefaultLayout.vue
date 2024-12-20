@@ -41,7 +41,7 @@ const menuGroups = ref([
     items: [
       { title: 'Organizations', route: '/' },
       { title: 'Users', route: '/organization/users' },
-      { title: 'Auth Specs', route: `${betteAuth}/auth/reference` },
+      { title: 'Auth Specs', route: `/api/auth/reference` },
     ],
   },
   {
