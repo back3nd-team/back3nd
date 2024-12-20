@@ -7,7 +7,7 @@ const drawer = ref(false)
 const menu = ref(false) // Dropdown menu state
 const router = useRouter()
 const authStore = useAuthStore()
-
+const betteAuth = import.meta.env.VITE_AUTH_API_URL
 // Get the logged-in user from the store
 const user = computed(() => authStore?.user)
 
@@ -41,7 +41,7 @@ const menuGroups = ref([
     items: [
       { title: 'Organizations', route: '/' },
       { title: 'Users', route: '/organization/users' },
-      { title: 'Auth Specs', route: 'http://localhost:3737/auth/reference' },
+      { title: 'Auth Specs', route: `${betteAuth}/auth/reference` },
     ],
   },
   {
