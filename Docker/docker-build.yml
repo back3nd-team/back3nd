@@ -6,6 +6,9 @@ on:
       - main
     types:
       - closed
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -38,7 +41,7 @@ jobs:
           git fetch --tags
 
           # Get the latest tag
-          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          LATEST_TAG=$(git tag -l --sort=-v:refname | head -n 1)
 
           # If no tags are found, start with 0.1.0
           if [ -z "$LATEST_TAG" ]; then
@@ -61,13 +64,12 @@ jobs:
       - name: Check if Tag Exists
         id: check_tag
         run: |
-          TAG_EXISTS=$(git tag -l "v${{ env.NEXT_VERSION }}")
-          if [ -n "$TAG_EXISTS" ]; then
-            echo "Tag v${{ env.NEXT_VERSION }} already exists."
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+          if git rev-parse "v${{ env.NEXT_VERSION }}" >/dev/null 2>&1; then
+              echo "Tag v${{ env.NEXT_VERSION }} already exists."
+              echo "TAG_EXISTS=true" >> $GITHUB_ENV
           else
-            echo "Tag v${{ env.NEXT_VERSION }} does not exist."
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+              echo "Tag v${{ env.NEXT_VERSION }} does not exist."
+              echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
       # Step 5: Create Git Tag (if it doesn't exist)
@@ -80,19 +82,28 @@ jobs:
           git tag -a "v${{ env.NEXT_VERSION }}" -m "Release version ${{ env.NEXT_VERSION }}"
           git push origin "v${{ env.NEXT_VERSION }}"
 
-      # Step 6: Build Docker Image
+      # Step 6: Overwrite Tag if Necessary (Optional)
+      - name: Force Overwrite Tag (Optional)
+        if: env.TAG_EXISTS == 'true'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -fa "v${{ env.NEXT_VERSION }}" -m "Release version ${{ env.NEXT_VERSION }}"
+          git push -f origin "v${{ env.NEXT_VERSION }}"
+
+      # Step 7: Build Docker Image
       - name: Build Docker image
         run: |
           echo "Building Docker image with version: ${{ env.NEXT_VERSION }}"
           docker build -f Docker/Dockerfile -t ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.NEXT_VERSION }} .
 
-      # Step 7: Push Docker Image
+      # Step 8: Push Docker Image
       - name: Push Docker image
         run: |
           echo "Pushing Docker image with version: ${{ env.NEXT_VERSION }}"
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.NEXT_VERSION }}
 
-      # Step 8: Check if Release Already Exists
+      # Step 9: Check if Release Already Exists
       - name: Check if Release Exists
         id: check_release
         run: |
@@ -107,7 +118,7 @@ jobs:
             echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
           fi
 
-      # Step 9: Create GitHub Release (if it doesn't exist)
+      # Step 10: Create GitHub Release (if it doesn't exist)
       - name: Create GitHub Release
         if: env.RELEASE_EXISTS == 'false'
         uses: actions/create-release@v1
