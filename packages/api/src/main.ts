@@ -23,15 +23,14 @@ app.use(
     credentials: true,
   }),
 )
-app.all('/api/auth/*', c => auth.handler(c.req.raw))
+app.all('/api/auth/**', c => auth.handler(c.req.raw))
 app.route('/api/files', protectedRoute())
 app.route('/api/postgrest', PostgrestAuth)
 app.route('/api/organization', organizationRoutes)
 app.route('/api/files', fileRoutes)
-app.get('/api/', c => c.text('Back3nd API running!'))
+app.get('/api', c => c.text('Back3nd API running!'))
 
 export default {
   port: 3737,
   fetch: app.fetch,
-  host: '0.0.0.0',
 }
