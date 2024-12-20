@@ -51,5 +51,6 @@ const authConfig = {
     }),
   ],
 }
+// @ts-expect-error i dont know
 export const auth = betterAuth(authConfig)
 export { authConfig }

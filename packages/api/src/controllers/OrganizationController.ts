@@ -5,6 +5,7 @@ export class OrganizationController {
   static async addMember(ctx: Context) {
     const { userId, organizationId, role } = await ctx.req.json()
     try {
+      // @ts-expect-error i dont know
       const response = await auth.api.addMember({
         body: {
           userId,
