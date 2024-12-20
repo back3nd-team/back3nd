@@ -25,7 +25,7 @@ export class PostgrestService {
       if (!token) {
         throw new Error('Token is missing')
       }
-
+      console.log('POSTGREST_URL', this.postgrestUrl)
       const bearerToken = await this.fetchToken()
       this.client = new PostgrestClient(this.postgrestUrl, {
         headers: {

@@ -41,7 +41,7 @@ const menuGroups = ref([
     items: [
       { title: 'Organizations', route: '/' },
       { title: 'Users', route: '/organization/users' },
-      { title: 'Auth Specs', route: `/api/auth/reference` },
+      { title: 'Auth Specs', route: `/api/auth/reference`, external: true },
     ],
   },
   {
@@ -103,7 +103,7 @@ const menuGroups = ref([
             <v-list-item
               v-for="item in group.items"
               :key="item.title"
-              @click="navigateTo(item.route)"
+              @click="item.external ? window.open(item.route, '_blank') : navigateTo(item.route)"
             >
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
