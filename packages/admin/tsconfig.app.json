@@ -2,7 +2,9 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "esnext",
     "baseUrl": ".",
+    "module": "ESNext",
     "paths": {
       "@/*": ["./src/*"]
     }
