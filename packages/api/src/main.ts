@@ -33,4 +33,5 @@ app.get('/api/', c => c.text('Back3nd API running!'))
 export default {
   port: 3737,
   fetch: app.fetch,
+  host: '0.0.0.0',
 }
