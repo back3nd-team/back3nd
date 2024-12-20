@@ -16,6 +16,10 @@ const authConfig = {
     crossSubDomainCookies: {
       enabled: true,
     },
+    defaultCookieAttributes: {
+      sameSite: 'none',
+      secure: true,
+    },
   },
   multiTenancy: {
     enabled: true,
