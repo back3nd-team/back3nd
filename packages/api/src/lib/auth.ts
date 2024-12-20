@@ -7,7 +7,7 @@ const authConfig = {
   trustedOrigins: [
     '*',
   ],
-  basePath: '/auth',
+  basePath: '/api/auth',
   baseURL: import.meta.env.BETTER_AUTH_URL,
   database: new Pool({
     connectionString: import.meta.env.BETTER_AUTH_DATABASE,
