@@ -7,7 +7,7 @@ const drawer = ref(false)
 const menu = ref(false) // Dropdown menu state
 const router = useRouter()
 const authStore = useAuthStore()
-const betteAuth = import.meta.env.VITE_AUTH_API_URL
+
 // Get the logged-in user from the store
 const user = computed(() => authStore?.user)
 
@@ -26,7 +26,7 @@ function isExternalLink(url: string): boolean {
 function navigateTo(route: string) {
   if (isExternalLink(route)) {
     console.warn(`Opening external link: ${route}`)
-    window.open(route, '_blank') // Opens in a new window
+    router.push({ path: route, query: { external: 'true' } })
   }
   else {
     console.warn(`Navigating to internal route: ${route}`)
@@ -103,7 +103,7 @@ const menuGroups = ref([
             <v-list-item
               v-for="item in group.items"
               :key="item.title"
-              @click="item.external ? window.open(item.route, '_blank') : navigateTo(item.route)"
+              @click="navigateTo(item.route)"
             >
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
