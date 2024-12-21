@@ -24,7 +24,6 @@ app.use(
   }),
 )
 app.all('/api/auth/**', c => auth.handler(c.req.raw))
-app.route('/api/files', protectedRoute())
 app.route('/api/postgrest', PostgrestAuth)
 app.route('/api/organization', organizationRoutes)
 app.route('/api/files', fileRoutes)

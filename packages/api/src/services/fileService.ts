@@ -36,9 +36,7 @@ function generateObjectKey(file: File): string {
  */
 export async function uploadFile(c) {
   try {
-    const contextStoraged = getContext()
-    // @ts-expect-error - The user is stored in the context.
-    const user = contextStoraged.get('user')
+    const user = c.get('user')
     if (!user) {
       return c.json({ error: 'User not found' }, 401)
     }
