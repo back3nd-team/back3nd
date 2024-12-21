@@ -1,4 +1,4 @@
-## docker build -f Docker/Dockerfile -t back3nd:alpha . 
+## docker build -f Docker/Dockerfile -t back3nd:beta . 
 # Use the latest LTS version of Node.js based on Bullseye
 FROM node:lts-bullseye
 
@@ -35,7 +35,9 @@ RUN bun add -g serve
 EXPOSE 3000
 
 # Install Nginx
-RUN apt-get update && apt-get install -y nginx
+RUN apt-get update && apt-get install -y nginx net-tools curl
+
+# Copy the Nginx configuration file
 COPY Docker/nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 

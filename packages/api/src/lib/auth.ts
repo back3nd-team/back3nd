@@ -7,7 +7,7 @@ const authConfig = {
   trustedOrigins: [
     '*',
   ],
-  basePath: '/auth',
+  basePath: '/api/auth',
   baseURL: import.meta.env.BETTER_AUTH_URL,
   database: new Pool({
     connectionString: import.meta.env.BETTER_AUTH_DATABASE,
@@ -15,6 +15,10 @@ const authConfig = {
   advanced: {
     crossSubDomainCookies: {
       enabled: true,
+    },
+    defaultCookieAttributes: {
+      sameSite: 'none',
+      secure: true,
     },
   },
   multiTenancy: {
@@ -47,5 +51,6 @@ const authConfig = {
     }),
   ],
 }
+// @ts-expect-error i dont know
 export const auth = betterAuth(authConfig)
 export { authConfig }

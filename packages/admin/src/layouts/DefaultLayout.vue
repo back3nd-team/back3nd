@@ -26,7 +26,7 @@ function isExternalLink(url: string): boolean {
 function navigateTo(route: string) {
   if (isExternalLink(route)) {
     console.warn(`Opening external link: ${route}`)
-    window.open(route, '_blank') // Opens in a new window
+    router.push({ path: route, query: { external: 'true' } })
   }
   else {
     console.warn(`Navigating to internal route: ${route}`)
@@ -41,7 +41,7 @@ const menuGroups = ref([
     items: [
       { title: 'Organizations', route: '/' },
       { title: 'Users', route: '/organization/users' },
-      { title: 'Auth Specs', route: 'http://localhost:3737/auth/reference' },
+      { title: 'Auth Specs', route: `/api/auth/reference`, external: true },
     ],
   },
   {

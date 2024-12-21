@@ -1,44 +1,53 @@
 services:
-  # api:
-  #  # image: ghcr.io/back3nd-team/back3nd:pre-alpha
-  #   image:  back3nd:alpha
-  #   container_name: back3nd
+  api:
+    image: back3nd:beta
+    container_name: back3nd
+    environment:
+      BETTER_AUTH_DATABASE: 'postgresql://cidadet:S$o0ftag0n@2025@dev-cidadet-postgres.sirius.softagon.io:5439/softagondb'
+      BETTER_AUTH_SECRET: '9ee85b65d04fb923c3c41a9167d9564929aa31c8734f641fcefcbb4dffd1ff03'
+      BACK3ND_ADMIN_USER: 'user@back3nd.com'
+      BACK3ND_ADMIN_PASSWORD: 'adminPassword123'
+      JWT_SECRET: 'c5e922d39eeed46e0b930644'
+      VITE_AUTH_API_URL: 'http://localhost:3737/auth/'
+      VITE_POSTGRES_API_URL: 'http://localhost:3030/'
+      STORAGE_REGION: 'eu-east-1'
+      STORAGE_ENDPOINT: 'https://ged-api.sirius.softagon.io'
+      STORAGE_ACCESS_KEY: 'cidade-t-ged'
+      STORAGE_SECRET_KEY: 'O578kgOhKLbmivWwBWs3UaspqsE2bolP2K1KXh4j'
+      STORAGE_BUCKET_NAME: 'cidade-t-ged'
+    ports:
+      - "3737:3737"
+      - "3000:3000"
+      - "8087:80"
+  # postgres_db:
+  #   image: postgres:17.0-alpine
+  #   container_name: postgres_db
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - postgresql_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #   ports:
+  #     - "5432:5432"
+  # postgrest:
+  #   image: postgrest/postgrest:latest
+  #   container_name: postgrest
   #   env_file:
   #     - .env
   #   depends_on:
-  #     - postgres_db  
+  #     - postgres_db
   #   ports:
-  #     - "3737:3737"
-  #     - "3000:3000"
-  #     - "8087:80"
-  postgres_db:
-    image: postgres:17.0-alpine
-    container_name: postgres_db
-    env_file:
-      - .env
-    volumes:
-      - postgresql_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    ports:
-      - 5432:5432
-  postgrest:
-    env_file:
-      - .env
-    depends_on:
-      - postgres_db  
-    container_name: postgrest
-    image: postgrest/postgrest:latest
-    ports:
-      - "3030:3000"
-    environment:
-      - PGRST_DB_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}
-      - PGRST_DB_SCHEMA=public,information_schema
-      - PGRST_JWT_SECRET=${BETTER_AUTH_SECRET}
-      - PGRST_OPENAPI_MODE=ignore-privileges
-    restart: always
-volumes:
-  postgresql_data:
+  #     - "3030:3000"
+  #   environment:
+  #     - PGRST_DB_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}
+  #     - PGRST_DB_SCHEMA=public,information_schema
+  #     - PGRST_JWT_SECRET=${BETTER_AUTH_SECRET}
+  #     - PGRST_OPENAPI_MODE=ignore-privileges
+  #   restart: always
+
+# volumes:
+#   postgresql_data:

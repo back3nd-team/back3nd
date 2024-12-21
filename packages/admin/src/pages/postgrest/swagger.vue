@@ -5,7 +5,7 @@ import { PostgrestService } from '../../services/PostgrestService'
 import 'swagger-ui-dist/swagger-ui.css'
 import 'swagger-ui-themes/themes/3.x/theme-material.css'
 
-const swaggerUrl = 'http://localhost:3030'
+const swaggerUrl = import.meta.env.VITE_POSTGRES_API_URL
 const postgrestService = new PostgrestService()
 
 onMounted(async () => {
