@@ -8,6 +8,7 @@ bunx @better-auth/cli generate --config packages/api/src/lib/auth.ts
 
 # Check table existence, sync schema, and seed database
 bun run packages/api/src/scripts/seed.ts
+bun run packages/api/src/scripts/roles.ts
 
 # Start the Hono API on port 3737
 bun packages/api/dist/main.js &

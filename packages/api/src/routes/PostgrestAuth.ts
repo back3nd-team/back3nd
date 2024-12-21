@@ -28,7 +28,7 @@ app.post('/token', async (ctx) => {
     sub: user.id,
     name: user.name,
     email: user.email,
-    role: 'back3ndboss', // aqui deve pegar do usuário conectado
+    role: 'owner', // aqui deve pegar do usuário conectado
     iss: 'back3nd',
     aud: 'back3nd-studio',
   }
