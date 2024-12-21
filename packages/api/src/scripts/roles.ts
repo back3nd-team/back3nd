@@ -16,7 +16,7 @@ async function createRole() {
                 FROM pg_roles 
                 WHERE rolname = 'owner'
             ) THEN
-                CREATE ROLE owner;
+                CREATE ROLE owner; 
             END IF;
         END
         $$;
