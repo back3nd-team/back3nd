@@ -464,4 +464,5 @@ export const fileService = {
   getFileByPath,
   getFileVersion,
   generateSignedUrl,
+  getFileVersionId,
 }
