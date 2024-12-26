@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, ListObjectsV2Command, ListObjectVersionsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import mime from 'mime-types'
+import { auth } from '../lib/auth'
 import { formatSize } from '../utils/formatSize'
 import { getEnvVariable } from '../utils/getEnvVariable'
 import { slugify } from '../utils/slugify'
@@ -40,8 +41,8 @@ export async function uploadFile(c) {
     if (!user) {
       return c.json({ error: 'User not found' }, 401)
     }
-
     const formData = await c.req.formData()
+    const userData = formData.get('userData') as string | null
     const file = formData.get('file') as File | null
 
     if (!file) {
@@ -49,8 +50,7 @@ export async function uploadFile(c) {
     }
 
     const objectKey = generateObjectKey(file)
-    const serializedUser = JSON.stringify(user)
-
+    const serializedUser = userData ? JSON.stringify(userData) : JSON.stringify(user)
     if (serializedUser.length > 2000) {
       return c.json(
         { error: 'User metadata exceeds 2 KB limit for S3 metadata' },
