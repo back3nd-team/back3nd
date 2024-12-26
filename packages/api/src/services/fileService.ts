@@ -130,6 +130,39 @@ export async function listFiles(c) {
     return c.json({ error: 'Failed to list files from S3' }, 500)
   }
 }
+export async function getFileVersionId(c) {
+  const { path } = c.req.query()
+
+  if (!path) {
+    return c.json({ error: 'File path is required' }, 400)
+  }
+
+  try {
+    // Lista as versões do objeto no S3
+    const response = await s3Client.send(
+      new ListObjectVersionsCommand({
+        Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
+        Prefix: path,
+      }),
+    )
+
+    // Encontra a versão mais recente (isLatest)
+    const latestVersion = (response.Versions || []).find(version => version.IsLatest)
+
+    if (!latestVersion) {
+      return c.json({ error: 'No version found for the specified file' }, 404)
+    }
+
+    return c.json({
+      path,
+      versionId: latestVersion.VersionId,
+    })
+  }
+  catch (error: any) {
+    console.error(`Error fetching versionId for file from S3: ${error.message}`)
+    return c.json({ error: 'Failed to fetch versionId from S3' }, 500)
+  }
+}
 
 export async function listDates(c) {
   const { sub } = c.req.query()
@@ -431,4 +464,5 @@ export const fileService = {
   getFileByPath,
   getFileVersion,
   generateSignedUrl,
+  getFileVersionId,
 }
