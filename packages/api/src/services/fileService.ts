@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { DeleteObjectCommand, GetObjectCommand, HeadObjectCommand, ListObjectsV2Command, ListObjectVersionsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { getContext } from 'hono/context-storage'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import mime from 'mime-types'
 import { formatSize } from '../utils/formatSize'
 import { getEnvVariable } from '../utils/getEnvVariable'
@@ -291,6 +291,33 @@ export async function downloadFile(c) {
     return c.json({ error: 'Failed to download file from S3' }, 500)
   }
 }
+export async function generateSignedUrl(c) {
+  const { path, expiresIn = 3600 } = c.req.query()
+
+  if (!path) {
+    return c.json({ error: 'File path is required' }, 400)
+  }
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: getEnvVariable('STORAGE_BUCKET_NAME'),
+      Key: path,
+    })
+
+    const signedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: Number(expiresIn),
+    })
+
+    return c.json({
+      url: signedUrl,
+      expiresIn,
+    })
+  }
+  catch (error: any) {
+    console.error(`Error generating signed URL: ${error.message}`)
+    return c.json({ error: 'Failed to generate signed URL' }, 500)
+  }
+}
 /**
  * Deletes a file from the S3 bucket.
  * If `versionId` is provided, the specified version of the file will be deleted.
@@ -403,4 +430,5 @@ export const fileService = {
   deleteFile,
   getFileByPath,
   getFileVersion,
+  generateSignedUrl,
 }
