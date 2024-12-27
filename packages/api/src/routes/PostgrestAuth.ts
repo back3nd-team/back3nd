@@ -23,6 +23,9 @@ app.post('/token', async (ctx) => {
   if (!user) {
     return ctx.json({ error: 'User not authenticated' }, 401)
   }
+  const expirationTimeInSeconds = 7 * 24 * 60 * 60 // 7 days in seconds
+  const currentTimeInSeconds = Math.floor(Date.now() / 1000)
+  const expirationTime = currentTimeInSeconds + expirationTimeInSeconds
 
   const tokenPayload = {
     sub: user.id,
@@ -31,6 +34,7 @@ app.post('/token', async (ctx) => {
     role: 'owner', // aqui deve pegar do usuário conectado
     iss: 'back3nd',
     aud: 'back3nd-studio',
+    exp: expirationTime,
   }
 
   // Gera o JWT usando a PostgrestService
