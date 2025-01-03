@@ -6,10 +6,13 @@ on:
       - main
     types:
       - closed
+  push:
+    branches:
+      - main
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     permissions:
@@ -28,14 +31,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN2025 }}
 
-      # Step 3: Build and Push Docker Image
+      # Step 3: Generate version variable
+      - name: Set version to today's date
+        run: |
+          echo "VERSION=$(date +'%d%m%Y')" >> $GITHUB_ENV
+
+      # Step 4: Build and Push Docker Image
       - name: Build and Push Docker image
         run: |
-          # Generate version
-          TODAY=$(date +'%d%m%Y')
-          echo "VERSION=$TODAY" >> $GITHUB_ENV
-          echo "Set version to today's date: $TODAY"
-
-          # Build and push image
+          echo "Building Docker image with version: ${{ env.VERSION }}"
           docker build -t ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }} -f Docker/Dockerfile .
           docker push ghcr.io/${{ github.repository_owner }}/back3nd:${{ env.VERSION }}
