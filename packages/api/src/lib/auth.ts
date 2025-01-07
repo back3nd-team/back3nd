@@ -35,13 +35,7 @@ const authConfig = {
   },
   plugins: [
     openAPI(),
-    jwt({
-      jwks: {
-        keyPairConfig: {
-          alg: 'ES256',
-        },
-      },
-    }),
+    jwt(),
     bearer(),
     admin(),
     organization({
