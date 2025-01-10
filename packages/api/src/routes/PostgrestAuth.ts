@@ -38,7 +38,7 @@ app.post('/token', async (ctx) => {
   }
 
   // Gera o JWT usando a PostgrestService
-  const token = await PostgrestService.generateToken(tokenPayload)
+  const token = await PostgrestService.generateToken(tokenPayload, expirationTime)
 
   return ctx.json({ token })
 })
