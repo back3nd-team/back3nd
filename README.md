@@ -18,6 +18,16 @@ Now, let's start the project and see it in action! Run this command:
 bun run main.ts
 ```
 
+Now enter the packages/api folder and run the following commands:
+```
+bunx @better-auth/cli generate
+```
+
+Time to seed your fresh database, running this following command in "/packages/api":
+```
+bun run src/scripts/seed.ts
+```
+
 ## Environment Variables 🌍
 
 To make everything work smoothly, we need to set up some environment variables. Create a `.env` file in the root directory and add the following variables:
