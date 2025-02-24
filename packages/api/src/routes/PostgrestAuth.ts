@@ -20,6 +20,7 @@ const app = new Hono<{
 
 app.post('/token', async (ctx) => {
   const user = ctx.get('user') as User
+  console.log(user)
   if (!user) {
     return ctx.json({ error: 'User not authenticated' }, 401)
   }

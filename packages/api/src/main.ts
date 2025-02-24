@@ -23,6 +23,7 @@ app.use(
     credentials: true,
   }),
 )
+
 app.all('/api/auth/**', c => auth.handler(c.req.raw))
 app.route('/api/postgrest', PostgrestAuth)
 app.route('/api/organization', organizationRoutes)
@@ -30,6 +31,7 @@ app.route('/api/files', fileRoutes)
 app.route('/api/pdf', pdfRoutes) // Adicionar a rota de assinatura de PDF
 app.get('/api', c => c.text('Back3nd API running!'))
 
+console.log(app.routes)
 export default {
   port: 3737,
   fetch: app.fetch,
