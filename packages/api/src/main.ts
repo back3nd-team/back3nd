@@ -6,6 +6,7 @@ import { fileRoutes } from './routes/fileRoutes'
 import organizationRoutes from './routes/OrganizationRoutes'
 import { pdfRoutes } from './routes/PdfRoutes' // Importar as rotas de assinatura de PDF
 import PostgrestAuth from './routes/PostgrestAuth'
+import TeacherRoutes from './routes/TeacherRoutes'
 
 const app = new Hono({ strict: false })
 
@@ -29,6 +30,7 @@ app.route('/api/postgrest', PostgrestAuth)
 app.route('/api/organization', organizationRoutes)
 app.route('/api/files', fileRoutes)
 app.route('/api/pdf', pdfRoutes) // Adicionar a rota de assinatura de PDF
+app.route('/api/teacher', TeacherRoutes)
 app.get('/api', c => c.text('Back3nd API running!'))
 
 console.log(app.routes)

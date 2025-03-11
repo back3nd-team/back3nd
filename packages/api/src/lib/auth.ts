@@ -14,7 +14,7 @@ const authConfig = {
   }),
   advanced: {
     crossSubDomainCookies: {
-      enabled: true,
+      enabled: false,
     },
     defaultCookieAttributes: {
       sameSite: 'none',

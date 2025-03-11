@@ -17,6 +17,11 @@ Now, let's start the project and see it in action! Run this command:
 ```bash
 bun run main.ts
 ```
+Now install the @better-auth/cli
+
+```bash
+bun add -g @better-auth/cli
+```
 
 Now enter the packages/api folder and run the following commands:
 ```
